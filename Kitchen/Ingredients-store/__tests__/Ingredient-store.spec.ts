@@ -87,9 +87,9 @@ describe('Ingredient store tests suite:', () => {
     });
   });
 
-  describe('addToExistingStock() test:', () => {
-    it('should add qty to existing qty of ingredient', () => {
-      const qtyToAdd: number = 100;
+  describe('updateExistingIngredientQty() test:', () => {
+    it('should modify qty of existing ingredient qty by specyfied number', () => {
+      const qtyToModify: number = 100;
       ingredientsStore.addOrUpdateIngredient({
         ingredient: ingredient1Mock,
         qty,
@@ -101,9 +101,9 @@ describe('Ingredient store tests suite:', () => {
       assert.deepEqual(expectedFoundIngredientItem.ingredient, ingredient1Mock);
       assert.equal(expectedFoundIngredientItem.qty, qty);
 
-      ingredientsStore.addToExistingStock({
+      ingredientsStore.updateExistingIngredientQty({
         ingredient: expectedFoundIngredientItem.ingredient,
-        qty: qtyToAdd,
+        qty: qtyToModify,
       });
 
       const expectedUpdatedIngredientItem = ingredientsStore.findIngredient(
@@ -113,7 +113,7 @@ describe('Ingredient store tests suite:', () => {
         expectedUpdatedIngredientItem.ingredient,
         ingredient1Mock
       );
-      assert.equal(expectedUpdatedIngredientItem.qty, qty + qtyToAdd);
+      assert.equal(expectedUpdatedIngredientItem.qty, qty + qtyToModify);
     });
 
     it('should throw error on try to remove not existing ingredient', () => {

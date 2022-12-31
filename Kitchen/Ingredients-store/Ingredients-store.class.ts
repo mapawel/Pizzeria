@@ -31,28 +31,18 @@ export class IngredientsStore implements IIngredientsStore {
     return true;
   }
 
-  addToExistingStock({ ingredient, qty }: IngredientItem): boolean {
-    // qty VALIDATOR to ADD here
-    const foundIngredient = this.validateIfExisting(ingredient.nameId);
-    this.ingredients.set(ingredient.nameId, {
-      ingredient: foundIngredient.ingredient,
-      qty: foundIngredient.qty + qty,
-    });
-    return true;
-  }
-
   removeExistingIngredient(ingredient: Ingredient): boolean {
     this.validateIfExisting(ingredient.nameId);
     this.ingredients.delete(ingredient.nameId);
     return true;
   }
 
-  useIgredient({ ingredient, qty }: IngredientItem): boolean {
-    // qty VALIDATOR to ADD here + validator of stock qty!
+  updateExistingIngredientQty({ ingredient, qty }: IngredientItem): boolean {
+    // qty VALIDATOR to ADD here
     const foundIngredient = this.validateIfExisting(ingredient.nameId);
     this.ingredients.set(ingredient.nameId, {
-      ...foundIngredient,
-      qty: foundIngredient.qty - qty,
+      ingredient: foundIngredient.ingredient,
+      qty: foundIngredient.qty + qty,
     });
     return true;
   }
