@@ -1,9 +1,11 @@
 import { Ingredient } from './Ingredient/Ingredient.class';
 import { IngredientItem } from './Ingredient-item.type';
-import { IIngredientsStore } from './Ingredients-store.interface';
+import { DAOinterface } from '../../DAO/DAO.interface';
 import { IngretientStoreError } from './Ingredient-store.exception';
 
-export class IngredientsStore implements IIngredientsStore {
+export class IngredientsStore
+  implements DAOinterface<IngredientItem, Ingredient, number>
+{
   static instance: IngredientsStore | null;
   private readonly ingredients: Map<string, IngredientItem> = new Map();
 
@@ -18,11 +20,11 @@ export class IngredientsStore implements IIngredientsStore {
     IngredientsStore.instance = null;
   }
 
-  findIngredient(nameId: string): IngredientItem {
+  findItem(nameId: string): IngredientItem {
     return this.validateIfExisting(nameId);
   }
 
-  addOrUpdateIngredient({ ingredient, qty }: IngredientItem): boolean {
+  addOrUpdateItem(ingredient: Ingredient, qty: number): boolean {
     // qty VALIDATOR to ADD here
     this.ingredients.set(ingredient.nameId, {
       ingredient,
@@ -31,13 +33,13 @@ export class IngredientsStore implements IIngredientsStore {
     return true;
   }
 
-  removeExistingIngredient(ingredient: Ingredient): boolean {
+  removeExistingItem(ingredient: Ingredient): boolean {
     this.validateIfExisting(ingredient.nameId);
     this.ingredients.delete(ingredient.nameId);
     return true;
   }
 
-  updateExistingIngredientQty({ ingredient, qty }: IngredientItem): boolean {
+  updateExistingItemParam(ingredient: Ingredient, qty: number): boolean {
     // qty VALIDATOR to ADD here
     const foundIngredient = this.validateIfExisting(ingredient.nameId);
     this.ingredients.set(ingredient.nameId, {
