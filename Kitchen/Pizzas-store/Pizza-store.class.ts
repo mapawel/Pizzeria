@@ -1,12 +1,13 @@
 import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
 import { DAOinterface } from '../../DAO/DAO.interface';
-import { Pizza } from './Pizza/Pizza';
+import { Pizza } from './Pizza/Pizza.class';
 import { PizzaItem } from './PizzaItem.type';
 import { PizzaStoreError } from './Pizza-store.exception';
 import { Ingredient } from 'Kitchen/Ingredients-store/Ingredient/Ingredient.class';
 
 export class PizzaStore
-  implements DAOinterface<PizzaItem, Pizza, Map<string, IngredientItem>>
+  implements
+    DAOinterface<PizzaItem, Pizza, Map<string, IngredientItem>, number>
 {
   static instance: PizzaStore | null;
   private readonly pizzas: Map<string, PizzaItem> = new Map();
@@ -27,7 +28,8 @@ export class PizzaStore
 
   createAndAddNewPizza(
     name: string,
-    ingredientsWhQty: { ingredient: Ingredient; qty: number }[]
+    ingredientsWhQty: { ingredient: Ingredient; qty: number }[],
+    time: number
   ): boolean {
     // qty VALIDATOR to ADD here
     const newPizza = new Pizza(name);
@@ -38,19 +40,20 @@ export class PizzaStore
         qty,
       })
     );
-    this.addOrUpdateItem(newPizza, ingredientsMap);
+    this.addOrUpdateItem(newPizza, ingredientsMap, time);
     return true;
   }
 
-  test(){
-    return new Map(this.pizzas)
-  }
-
-  addOrUpdateItem(pizza: Pizza, recipe: Map<string, IngredientItem>): boolean {
+  addOrUpdateItem(
+    pizza: Pizza,
+    recipe: Map<string, IngredientItem>,
+    time: number
+  ): boolean {
     // qty VALIDATOR to ADD here
     this.pizzas.set(pizza.nameId, {
       pizza,
       recipe,
+      time,
     });
     return true;
   }
@@ -63,12 +66,14 @@ export class PizzaStore
 
   updateExistingItemParam(
     pizza: Pizza,
-    recipe: Map<string, IngredientItem>
+    recipe: Map<string, IngredientItem>,
+    time: number
   ): boolean {
     const foundPizza = this.validateIfExisting(pizza.nameId);
     this.pizzas.set(pizza.nameId, {
       pizza: foundPizza.pizza,
       recipe,
+      time,
     });
     return true;
   }

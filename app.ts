@@ -1,4 +1,4 @@
-import { Pizza } from './Kitchen/Pizzas-store/Pizza/Pizza';
+import { Pizza } from './Kitchen/Pizzas-store/Pizza/Pizza.class';
 import { PizzaStore } from './Kitchen/Pizzas-store/Pizza-store.class';
 import { Ingredient } from './Kitchen/Ingredients-store/Ingredient/Ingredient.class';
 
@@ -15,6 +15,6 @@ pstore.createAndAddNewPizza('margerita', [
     ingredient: i2,
     qty: 20,
   },
-]);
+], 12);
 
 console.log(' ----> ', pstore.findItem('MARGERITA'));

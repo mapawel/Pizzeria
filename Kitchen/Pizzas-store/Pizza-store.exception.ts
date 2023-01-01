@@ -1,4 +1,4 @@
-import { Pizza } from './Pizza/Pizza';
+import { Pizza } from './Pizza/Pizza.class';
 
 export class PizzaStoreError extends Error {
   constructor(

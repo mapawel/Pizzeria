@@ -4,7 +4,7 @@ import { DAOinterface } from '../../DAO/DAO.interface';
 import { IngretientStoreError } from './Ingredient-store.exception';
 
 export class IngredientsStore
-  implements DAOinterface<IngredientItem, Ingredient, number>
+  implements DAOinterface<IngredientItem, Ingredient, number, null>
 {
   static instance: IngredientsStore | null;
   private readonly ingredients: Map<string, IngredientItem> = new Map();
