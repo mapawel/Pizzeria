@@ -13,13 +13,13 @@ describe('Ingredient store tests suite:', () => {
     IngredientsStore.resetInstance();
   });
 
-  describe('addOrUpdateItem() + findItem() test:', () => {
+  describe('addOrUpdateItem() + findItemById() test:', () => {
     const qty: number = 10000;
 
     it('should add ingreadient item with specyfied quantity (gramms) and find ingredient by passet nameId', () => {
       ingredientsStore.addOrUpdateItem(ingredient1Mock, qty);
 
-      const expectedFoundIngredientItem = ingredientsStore.findItem(
+      const expectedFoundIngredientItem = ingredientsStore.findItemById(
         ingredient1Mock.nameId
       );
       assert.deepEqual(expectedFoundIngredientItem.ingredient, ingredient1Mock);
@@ -31,7 +31,7 @@ describe('Ingredient store tests suite:', () => {
       ingredientsStore.addOrUpdateItem(ingredient1Mock, qty);
       ingredientsStore.addOrUpdateItem(ingredient1Mock, changedQty);
 
-      const expectedFoundIngredientItem = ingredientsStore.findItem(
+      const expectedFoundIngredientItem = ingredientsStore.findItemById(
         ingredient1Mock.nameId
       );
       assert.deepEqual(expectedFoundIngredientItem.ingredient, ingredient1Mock);
@@ -41,7 +41,7 @@ describe('Ingredient store tests suite:', () => {
     it('should throw error on try to find by not existing nameId', () => {
       ingredientsStore.addOrUpdateItem(ingredient1Mock, qty);
       assert.throws(() => {
-        ingredientsStore.findItem('notExistingId');
+        ingredientsStore.findItemById('notExistingId');
       }, 'Ingredient with passet nameId not found in store, could not proceed.');
     });
   });
@@ -50,7 +50,7 @@ describe('Ingredient store tests suite:', () => {
     it('should remove ingridient from store', () => {
       ingredientsStore.addOrUpdateItem(ingredient1Mock, qty);
 
-      const expectedFoundIngredientItem = ingredientsStore.findItem(
+      const expectedFoundIngredientItem = ingredientsStore.findItemById(
         ingredient1Mock.nameId
       );
       assert.deepEqual(expectedFoundIngredientItem.ingredient, ingredient1Mock);
@@ -61,7 +61,7 @@ describe('Ingredient store tests suite:', () => {
       );
 
       assert.throws(() => {
-        ingredientsStore.findItem(ingredient1Mock.nameId);
+        ingredientsStore.findItemById(ingredient1Mock.nameId);
       }, 'Ingredient with passet nameId not found in store, could not proceed.');
     });
 
@@ -77,7 +77,7 @@ describe('Ingredient store tests suite:', () => {
       const qtyToModify: number = 100;
       ingredientsStore.addOrUpdateItem(ingredient1Mock, qty);
 
-      const expectedFoundIngredientItem = ingredientsStore.findItem(
+      const expectedFoundIngredientItem = ingredientsStore.findItemById(
         ingredient1Mock.nameId
       );
       assert.deepEqual(expectedFoundIngredientItem.ingredient, ingredient1Mock);
@@ -88,7 +88,7 @@ describe('Ingredient store tests suite:', () => {
         qtyToModify
       );
 
-      const expectedUpdatedIngredientItem = ingredientsStore.findItem(
+      const expectedUpdatedIngredientItem = ingredientsStore.findItemById(
         ingredient1Mock.nameId
       );
 

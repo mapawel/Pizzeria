@@ -15,11 +15,11 @@ describe('Pizzas store tests suite:', () => {
     PizzaStore.resetInstance();
   });
 
-  describe('createAndAddNewPizza() + addOrUpdateItem() + findItem()', () => {
+  describe('createAndAddNewPizza() + addOrUpdateItem() + findItemById()', () => {
     it('should create a new Pizza and add it to store', () => {
       pizzaStore.createAndAddNewPizza(pizzaName, recipe, pizzaTime);
 
-      const expectedFoundPizza = pizzaStore.findItem(
+      const expectedFoundPizza = pizzaStore.findItemById(
         pizzaName.replace(/\s/g, '').toUpperCase()
       );
 
@@ -37,7 +37,7 @@ describe('Pizzas store tests suite:', () => {
 
     it('should throw error on try to find by not existing nameId', () => {
       assert.throws(() => {
-        pizzaStore.findItem('notExistingId');
+        pizzaStore.findItemById('notExistingId');
       }, 'Pizza with passed nameId not found in store, could not proceed.');
     });
   });
@@ -46,14 +46,14 @@ describe('Pizzas store tests suite:', () => {
     it('should remove pizza item from store', () => {
       pizzaStore.createAndAddNewPizza(pizzaName, recipe, pizzaTime);
 
-      const expectedFoundPizza = pizzaStore.findItem(
+      const expectedFoundPizza = pizzaStore.findItemById(
         pizzaName.replace(/\s/g, '').toUpperCase()
       );
 
       pizzaStore.removeExistingItem(expectedFoundPizza.pizza);
 
       assert.throws(() => {
-        pizzaStore.findItem(pizzaName.replace(/\s/g, '').toUpperCase());
+        pizzaStore.findItemById(pizzaName.replace(/\s/g, '').toUpperCase());
       }, 'Pizza with passed nameId not found in store, could not proceed.');
     });
 
@@ -68,7 +68,7 @@ describe('Pizzas store tests suite:', () => {
     it('should modify recipe of existing pizza item to a new one', () => {
       pizzaStore.createAndAddNewPizza(pizzaName, recipe, pizzaTime);
 
-      const expectedFoundPizza = pizzaStore.findItem(
+      const expectedFoundPizza = pizzaStore.findItemById(
         pizzaName.replace(/\s/g, '').toUpperCase()
       );
 
@@ -86,7 +86,7 @@ describe('Pizzas store tests suite:', () => {
         newPizzaTime
       );
 
-      const expectedUpdatedPizza = pizzaStore.findItem(
+      const expectedUpdatedPizza = pizzaStore.findItemById(
         pizzaName.replace(/\s/g, '').toUpperCase()
       );
 

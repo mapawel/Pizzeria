@@ -21,18 +21,30 @@ export class KitchenService {
     KitchenService.instance = null;
   }
 
-  public cookPizzas(nameId: string, pizzasQty: number): boolean {
-    const pizzaToCook = this.pizzasStore.findItem(nameId);
-    const ingredientsArr = Array.from(pizzaToCook.recipe).map(
-      ([_, value]) => value
-    );
-    const totalIngredientsArr = ingredientsArr.map((item: IngredientItem) => ({
-      ...item,
-      qty: item.qty * pizzasQty,
-    }));
+  public cookPizzas(totalIngredientsArr: IngredientItem[]): boolean {
     totalIngredientsArr.forEach((item: IngredientItem) => {
       this.ingredientsStore.updateExistingItemParam(item.ingredient, -item.qty);
     });
     return true;
+  }
+
+  public prepareIngredients(
+    pizzaNameId: string,
+    pizzasQty: number
+  ): IngredientItem[] {
+    const pizzaToCook = this.pizzasStore.findItemById(pizzaNameId);
+    const ingredientsArr = Array.from(pizzaToCook.recipe).map(
+      ([_, value]) => value
+    );
+    const totalIngredientsArr: IngredientItem[] = ingredientsArr.map(
+      (item: IngredientItem) => ({
+        ...item,
+        qty: item.qty * pizzasQty,
+      })
+    );
+    totalIngredientsArr.forEach((item: IngredientItem) => {
+      this.ingredientsStore.checkIfEnough(item.ingredient.nameId, item.qty);
+    });
+    return totalIngredientsArr;
   }
 }

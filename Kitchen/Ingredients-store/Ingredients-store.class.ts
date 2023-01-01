@@ -20,11 +20,11 @@ export class IngredientsStore
     IngredientsStore.instance = null;
   }
 
-  findItem(nameId: string): IngredientItem {
+  public findItemById(nameId: string): IngredientItem {
     return this.validateIfExisting(nameId);
   }
 
-  addOrUpdateItem(ingredient: Ingredient, qty: number): boolean {
+  public addOrUpdateItem(ingredient: Ingredient, qty: number): boolean {
     // qty VALIDATOR to ADD here
     this.ingredients.set(ingredient.nameId, {
       ingredient,
@@ -33,20 +33,31 @@ export class IngredientsStore
     return true;
   }
 
-  removeExistingItem(ingredient: Ingredient): boolean {
+  public removeExistingItem(ingredient: Ingredient): boolean {
     this.validateIfExisting(ingredient.nameId);
     this.ingredients.delete(ingredient.nameId);
     return true;
   }
 
-  updateExistingItemParam(ingredient: Ingredient, qty: number): boolean {
+  public updateExistingItemParam(ingredient: Ingredient, qty: number): boolean {
     // qty VALIDATOR to ADD here
-    const foundIngredient = this.validateIfExisting(ingredient.nameId);
+    const foundIngredient =
+      qty < 0
+        ? this.checkIfEnough(ingredient.nameId, -qty)
+        : this.validateIfExisting(ingredient.nameId);
     this.ingredients.set(ingredient.nameId, {
       ingredient: foundIngredient.ingredient,
       qty: foundIngredient.qty + qty,
     });
     return true;
+  }
+
+  public checkIfEnough(nameId: string, qty: number) {
+    const foundIngredient = this.validateIfExisting(nameId);
+    if (foundIngredient.qty < qty) {
+      throw new Error(`Not enought ${nameId} on stock.`);
+    }
+    return foundIngredient;
   }
 
   private validateIfExisting(nameId: string): IngredientItem {

@@ -22,11 +22,12 @@ export class PizzaStore
   public static resetInstance() {
     PizzaStore.instance = null;
   }
-  findItem(nameId: string): PizzaItem {
+  
+  public findItemById(nameId: string): PizzaItem {
     return this.validateIfExisting(nameId);
   }
 
-  createAndAddNewPizza(
+  public createAndAddNewPizza(
     name: string,
     ingredientsWhQty: { ingredient: Ingredient; qty: number }[],
     time: number
@@ -44,7 +45,7 @@ export class PizzaStore
     return true;
   }
 
-  addOrUpdateItem(
+  public addOrUpdateItem(
     pizza: Pizza,
     recipe: Map<string, IngredientItem>,
     time: number
@@ -58,13 +59,13 @@ export class PizzaStore
     return true;
   }
 
-  removeExistingItem(pizza: Pizza): boolean {
+  public removeExistingItem(pizza: Pizza): boolean {
     this.validateIfExisting(pizza.nameId);
     this.pizzas.delete(pizza.nameId);
     return true;
   }
 
-  updateExistingItemParam(
+  public updateExistingItemParam(
     pizza: Pizza,
     recipe: Map<string, IngredientItem>,
     time: number
