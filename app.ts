@@ -1,7 +1,7 @@
 import { Pizza } from './Kitchen/Pizzas-store/Pizza/Pizza.class';
 import { PizzaStore } from './Kitchen/Pizzas-store/Pizza-store.class';
 import { Ingredient } from './Kitchen/Ingredients-store/Ingredient/Ingredient.class';
-import { KitchenService } from './Kitchen/Kitchen-service.class';
+import { KitchenService } from './Kitchen/Kitchen-service';
 import { IngredientsStore } from './Kitchen/Ingredients-store/Ingredients-store.class';
 import { Worker } from './Workers/Worker/Worker.class';
 import { Role } from './Workers/Worker/Roles.enum';
