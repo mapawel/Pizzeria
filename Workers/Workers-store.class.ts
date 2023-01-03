@@ -4,7 +4,7 @@ import { Worker } from './Worker/Worker.class';
 import { WorkersStoreError } from './Workers-store.exception';
 
 export class WorkersStore
-  implements DAOinterface<WorkerItem, Worker, null, null>
+  implements DAOinterface<WorkerItem, Worker, boolean, null>
 {
   static instance: WorkersStore | null;
   private readonly workers: Map<string, WorkerItem> = new Map();
@@ -19,7 +19,7 @@ export class WorkersStore
   public static resetInstance() {
     WorkersStore.instance = null;
   }
-
+//TODO to remove
   test(){
     return new Map(this.workers)
   }
@@ -28,11 +28,10 @@ export class WorkersStore
     return this.validateIfExisting(id);
   }
 
-  public addOrUpdateItem(worker: Worker): boolean {
+  public addOrUpdateItem(worker: Worker, isAvailable: boolean): boolean {
     this.workers.set(worker.name, {
       worker,
-      isAvailable: true,
-      resetAvailableTime: null,
+      isAvailable,
     });
     return true;
   }
@@ -43,12 +42,11 @@ export class WorkersStore
     return true;
   }
 
-  public updateExistingItemParam(worker: Worker): boolean {
+  public updateExistingItemParam(worker: Worker, isAvailable: boolean): boolean {
     this.validateIfExisting(worker.id);
     this.workers.set(worker.name, {
       worker,
-      isAvailable: true,
-      resetAvailableTime: null,
+      isAvailable,
     });
     return true;
   }
