@@ -28,12 +28,13 @@ export class ProductsService
     return this.validateIfExisting(id);
   }
 
-  public addOrUpdateItem(pizzaItem: PizzaItem, price: number): boolean {
-    this.products.set(pizzaItem.pizza.nameId, {
+  public addOrUpdateItem(pizzaItem: PizzaItem, price: number): ProductItem {
+    const productItem: ProductItem = {
       pizzaItem,
       price,
-    });
-    return true;
+    };
+    this.products.set(pizzaItem.pizza.nameId, productItem);
+    return productItem;
   }
 
   public removeExistingItem(pizzaItem: PizzaItem): boolean {

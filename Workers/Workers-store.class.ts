@@ -2,6 +2,7 @@ import { DAOinterface } from 'DAO/DAO.interface';
 import { WorkerItem } from './WorkerItem.type';
 import { Worker } from './Worker/Worker.class';
 import { WorkersStoreError } from './Workers-store.exception';
+import { Role } from './Worker/Roles.enum';
 
 export class WorkersStore
   implements DAOinterface<WorkerItem, Worker, boolean, null>
@@ -19,9 +20,9 @@ export class WorkersStore
   public static resetInstance() {
     WorkersStore.instance = null;
   }
-//TODO to remove
-  test(){
-    return new Map(this.workers)
+  //TODO to remove
+  test() {
+    return new Map(this.workers);
   }
 
   public findItemById(id: string): WorkerItem {
@@ -42,7 +43,10 @@ export class WorkersStore
     return true;
   }
 
-  public updateExistingItemParam(worker: Worker, isAvailable: boolean): boolean {
+  public updateExistingItemParam(
+    worker: Worker,
+    isAvailable: boolean
+  ): boolean {
     this.validateIfExisting(worker.id);
     this.workers.set(worker.name, {
       worker,
@@ -51,10 +55,27 @@ export class WorkersStore
     return true;
   }
 
-  public checkIfAvailable(id: string): boolean {
-    const currentWorker = this.validateIfExisting(id);
-    return currentWorker.isAvailable;
+  public findAvailableWorker(role: Role): WorkerItem {
+    let workerAvailable: WorkerItem | null = null;
+    this.workers.forEach((workerItem: WorkerItem, id: string) => {
+      if (
+        workerItem.worker.role === role &&
+        workerItem.isAvailable &&
+        !workerAvailable
+      )
+        workerAvailable = workerItem;
+    });
+    if (!workerAvailable)
+      throw new WorkersStoreError('Cannot find any available worker specyfied.', {
+        role,
+      });
+    return workerAvailable;
   }
+
+  // private checkIfAvailable(id: string): boolean {
+  //   const currentWorker = this.validateIfExisting(id);
+  //   return currentWorker.isAvailable;
+  // }
 
   private validateIfExisting(id: string): WorkerItem {
     const foundWorker = this.workers.get(id);

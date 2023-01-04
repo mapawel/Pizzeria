@@ -5,9 +5,9 @@ export class Order<SellerType, CookType, TableType> {
   readonly id: string;
 
   public constructor(
-    readonly orderItem: OrderItem,
+    readonly orderItems: OrderItem[],
     readonly totalValue: number,
-    readonly seller: SellerType,
+    // readonly seller: SellerType,
     readonly cook: CookType,
     readonly table: TableType
   ) {
