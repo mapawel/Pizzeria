@@ -1,3 +1,4 @@
+import { OrderItem } from 'Service/Order/OrderItem.type';
 import { IngredientItem } from './Ingredients-store/Ingredient-item.type';
 import { IngredientsStore } from './Ingredients-store/Ingredients-store.class';
 import { PizzaStore } from './Pizzas-store/Pizza-store.class';
@@ -28,23 +29,49 @@ export class KitchenService {
     return true;
   }
 
-  public prepareIngredients(
-    pizzaNameId: string,
-    pizzasQty: number
+  public takeIngredientsForOrder(orderItems: OrderItem[]) {
+    const allIngredientsDuplicated: IngredientItem[][] = orderItems.map(
+      (orderItem: OrderItem) => this.composeOnePizzaTypeIngredients(orderItem)
+    );
+    const ingredients: string[] = [
+      ...new Set(
+        allIngredientsDuplicated
+          .flat(1)
+          .map(
+            (ingredientItem: IngredientItem) => ingredientItem.ingredient.nameId
+          )
+      ),
+    ];
+    const allIngredients = ingredients.map((ingrNameId: string) => {
+      const oneTypeIngredientArr: IngredientItem[] = allIngredientsDuplicated
+        .flat(1)
+        .filter(
+          (ingredientItem: IngredientItem) =>
+            ingredientItem.ingredient.nameId === ingrNameId
+        );
+
+      return oneTypeIngredientArr.reduce(
+        (acc: IngredientItem, x: IngredientItem) => ({
+          ingredient: acc.ingredient,
+          qty: acc.qty + x.qty,
+        })
+      );
+    });
+    console.log(allIngredients);
+  }
+
+  public composeOnePizzaTypeIngredients(
+    orderItem: OrderItem
   ): IngredientItem[] {
-    const pizzaToCook = this.pizzasStore.findItemById(pizzaNameId);
+    const pizzaToCook = this.pizzasStore.findItemById(
+      orderItem.product.pizzaItem.pizza.nameId
+    );
     const ingredientsArr = Array.from(pizzaToCook.recipe).map(
       ([_, value]) => value
     );
-    const totalIngredientsArr: IngredientItem[] = ingredientsArr.map(
-      (item: IngredientItem) => ({
-        ...item,
-        qty: item.qty * pizzasQty,
-      })
-    );
-    totalIngredientsArr.forEach((item: IngredientItem) => {
-      this.ingredientsStore.checkIfEnough(item.ingredient.nameId, item.qty);
-    });
-    return totalIngredientsArr;
+    return ingredientsArr.map((item: IngredientItem) => ({
+      ...item,
+      qty: item.qty * orderItem.qty,
+    }));
   }
 }

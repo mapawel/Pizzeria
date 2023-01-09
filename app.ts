@@ -13,6 +13,7 @@ import { Service } from './Service/Service';
 
 const i1 = new Ingredient('serek');
 const i2 = new Ingredient('sosik');
+const i3 = new Ingredient('papryczki');
 const pstore = PizzaStore.getInstance();
 const kitchen = KitchenService.getInstance();
 const ingredients = IngredientsStore.getInstance();
@@ -43,6 +44,7 @@ tables.addOrUpdateItem(table3, 0, true);
 
 ingredients.addOrUpdateItem(i1, 1000);
 ingredients.addOrUpdateItem(i2, 1000);
+ingredients.addOrUpdateItem(i3, 1000);
 
 const pizzaMarg = pstore.createAndAddNewPizza(
   'margerita',
@@ -59,15 +61,37 @@ const pizzaMarg = pstore.createAndAddNewPizza(
   12
 );
 
-const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
+const pizzaCapri = pstore.createAndAddNewPizza(
+  'capri',
+  [
+    {
+      ingredient: i2,
+      qty: 44,
+    },
+    {
+      ingredient: i3,
+      qty: 44,
+    },
+  ],
+  15
+);
 
-console.log(mainService.orderToGo([{ product: prodMarg, qty: 2 }], 0.5));
+const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
+const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
+
+mainService.orderToGo(
+  [
+    { product: prodMarg, qty: 1 },
+    { product: prodCapri, qty: 1 },
+  ],
+  0.5
+);
 
 // console.log('i1 ----> ', ingredients.findItemById('SEREK'));
 // console.log('i2 ----> ', ingredients.findItemById('SOSIK'));
 
-const allIngredients = kitchen.prepareIngredients('MARGERITA', 2);
-kitchen.cookPizzas(allIngredients);
+// const allIngredients = kitchen.takeOnePizzaTypeIngredients('MARGERITA', 2);
+// kitchen.cookPizzas(allIngredients);
 
 // console.log('i1 ----> ', ingredients.findItemById('SEREK'));
 // console.log('i2 ----> ', ingredients.findItemById('SOSIK'));

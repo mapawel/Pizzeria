@@ -9,6 +9,7 @@ import { ProductItem } from '../Products-service/ProductItem.type';
 import { ServiceError } from './Order/Service.exception';
 import { OrderItem } from './Order/OrderItem.type';
 import { table } from 'console';
+import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
 
 export class Service {
   static instance: Service | null;
@@ -56,6 +57,14 @@ export class Service {
       (acc: number, x: OrderItem) => acc + x.value,
       0
     );
+    this.kitchen.takeIngredientsForOrder(orderItems)
+    // orderItems.forEach((orderItem: OrderItem) =>
+    //   this.kitchen.takeOnePizzaTypeIngredients(
+    //     orderItem.product.pizzaItem.pizza.nameId,
+    //     orderItem.qty
+    //   )
+    // );
+
     // zmiana statusu kucharza na isAvailable: false
     const newOrder = new Order(orderItems, totalValue, cook, null);
     return newOrder;
