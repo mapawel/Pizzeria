@@ -32,15 +32,9 @@ workers.addOrUpdateItem(cook1, true);
 workers.addOrUpdateItem(cook2, true);
 workers.addOrUpdateItem(cook3, true);
 
-// console.log('workers ----> ', workers.test());
-
-// console.log(workers.findAvailableWorker(Role.cook))
-
-tables.addOrUpdateItem(table1, 0, true);
-tables.addOrUpdateItem(table2, 0, true);
-tables.addOrUpdateItem(table3, 0, true);
-
-// console.log('tables ----> ', tables.test());
+// tables.addOrUpdateItem(table1, 0, true);
+// tables.addOrUpdateItem(table2, 0, true);
+// tables.addOrUpdateItem(table3, 0, true);
 
 ingredients.addOrUpdateItem(i1, 1000);
 ingredients.addOrUpdateItem(i2, 1000);
@@ -79,19 +73,20 @@ const pizzaCapri = pstore.createAndAddNewPizza(
 const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
 const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
 
-mainService.orderToGo(
+const order = mainService.orderToGo(
   [
     { product: prodMarg, qty: 1 },
-    { product: prodCapri, qty: 1 },
+    { product: prodCapri, qty: 2 },
   ],
   0.5
 );
 
-// console.log('i1 ----> ', ingredients.findItemById('SEREK'));
-// console.log('i2 ----> ', ingredients.findItemById('SOSIK'));
+console.log('infgredients ----> ', ingredients.test());
+console.log('workers ----> ', workers.test());
+console.log('manin service ----> ', mainService.testProgress());
+console.log('manin service ----> ', mainService.testFinished());
 
-// const allIngredients = kitchen.takeOnePizzaTypeIngredients('MARGERITA', 2);
-// kitchen.cookPizzas(allIngredients);
-
-// console.log('i1 ----> ', ingredients.findItemById('SEREK'));
-// console.log('i2 ----> ', ingredients.findItemById('SOSIK'));
+mainService.finishOrder(order);
+console.log('2workers ----> ', workers.test());
+console.log('2manin service ----> ', mainService.testProgress());
+console.log('2manin service ----> ', mainService.testFinished());

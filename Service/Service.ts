@@ -24,6 +24,10 @@ export class Service {
     string,
     Order<WorkerItem, WorkerItem, TableItem | null>
   > = new Map();
+  private readonly ordersFinished: Map<
+    string,
+    Order<WorkerItem, WorkerItem, TableItem | null>
+  > = new Map();
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
@@ -39,6 +43,20 @@ export class Service {
   public static resetInstance() {
     Service.instance = null;
   }
+  // to REMOVE
+  public testProgress(): Map<
+    string,
+    Order<WorkerItem, WorkerItem, TableItem | null>
+  > {
+    return new Map(this.ordersInProgress);
+  }
+  public testFinished(): Map<
+    string,
+    Order<WorkerItem, WorkerItem, TableItem | null>
+  > {
+    return new Map(this.ordersFinished);
+  }
+  //------
 
   public orderToGo(
     preOrdersArr: {
@@ -47,30 +65,34 @@ export class Service {
     }[],
     discount: number
   ): Order<null, WorkerItem, null> {
-    const cook = this.workers.findAvailableWorker(Role.cook);
+    const cook: WorkerItem = this.workers.findAvailableWorker(Role.cook);
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
       discount
     );
-    // dodać walidację czy są składniki!
-    const totalValue = orderItems.reduce(
+    const ingredients: IngredientItem[] =
+      this.kitchen.takeIngredientsForOrder(orderItems);
+    const totalValue: number = orderItems.reduce(
       (acc: number, x: OrderItem) => acc + x.value,
       0
     );
-    this.kitchen.takeIngredientsForOrder(orderItems)
-    // orderItems.forEach((orderItem: OrderItem) =>
-    //   this.kitchen.takeOnePizzaTypeIngredients(
-    //     orderItem.product.pizzaItem.pizza.nameId,
-    //     orderItem.qty
-    //   )
-    // );
-
-    // zmiana statusu kucharza na isAvailable: false
     const newOrder = new Order(orderItems, totalValue, cook, null);
+    cook.isAvailable = false;
+    this.kitchen.cookPizzas(ingredients);
+    this.ordersInProgress.set(newOrder.id, newOrder);
     return newOrder;
   }
 
   public orderWhReservation() {}
+
+  public finishOrder(
+    order: Order<WorkerItem, WorkerItem, TableItem | null>
+  ): boolean {
+    this.workers.addOrUpdateItem(order.cook.worker, true);
+    this.ordersInProgress.delete(order.id);
+    this.ordersFinished.set(order.id, order);
+    return true;
+  }
 
   private createOrderItems(
     preOrdersArr: {

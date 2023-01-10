@@ -29,11 +29,11 @@ export class KitchenService {
     return true;
   }
 
-  public takeIngredientsForOrder(orderItems: OrderItem[]) {
+  public takeIngredientsForOrder(orderItems: OrderItem[]): IngredientItem[] {
     const allIngredientsDuplicated: IngredientItem[][] = orderItems.map(
-      (orderItem: OrderItem) => this.composeOnePizzaTypeIngredients(orderItem)
+      (orderItem: OrderItem) => this.recalculateIngredientsQty(orderItem)
     );
-    const ingredients: string[] = [
+    const ingredientNameIds: string[] = [
       ...new Set(
         allIngredientsDuplicated
           .flat(1)
@@ -42,7 +42,7 @@ export class KitchenService {
           )
       ),
     ];
-    const allIngredients = ingredients.map((ingrNameId: string) => {
+    const allIngredients = ingredientNameIds.map((ingrNameId: string) => {
       const oneTypeIngredientArr: IngredientItem[] = allIngredientsDuplicated
         .flat(1)
         .filter(
@@ -57,12 +57,13 @@ export class KitchenService {
         })
       );
     });
-    console.log(allIngredients);
+    allIngredients.forEach((item: IngredientItem) => {
+      this.ingredientsStore.checkIfEnough(item.ingredient.nameId, item.qty);
+    });
+    return allIngredients;
   }
 
-  public composeOnePizzaTypeIngredients(
-    orderItem: OrderItem
-  ): IngredientItem[] {
+  private recalculateIngredientsQty(orderItem: OrderItem): IngredientItem[] {
     const pizzaToCook = this.pizzasStore.findItemById(
       orderItem.product.pizzaItem.pizza.nameId
     );

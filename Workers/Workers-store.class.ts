@@ -66,9 +66,12 @@ export class WorkersStore
         workerAvailable = workerItem;
     });
     if (!workerAvailable)
-      throw new WorkersStoreError('Cannot find any available worker specyfied.', {
-        role,
-      });
+      throw new WorkersStoreError(
+        'Cannot find any available worker specyfied.',
+        {
+          role,
+        }
+      );
     return workerAvailable;
   }
 
