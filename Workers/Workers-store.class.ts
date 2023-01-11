@@ -55,7 +55,7 @@ export class WorkersStore
     return true;
   }
 
-  public findAvailableWorker(role: Role): WorkerItem {
+  public findAvailableWorker(role: Role): WorkerItem | false {
     let workerAvailable: WorkerItem | null = null;
     this.workers.forEach((workerItem: WorkerItem, id: string) => {
       if (
@@ -65,13 +65,7 @@ export class WorkersStore
       )
         workerAvailable = workerItem;
     });
-    if (!workerAvailable)
-      throw new WorkersStoreError(
-        'Cannot find any available worker specyfied.',
-        {
-          role,
-        }
-      );
+    if (!workerAvailable) return false;
     return workerAvailable;
   }
 

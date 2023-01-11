@@ -6,10 +6,10 @@ import { Order } from './Order/Order.class';
 import { TableItem } from '../Tables/TableItem.type';
 import { Role } from '../Workers/Worker/Roles.enum';
 import { ProductItem } from '../Products-service/ProductItem.type';
-import { ServiceError } from './Order/Service.exception';
 import { OrderItem } from './Order/OrderItem.type';
 import { table } from 'console';
 import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
+import { ServiceError } from './Order/Service.exception';
 
 export class Service {
   static instance: Service | null;
@@ -65,7 +65,14 @@ export class Service {
     }[],
     discount: number
   ): Order<null, WorkerItem, null> {
-    const cook: WorkerItem = this.workers.findAvailableWorker(Role.cook);
+    const cook: WorkerItem | false = this.workers.findAvailableWorker(
+      Role.cook
+    );
+    if (!cook)
+      throw new ServiceError(
+        'This order cannot be delivered - no cook available.',
+        { preOrdersArr, discount }
+      );
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
       discount
@@ -83,7 +90,31 @@ export class Service {
     return newOrder;
   }
 
-  public orderWhReservation() {}
+  // public orderWhReservation(
+  //   preOrdersArr: {
+  //     product: ProductItem;
+  //     qty: number;
+  //   }[],
+  //   discount: number
+  // ): Order<null, WorkerItem, TableItem> {
+  //   const cook: WorkerItem = this.workers.findAvailableWorker(Role.cook); // it will work without a cook
+  //   // table validator
+  //   const orderItems: OrderItem[] = this.createOrderItems(
+  //     preOrdersArr,
+  //     discount
+  //   );
+  //   const ingredients: IngredientItem[] =
+  //     this.kitchen.takeIngredientsForOrder(orderItems);
+  //   const totalValue: number = orderItems.reduce(
+  //     (acc: number, x: OrderItem) => acc + x.value,
+  //     0
+  //   );
+  //   const newOrder = new Order(orderItems, totalValue, cook, null);
+  //   cook.isAvailable = false;
+  //   this.kitchen.cookPizzas(ingredients);
+  //   this.ordersInProgress.set(newOrder.id, newOrder);
+  //   return newOrder;
+  // }
 
   public finishOrder(
     order: Order<WorkerItem, WorkerItem, TableItem | null>
