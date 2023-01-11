@@ -7,9 +7,9 @@ import { TableItem } from '../Tables/TableItem.type';
 import { Role } from '../Workers/Worker/Roles.enum';
 import { ProductItem } from '../Products-service/ProductItem.type';
 import { OrderItem } from './Order/OrderItem.type';
-import { table } from 'console';
 import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
 import { ServiceError } from './Order/Service.exception';
+import { DiscountStore } from '../Discounts-store/Discount-store.class';
 
 export class Service {
   static instance: Service | null;
@@ -28,11 +28,13 @@ export class Service {
     string,
     Order<WorkerItem, WorkerItem, TableItem | null>
   > = new Map();
+  private readonly discounts: DiscountStore;
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
     this.tables = TablesStore.getInstance();
     this.workers = WorkersStore.getInstance();
+    this.discounts = DiscountStore.getInstance();
   }
 
   public static getInstance() {
@@ -69,8 +71,11 @@ export class Service {
       product: ProductItem;
       qty: number;
     }[],
-    discount: number
+    discount?: string
   ): Order<null, WorkerItem, null> {
+    const discountPercent: number = discount
+      ? this.discounts.findItemById(discount).discountPercent
+      : 0;
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
       throw new ServiceError(
@@ -79,7 +84,7 @@ export class Service {
       );
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
-      discount
+      discountPercent
     );
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
@@ -100,9 +105,12 @@ export class Service {
       product: ProductItem;
       qty: number;
     }[],
-    discount: number,
-    tablePerson: number
+    tablePerson: number,
+    discount?: string,
   ): Order<null, WorkerItem | null, TableItem> {
+    const discountPercent: number = discount
+      ? this.discounts.findItemById(discount).discountPercent
+      : 0;
     const table: TableItem | null = this.tables.findFreeTable(tablePerson);
     if (!table)
       throw new ServiceError(
@@ -115,7 +123,7 @@ export class Service {
 
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
-      discount
+      discountPercent
     );
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
@@ -190,8 +198,8 @@ export class Service {
       ({ product, qty }: { product: ProductItem; qty: number }) => ({
         product,
         qty,
-        unitPrice: product.price * discount,
-        value: product.price * qty * discount,
+        unitPrice: product.price * (1 - discount),
+        value: product.price * qty * (1 - discount),
       })
     );
   }

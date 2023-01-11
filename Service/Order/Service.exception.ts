@@ -11,7 +11,7 @@ export class ServiceError extends Error {
             product: ProductItem;
             qty: number;
           }[];
-      discount?: number;
+      discount?: string;
       tablePerson?: number;
     }
   ) {

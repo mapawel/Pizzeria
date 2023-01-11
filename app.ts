@@ -27,19 +27,18 @@ const cook3 = new Worker('kucharz3', Role.cook);
 const table1 = new Table('1', 4);
 const table2 = new Table('2', 4);
 const table3 = new Table('3', 4);
-const discount1 = new Discount('student', DiscountType.unlimited, 0.4);
-const discount2 = new Discount('qwe', DiscountType.limited, 0.2, 10);
+const discount1 = new Discount('student', DiscountType.unlimited, 0);
+const discount2 = new Discount('qwe', DiscountType.limited, 0.1, 10);
 const workers = WorkersStore.getInstance();
 const tables = TablesStore.getInstance();
 const products = ProductsService.getInstance();
 const mainService = Service.getInstance();
 const discounts = DiscountStore.getInstance();
 
-discounts.addOrUpdateItem(discount1)
-discounts.addOrUpdateItem(discount2)
+discounts.addOrUpdateItem(discount1);
+discounts.addOrUpdateItem(discount2);
 
 console.log(discounts.test());
-
 
 workers.addOrUpdateItem(cook1, false);
 workers.addOrUpdateItem(cook2, false);
@@ -91,15 +90,15 @@ const order = mainService.orderWhReservation(
     { product: prodMarg, qty: 1 },
     { product: prodCapri, qty: 2 },
   ],
-  0.5,
-  4
+  4,
+  'QWE'
 );
 
 // console.log('infgredients ----> ', ingredients.test());
 // console.log('workers ----> ', workers.test());
 // console.log('tables ----> ', tables.test());
-// console.log('manin service to prepare----> ', mainService.testToPrepare());
-// console.log('manin service in progress ----> ', mainService.testProgress());
+console.log('manin service to prepare----> ', mainService.testToPrepare());
+console.log('manin service in progress ----> ', mainService.testProgress());
 
 workers.addOrUpdateItem(cook2, true);
 const freeCook: WorkerItem = workers.findItemById('kucharz2');

@@ -6,7 +6,7 @@ export class Discount {
   public constructor(
     code: string,
     private type: DiscountType,
-    private discountPercent: number,
+    readonly discountPercent: number,
     private qty?: number
   ) {
     this.code = code.replace(/\s/g, '').toUpperCase();
