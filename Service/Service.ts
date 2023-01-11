@@ -16,7 +16,7 @@ export class Service {
   private readonly kitchen: KitchenService;
   private readonly tables: TablesStore;
   private readonly workers: WorkersStore;
-  private readonly ordersToPrepare: Map<
+  private readonly ordersPending: Map<
     string,
     Order<WorkerItem, null, TableItem | null>
   > = new Map();
@@ -56,6 +56,12 @@ export class Service {
   > {
     return new Map(this.ordersFinished);
   }
+  public testToPrepare(): Map<
+    string,
+    Order<WorkerItem, WorkerItem | null, TableItem | null>
+  > {
+    return new Map(this.ordersPending);
+  }
   //------
 
   public orderToGo(
@@ -65,9 +71,7 @@ export class Service {
     }[],
     discount: number
   ): Order<null, WorkerItem, null> {
-    const cook: WorkerItem | false = this.workers.findAvailableWorker(
-      Role.cook
-    );
+    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
       throw new ServiceError(
         'This order cannot be delivered - no cook available.',
@@ -85,43 +89,93 @@ export class Service {
     );
     const newOrder = new Order(orderItems, totalValue, cook, null);
     cook.isAvailable = false;
+    this.workers.addOrUpdateItem(cook.worker, false);
     this.kitchen.cookPizzas(ingredients);
     this.ordersInProgress.set(newOrder.id, newOrder);
     return newOrder;
   }
 
-  // public orderWhReservation(
-  //   preOrdersArr: {
-  //     product: ProductItem;
-  //     qty: number;
-  //   }[],
-  //   discount: number
-  // ): Order<null, WorkerItem, TableItem> {
-  //   const cook: WorkerItem = this.workers.findAvailableWorker(Role.cook); // it will work without a cook
-  //   // table validator
-  //   const orderItems: OrderItem[] = this.createOrderItems(
-  //     preOrdersArr,
-  //     discount
-  //   );
-  //   const ingredients: IngredientItem[] =
-  //     this.kitchen.takeIngredientsForOrder(orderItems);
-  //   const totalValue: number = orderItems.reduce(
-  //     (acc: number, x: OrderItem) => acc + x.value,
-  //     0
-  //   );
-  //   const newOrder = new Order(orderItems, totalValue, cook, null);
-  //   cook.isAvailable = false;
-  //   this.kitchen.cookPizzas(ingredients);
-  //   this.ordersInProgress.set(newOrder.id, newOrder);
-  //   return newOrder;
-  // }
+  public orderWhReservation(
+    preOrdersArr: {
+      product: ProductItem;
+      qty: number;
+    }[],
+    discount: number,
+    tablePerson: number
+  ): Order<null, WorkerItem | null, TableItem> {
+    const table: TableItem | null = this.tables.findFreeTable(tablePerson);
+    if (!table)
+      throw new ServiceError(
+        'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
+        { preOrdersArr, discount, tablePerson }
+      );
+    table.sitsAvailable = table.sitsAvailable - tablePerson;
+    table.isAvailable = false;
+    this.tables.addOrUpdateItem(table.table, tablePerson, false);
 
-  public finishOrder(
+    const orderItems: OrderItem[] = this.createOrderItems(
+      preOrdersArr,
+      discount
+    );
+    const ingredients: IngredientItem[] =
+      this.kitchen.takeIngredientsForOrder(orderItems);
+    const totalValue: number = orderItems.reduce(
+      (acc: number, x: OrderItem) => acc + x.value,
+      0
+    );
+
+    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook); // it will work without a cook
+    let newOrder;
+
+    if (cook) {
+      newOrder = new Order(orderItems, totalValue, cook, table);
+      cook.isAvailable = false;
+      this.workers.addOrUpdateItem(cook.worker, false);
+
+      this.kitchen.cookPizzas(ingredients);
+      this.ordersInProgress.set(newOrder.id, newOrder);
+      return newOrder;
+    } else {
+      newOrder = new Order(orderItems, totalValue, null, table);
+      this.ordersPending.set(newOrder.id, newOrder);
+      return newOrder;
+    }
+  }
+
+  public executePendingOrder(
+    order: Order<WorkerItem, WorkerItem | null, TableItem>,
+    cook: WorkerItem
+  ): Order<WorkerItem, WorkerItem, TableItem> {
+    cook.isAvailable = false;
+    this.workers.addOrUpdateItem(cook.worker, false);
+
+    const ingredients: IngredientItem[] = this.kitchen.takeIngredientsForOrder(
+      order.orderItems
+    );
+    this.kitchen.cookPizzas(ingredients);
+
+    this.ordersPending.delete(order.id);
+    order.cook = cook;
+    this.ordersInProgress.set(
+      order.id,
+      order as Order<null, WorkerItem, TableItem>
+    );
+    return order as Order<null, WorkerItem, TableItem>;
+  }
+
+  public finishOrderByCook(
     order: Order<WorkerItem, WorkerItem, TableItem | null>
   ): boolean {
     this.workers.addOrUpdateItem(order.cook.worker, true);
     this.ordersInProgress.delete(order.id);
     this.ordersFinished.set(order.id, order);
+    return true;
+  }
+
+  public makeTableFree(
+    order: Order<WorkerItem, WorkerItem | null, TableItem>
+  ): boolean {
+    this.tables.addOrUpdateItem(order.table.table, 0, true);
     return true;
   }
 

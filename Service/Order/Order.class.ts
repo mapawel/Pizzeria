@@ -8,7 +8,7 @@ export class Order<SellerType, CookType, TableType> {
     readonly orderItems: OrderItem[],
     readonly totalValue: number,
     // readonly seller: SellerType,
-    readonly cook: CookType,
+    public cook: CookType,
     readonly table: TableType
   ) {
     this.id = uuidv4();

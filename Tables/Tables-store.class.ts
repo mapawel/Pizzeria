@@ -1,4 +1,5 @@
 import { DAOinterface } from 'DAO/DAO.interface';
+import { WorkerItem } from 'Workers/WorkerItem.type';
 import { Table } from './Table/Table.class';
 import { TableItem } from './TableItem.type';
 import { TablesStoreError } from './Tables-store.exception';
@@ -61,9 +62,23 @@ export class TablesStore
     return true;
   }
 
+  public findFreeTable(person: number): TableItem | null {
+    let tableAvailable: TableItem | null = null;
+    this.tables.forEach((tableItem: TableItem, id: string) => {
+      if (
+        tableItem.sitsAvailable >= person &&
+        tableItem.isAvailable &&
+        !tableAvailable
+      )
+        tableAvailable = tableItem;
+    });
+    if (!tableAvailable) return null;
+    return tableAvailable;
+  }
+
   public checkIfAvailable(id: string): boolean {
-    const currentWorker = this.validateIfExisting(id);
-    return currentWorker.isAvailable;
+    const currentTable = this.validateIfExisting(id);
+    return currentTable.isAvailable;
   }
 
   private validateIfExisting(id: string): TableItem {

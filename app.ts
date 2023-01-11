@@ -10,6 +10,7 @@ import { TablesStore } from './Tables/Tables-store.class';
 import { Table } from './Tables/Table/Table.class';
 import { ProductsService } from './Products-service/Products-service';
 import { Service } from './Service/Service';
+import { WorkerItem } from 'Workers/WorkerItem.type';
 
 const i1 = new Ingredient('serek');
 const i2 = new Ingredient('sosik');
@@ -28,13 +29,13 @@ const tables = TablesStore.getInstance();
 const products = ProductsService.getInstance();
 const mainService = Service.getInstance();
 
-workers.addOrUpdateItem(cook1, true);
-workers.addOrUpdateItem(cook2, true);
-workers.addOrUpdateItem(cook3, true);
+workers.addOrUpdateItem(cook1, false);
+workers.addOrUpdateItem(cook2, false);
+workers.addOrUpdateItem(cook3, false);
 
-// tables.addOrUpdateItem(table1, 0, true);
-// tables.addOrUpdateItem(table2, 0, true);
-// tables.addOrUpdateItem(table3, 0, true);
+tables.addOrUpdateItem(table1, 0, true);
+tables.addOrUpdateItem(table2, 0, true);
+tables.addOrUpdateItem(table3, 0, true);
 
 ingredients.addOrUpdateItem(i1, 1000);
 ingredients.addOrUpdateItem(i2, 1000);
@@ -73,20 +74,53 @@ const pizzaCapri = pstore.createAndAddNewPizza(
 const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
 const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
 
-const order = mainService.orderToGo(
+const order = mainService.orderWhReservation(
   [
     { product: prodMarg, qty: 1 },
     { product: prodCapri, qty: 2 },
   ],
-  0.5
+  0.5,
+  4
 );
 
 console.log('infgredients ----> ', ingredients.test());
 console.log('workers ----> ', workers.test());
-console.log('manin service ----> ', mainService.testProgress());
-console.log('manin service ----> ', mainService.testFinished());
+console.log('tables ----> ', tables.test());
+console.log('manin service to prepare----> ', mainService.testToPrepare());
+console.log('manin service in progress ----> ', mainService.testProgress());
 
-mainService.finishOrder(order);
-console.log('2workers ----> ', workers.test());
-console.log('2manin service ----> ', mainService.testProgress());
-console.log('2manin service ----> ', mainService.testFinished());
+workers.addOrUpdateItem(cook2, true);
+const freeCook: WorkerItem = workers.findItemById('kucharz2');
+
+const executingOrder = mainService.executePendingOrder(order, freeCook);
+
+console.log('AFTER EXECUTING - infgredients ----> ', ingredients.test());
+console.log('AFTER EXECUTING - workers ----> ', workers.test());
+console.log('AFTER EXECUTING - tables ----> ', tables.test());
+console.log(
+  'AFTER EXECUTING - manin service to prepare----> ',
+  mainService.testToPrepare()
+);
+console.log(
+  'AFTER EXECUTING - manin service in progress ----> ',
+  mainService.testProgress()
+);
+
+mainService.makeTableFree(executingOrder)
+mainService.finishOrderByCook(executingOrder);
+
+console.log('AFTER FINISHING - infgredients ----> ', ingredients.test());
+console.log('AFTER FINISHING - workers ----> ', workers.test());
+console.log('AFTER FINISHING - tables ----> ', tables.test());
+console.log(
+  'AFTER FINISHING - manin service to prepare----> ',
+  mainService.testToPrepare()
+);
+console.log(
+  'AFTER FINISHING - manin service in progress ----> ',
+  mainService.testProgress()
+);
+console.log(
+  'AFTER FINISHING - manin service in finished ----> ',
+  mainService.testFinished()
+);

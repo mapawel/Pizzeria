@@ -12,6 +12,7 @@ export class ServiceError extends Error {
             qty: number;
           }[];
       discount?: number;
+      tablePerson?: number;
     }
   ) {
     super(message);

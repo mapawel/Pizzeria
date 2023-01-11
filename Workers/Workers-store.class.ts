@@ -55,7 +55,7 @@ export class WorkersStore
     return true;
   }
 
-  public findAvailableWorker(role: Role): WorkerItem | false {
+  public findAvailableWorker(role: Role): WorkerItem | null {
     let workerAvailable: WorkerItem | null = null;
     this.workers.forEach((workerItem: WorkerItem, id: string) => {
       if (
@@ -65,7 +65,7 @@ export class WorkersStore
       )
         workerAvailable = workerItem;
     });
-    if (!workerAvailable) return false;
+    if (!workerAvailable) return null;
     return workerAvailable;
   }
 
