@@ -1,5 +1,5 @@
 import { OrderItem } from './OrderItem.type';
-import { ProductItem } from '../../Products-service/ProductItem.type';
+import { ProductItem } from '../../Products/ProductItem.type';
 
 export class ServiceError extends Error {
   constructor(

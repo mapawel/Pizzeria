@@ -2,38 +2,30 @@ import { WorkerItem } from '../Workers/WorkerItem.type';
 import { KitchenService } from '../Kitchen/Kitchen-service';
 import { TablesStore } from '../Tables/Tables-store.class';
 import { WorkersStore } from '../Workers/Workers-store.class';
-import { Order } from './Order/Order.class';
+import { Order } from '../Orders/Order/Order.class';
 import { TableItem } from '../Tables/TableItem.type';
 import { Role } from '../Workers/Worker/Roles.enum';
-import { ProductItem } from '../Products-service/ProductItem.type';
-import { OrderItem } from './Order/OrderItem.type';
-import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
-import { ServiceError } from './Order/Service.exception';
-import { DiscountStore } from '../Discounts-store/Discount-store.class';
+import { ProductItem } from '../Products/ProductItem.type';
+import { OrderItem } from '../Orders/Order/OrderItem.type';
+import { IngredientItem } from 'Kitchen/Ingredients/Ingredient-item.type';
+import { ServiceError } from '../Orders/Order/Service.exception';
+import { DiscountStore } from '../Discounts/Discount-store.class';
+import { OrdersService } from '../Orders/Orders-service.class';
+import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 
 export class Service {
   static instance: Service | null;
   private readonly kitchen: KitchenService;
   private readonly tables: TablesStore;
   private readonly workers: WorkersStore;
-  private readonly ordersPending: Map<
-    string,
-    Order<WorkerItem, null, TableItem | null>
-  > = new Map();
-  private readonly ordersInProgress: Map<
-    string,
-    Order<WorkerItem, WorkerItem, TableItem | null>
-  > = new Map();
-  private readonly ordersFinished: Map<
-    string,
-    Order<WorkerItem, WorkerItem, TableItem | null>
-  > = new Map();
+  private readonly orders: OrdersService;
   private readonly discounts: DiscountStore;
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
     this.tables = TablesStore.getInstance();
     this.workers = WorkersStore.getInstance();
+    this.orders = OrdersService.getInstance();
     this.discounts = DiscountStore.getInstance();
   }
 
@@ -45,26 +37,12 @@ export class Service {
   public static resetInstance() {
     Service.instance = null;
   }
-  // to REMOVE
-  public testProgress(): Map<
-    string,
-    Order<WorkerItem, WorkerItem, TableItem | null>
-  > {
-    return new Map(this.ordersInProgress);
+
+  public listOrders(
+    ordersType: OrdersServiceCollections
+  ): Map<string, Order<WorkerItem, WorkerItem | null, TableItem | null>> {
+    return new Map(this.orders[ordersType]);
   }
-  public testFinished(): Map<
-    string,
-    Order<WorkerItem, WorkerItem, TableItem | null>
-  > {
-    return new Map(this.ordersFinished);
-  }
-  public testToPrepare(): Map<
-    string,
-    Order<WorkerItem, WorkerItem | null, TableItem | null>
-  > {
-    return new Map(this.ordersPending);
-  }
-  //------
 
   public orderToGo(
     preOrdersArr: {
@@ -96,7 +74,7 @@ export class Service {
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, false);
     this.kitchen.cookPizzas(ingredients);
-    this.ordersInProgress.set(newOrder.id, newOrder);
+    this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     return newOrder;
   }
 
@@ -106,7 +84,7 @@ export class Service {
       qty: number;
     }[],
     tablePerson: number,
-    discount?: string,
+    discount?: string
   ): Order<null, WorkerItem | null, TableItem> {
     const discountPercent: number = discount
       ? this.discounts.findItemById(discount).discountPercent
@@ -132,20 +110,19 @@ export class Service {
       0
     );
 
-    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook); // it will work without a cook
+    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     let newOrder;
 
     if (cook) {
       newOrder = new Order(orderItems, totalValue, cook, table);
       cook.isAvailable = false;
       this.workers.addOrUpdateItem(cook.worker, false);
-
       this.kitchen.cookPizzas(ingredients);
-      this.ordersInProgress.set(newOrder.id, newOrder);
+      this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
       return newOrder;
     } else {
       newOrder = new Order(orderItems, totalValue, null, table);
-      this.ordersPending.set(newOrder.id, newOrder);
+      this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
       return newOrder;
     }
   }
@@ -161,13 +138,9 @@ export class Service {
       order.orderItems
     );
     this.kitchen.cookPizzas(ingredients);
-
-    this.ordersPending.delete(order.id);
+    this.orders.deleteOrder(order, OrdersServiceCollections.ordersPending);
     order.cook = cook;
-    this.ordersInProgress.set(
-      order.id,
-      order as Order<null, WorkerItem, TableItem>
-    );
+    this.orders.addOrder(order, OrdersServiceCollections.ordersInProgress);
     return order as Order<null, WorkerItem, TableItem>;
   }
 
@@ -175,8 +148,8 @@ export class Service {
     order: Order<WorkerItem, WorkerItem, TableItem | null>
   ): boolean {
     this.workers.addOrUpdateItem(order.cook.worker, true);
-    this.ordersInProgress.delete(order.id);
-    this.ordersFinished.set(order.id, order);
+    this.orders.deleteOrder(order, OrdersServiceCollections.ordersInProgress);
+    this.orders.addOrder(order, OrdersServiceCollections.ordersFinished);
     return true;
   }
 

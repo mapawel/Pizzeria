@@ -1,4 +1,4 @@
-import { ProductItem } from 'Products-service/ProductItem.type';
+import { ProductItem } from 'Products/ProductItem.type';
 
 export type OrderItem = {
   product: ProductItem;

@@ -1,19 +1,21 @@
-import { Pizza } from './Kitchen/Pizzas-store/Pizza/Pizza.class';
-import { PizzaStore } from './Kitchen/Pizzas-store/Pizza-store.class';
-import { Ingredient } from './Kitchen/Ingredients-store/Ingredient/Ingredient.class';
+import { Pizza } from './Kitchen/Pizzas/Pizza/Pizza.class';
+import { PizzaStore } from './Kitchen/Pizzas/Pizza-store.class';
+import { Ingredient } from './Kitchen/Ingredients/Ingredient/Ingredient.class';
 import { KitchenService } from './Kitchen/Kitchen-service';
-import { IngredientsStore } from './Kitchen/Ingredients-store/Ingredients-store.class';
+import { IngredientsStore } from './Kitchen/Ingredients/Ingredients-store.class';
 import { Worker } from './Workers/Worker/Worker.class';
 import { Role } from './Workers/Worker/Roles.enum';
 import { WorkersStore } from './Workers/Workers-store.class';
 import { TablesStore } from './Tables/Tables-store.class';
 import { Table } from './Tables/Table/Table.class';
-import { ProductsService } from './Products-service/Products-service';
+import { ProductsService } from './Products/Products-service';
 import { Service } from './Service/Service';
 import { WorkerItem } from './Workers/WorkerItem.type';
-import { DiscountStore } from './Discounts-store/Discount-store.class';
-import { Discount } from './Discounts-store/Discount/Discount.class';
-import { DiscountType } from './Discounts-store/Discount/Discount-type.enum';
+import { DiscountStore } from './Discounts/Discount-store.class';
+import { Discount } from './Discounts/Discount/Discount.class';
+import { DiscountType } from './Discounts/Discount/Discount-type.enum';
+import { OrdersService } from './Orders/Orders-service.class';
+import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
 
 const i1 = new Ingredient('serek');
 const i2 = new Ingredient('sosik');
@@ -34,11 +36,10 @@ const tables = TablesStore.getInstance();
 const products = ProductsService.getInstance();
 const mainService = Service.getInstance();
 const discounts = DiscountStore.getInstance();
+const orders = OrdersService.getInstance();
 
 discounts.addOrUpdateItem(discount1);
 discounts.addOrUpdateItem(discount2);
-
-console.log(discounts.test());
 
 workers.addOrUpdateItem(cook1, false);
 workers.addOrUpdateItem(cook2, false);
@@ -97,41 +98,27 @@ const order = mainService.orderWhReservation(
 // console.log('infgredients ----> ', ingredients.test());
 // console.log('workers ----> ', workers.test());
 // console.log('tables ----> ', tables.test());
-console.log('manin service to prepare----> ', mainService.testToPrepare());
-console.log('manin service in progress ----> ', mainService.testProgress());
+console.log(
+  'orders to prepare----> ',
+  mainService.listOrders(OrdersServiceCollections.ordersPending)
+);
+console.log(
+  'orders in progress ----> ',
+  mainService.listOrders(OrdersServiceCollections.ordersInProgress)
+);
 
 workers.addOrUpdateItem(cook2, true);
 const freeCook: WorkerItem = workers.findItemById('kucharz2');
 
 const executingOrder = mainService.executePendingOrder(order, freeCook);
 
-// console.log('AFTER EXECUTING - infgredients ----> ', ingredients.test());
-// console.log('AFTER EXECUTING - workers ----> ', workers.test());
-// console.log('AFTER EXECUTING - tables ----> ', tables.test());
-// console.log(
-//   'AFTER EXECUTING - manin service to prepare----> ',
-//   mainService.testToPrepare()
-// );
-// console.log(
-//   'AFTER EXECUTING - manin service in progress ----> ',
-//   mainService.testProgress()
-// );
-
+console.log(
+  'EXECUTED orders to prepare----> ',
+  mainService.listOrders(OrdersServiceCollections.ordersPending)
+);
+console.log(
+  'EXECUTED orders in progress ----> ',
+  mainService.listOrders(OrdersServiceCollections.ordersInProgress)
+);
 mainService.makeTableFree(executingOrder);
 mainService.finishOrderByCook(executingOrder);
-
-// console.log('AFTER FINISHING - infgredients ----> ', ingredients.test());
-// console.log('AFTER FINISHING - workers ----> ', workers.test());
-// console.log('AFTER FINISHING - tables ----> ', tables.test());
-// console.log(
-//   'AFTER FINISHING - manin service to prepare----> ',
-//   mainService.testToPrepare()
-// );
-// console.log(
-//   'AFTER FINISHING - manin service in progress ----> ',
-//   mainService.testProgress()
-// );
-// console.log(
-//   'AFTER FINISHING - manin service in finished ----> ',
-//   mainService.testFinished()
-// );

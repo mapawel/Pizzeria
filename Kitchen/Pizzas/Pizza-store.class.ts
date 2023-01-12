@@ -1,9 +1,9 @@
-import { IngredientItem } from 'Kitchen/Ingredients-store/Ingredient-item.type';
+import { IngredientItem } from 'Kitchen/Ingredients/Ingredient-item.type';
 import { DAOinterface } from '../../DAO/DAO.interface';
 import { Pizza } from './Pizza/Pizza.class';
 import { PizzaItem } from './PizzaItem.type';
 import { PizzaStoreError } from './Pizza-store.exception';
-import { Ingredient } from 'Kitchen/Ingredients-store/Ingredient/Ingredient.class';
+import { Ingredient } from 'Kitchen/Ingredients/Ingredient/Ingredient.class';
 
 export class PizzaStore
   implements

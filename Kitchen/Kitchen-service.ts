@@ -1,7 +1,7 @@
-import { OrderItem } from 'Service/Order/OrderItem.type';
-import { IngredientItem } from './Ingredients-store/Ingredient-item.type';
-import { IngredientsStore } from './Ingredients-store/Ingredients-store.class';
-import { PizzaStore } from './Pizzas-store/Pizza-store.class';
+import { OrderItem } from 'Orders/Order/OrderItem.type';
+import { IngredientItem } from './Ingredients/Ingredient-item.type';
+import { IngredientsStore } from './Ingredients/Ingredients-store.class';
+import { PizzaStore } from './Pizzas/Pizza-store.class';
 
 export class KitchenService {
   static instance: KitchenService | null;
