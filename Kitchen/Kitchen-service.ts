@@ -2,8 +2,9 @@ import { OrderItem } from 'Orders/Order/OrderItem.type';
 import { IngredientItem } from './Ingredients/Ingredient-item.type';
 import { IngredientsStore } from './Ingredients/Ingredients-store.class';
 import { PizzaStore } from './Pizzas/Pizza-store.class';
+import { IKitchenService } from './Kitchen-service.interface';
 
-export class KitchenService {
+export class KitchenService implements IKitchenService {
   static instance: KitchenService | null;
   private readonly ingredientsStore: IngredientsStore;
   private readonly pizzasStore: PizzaStore;
@@ -33,30 +34,14 @@ export class KitchenService {
     const allIngredientsDuplicated: IngredientItem[][] = orderItems.map(
       (orderItem: OrderItem) => this.recalculateIngredientsQty(orderItem)
     );
-    const ingredientNameIds: string[] = [
-      ...new Set(
-        allIngredientsDuplicated
-          .flat(1)
-          .map(
-            (ingredientItem: IngredientItem) => ingredientItem.ingredient.nameId
-          )
-      ),
-    ];
-    const allIngredients = ingredientNameIds.map((ingrNameId: string) => {
-      const oneTypeIngredientArr: IngredientItem[] = allIngredientsDuplicated
-        .flat(1)
-        .filter(
-          (ingredientItem: IngredientItem) =>
-            ingredientItem.ingredient.nameId === ingrNameId
-        );
+    const ingredientNameIds: string[] = this.getUniqueNameIds(
+      allIngredientsDuplicated
+    );
 
-      return oneTypeIngredientArr.reduce(
-        (acc: IngredientItem, x: IngredientItem) => ({
-          ingredient: acc.ingredient,
-          qty: acc.qty + x.qty,
-        })
-      );
-    });
+    const allIngredients = this.getTotalIngredients(
+      ingredientNameIds,
+      allIngredientsDuplicated
+    );
     allIngredients.forEach((item: IngredientItem) => {
       this.ingredientsStore.checkIfEnough(item.ingredient.nameId, item.qty);
     });
@@ -74,5 +59,40 @@ export class KitchenService {
       ...item,
       qty: item.qty * orderItem.qty,
     }));
+  }
+
+  private getUniqueNameIds(
+    allIngredientsDuplicated: IngredientItem[][]
+  ): string[] {
+    return [
+      ...new Set(
+        allIngredientsDuplicated
+          .flat(1)
+          .map(
+            (ingredientItem: IngredientItem) => ingredientItem.ingredient.nameId
+          )
+      ),
+    ];
+  }
+
+  private getTotalIngredients(
+    ingredientNameIds: string[],
+    allIngredientsDuplicated: IngredientItem[][]
+  ): IngredientItem[] {
+    return ingredientNameIds.map((ingrNameId: string) => {
+      const oneTypeIngredientArr: IngredientItem[] = allIngredientsDuplicated
+        .flat(1)
+        .filter(
+          (ingredientItem: IngredientItem) =>
+            ingredientItem.ingredient.nameId === ingrNameId
+        );
+
+      return oneTypeIngredientArr.reduce(
+        (acc: IngredientItem, x: IngredientItem) => ({
+          ingredient: acc.ingredient,
+          qty: acc.qty + x.qty,
+        })
+      );
+    });
   }
 }

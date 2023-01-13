@@ -1,4 +1,4 @@
-import { DiscountStoreError } from './Discount-store.exception';
+import { DiscountError } from './Discount.exception';
 import { Discount } from './Discount/Discount.class';
 
 export class DiscountStore {
@@ -14,10 +14,6 @@ export class DiscountStore {
 
   public static resetInstance() {
     DiscountStore.instance = null;
-  }
-
-  public test() {
-    return this.discounts;
   }
 
   public findItemById(code: string): Discount {
@@ -41,7 +37,7 @@ export class DiscountStore {
       code.replace(/\s/g, '').toUpperCase()
     );
     if (!foundIngredient)
-      throw new DiscountStoreError(
+      throw new DiscountError(
         'Discount with passed code not found in store, could not proceed.',
         { code }
       );

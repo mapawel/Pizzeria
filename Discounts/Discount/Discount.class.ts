@@ -1,4 +1,4 @@
-import { DiscountStoreError } from '../Discount-store.exception';
+import { DiscountError } from '../Discount.exception';
 import { DiscountType } from './Discount-type.enum';
 
 export class Discount {
@@ -11,7 +11,7 @@ export class Discount {
   ) {
     this.code = code.replace(/\s/g, '').toUpperCase();
     if (type === DiscountType.limited && !qty)
-      throw new DiscountStoreError('Qty has to be passed in this case', {
+      throw new DiscountError('Qty has to be passed in this case', {
         code,
         type,
         qty,
@@ -20,7 +20,7 @@ export class Discount {
 
   public useDiscountQty(qtyToUse: number): boolean {
     if (this.type === DiscountType.limited && qtyToUse > (this.qty || 0))
-      throw new DiscountStoreError('This voucher is not available any more.', {
+      throw new DiscountError('This voucher is not available any more.', {
         code: this.code,
       });
     if (this.qty) {

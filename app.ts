@@ -85,8 +85,7 @@ const pizzaCapri = pstore.createAndAddNewPizza(
 
 const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
 const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
-
-console.log('DISCOUNTS: ', discounts.test());
+console.log('infgredients ----> ', ingredients.test());
 
 const order = mainService.orderWhReservation(
   [
@@ -97,7 +96,6 @@ const order = mainService.orderWhReservation(
   'qwe'
 );
 
-// console.log('infgredients ----> ', ingredients.test());
 // console.log('workers ----> ', workers.test());
 // console.log('tables ----> ', tables.test());
 console.log(
@@ -108,7 +106,6 @@ console.log(
   'orders in progress ----> ',
   mainService.listOrders(OrdersServiceCollections.ordersInProgress)
 );
-console.log('DISCOUNTS: ', discounts.test());
 
 workers.addOrUpdateItem(cook2, true);
 const freeCook: WorkerItem = workers.findItemById('kucharz2');
@@ -126,4 +123,4 @@ console.log(
 );
 mainService.makeTableFree(executingOrder);
 mainService.finishOrderByCook(executingOrder);
-console.log('DISCOUNTS: ', discounts.test());
+console.log('infgredients ----> ', ingredients.test());
