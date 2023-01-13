@@ -1,6 +1,6 @@
 import { ProductItem } from './ProductItem.type';
 
-export class ProductsServiceError extends Error {
+export class ProductsStoreError extends Error {
   constructor(
     readonly message: string,
     readonly payload?: { id?: string; productItem?: ProductItem }

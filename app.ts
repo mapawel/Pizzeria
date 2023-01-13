@@ -8,7 +8,7 @@ import { Role } from './Workers/Worker/Roles.enum';
 import { WorkersStore } from './Workers/Workers-store.class';
 import { TablesStore } from './Tables/Tables-store.class';
 import { Table } from './Tables/Table/Table.class';
-import { ProductsService } from './Products/Products-service';
+import { ProductsStore } from './Products/Products-store';
 import { Service } from './Service/Service';
 import { WorkerItem } from './Workers/WorkerItem.type';
 import { DiscountStore } from './Discounts/Discount-store.class';
@@ -33,7 +33,7 @@ const discount1 = new Discount('student', DiscountType.unlimited, 0);
 const discount2 = new Discount('qwe', DiscountType.limited, 0.1, 10);
 const workers = WorkersStore.getInstance();
 const tables = TablesStore.getInstance();
-const products = ProductsService.getInstance();
+const products = ProductsStore.getInstance();
 const mainService = Service.getInstance();
 const discounts = DiscountStore.getInstance();
 const orders = OrdersService.getInstance();
@@ -86,13 +86,15 @@ const pizzaCapri = pstore.createAndAddNewPizza(
 const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
 const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
 
+console.log('DISCOUNTS: ', discounts.test());
+
 const order = mainService.orderWhReservation(
   [
     { product: prodMarg, qty: 1 },
     { product: prodCapri, qty: 2 },
   ],
   4,
-  'QWE'
+  'qwe'
 );
 
 // console.log('infgredients ----> ', ingredients.test());
@@ -106,9 +108,11 @@ console.log(
   'orders in progress ----> ',
   mainService.listOrders(OrdersServiceCollections.ordersInProgress)
 );
+console.log('DISCOUNTS: ', discounts.test());
 
 workers.addOrUpdateItem(cook2, true);
 const freeCook: WorkerItem = workers.findItemById('kucharz2');
+workers.addOrUpdateItem(cook3, true);
 
 const executingOrder = mainService.executePendingOrder(order, freeCook);
 
@@ -122,3 +126,4 @@ console.log(
 );
 mainService.makeTableFree(executingOrder);
 mainService.finishOrderByCook(executingOrder);
+console.log('DISCOUNTS: ', discounts.test());

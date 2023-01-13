@@ -15,9 +15,9 @@ export class DiscountStore {
   public static resetInstance() {
     DiscountStore.instance = null;
   }
-  //TODO to remove
-  test() {
-    return new Map(this.discounts);
+
+  public test() {
+    return this.discounts;
   }
 
   public findItemById(code: string): Discount {
@@ -37,7 +37,9 @@ export class DiscountStore {
   }
 
   private validateIfExisting(code: string): Discount {
-    const foundIngredient = this.discounts.get(code);
+    const foundIngredient = this.discounts.get(
+      code.replace(/\s/g, '').toUpperCase()
+    );
     if (!foundIngredient)
       throw new DiscountStoreError(
         'Discount with passed code not found in store, could not proceed.',

@@ -5,7 +5,7 @@ export class Discount {
   readonly code: string;
   public constructor(
     code: string,
-    private type: DiscountType,
+    readonly type: DiscountType,
     readonly discountPercent: number,
     private qty?: number
   ) {
@@ -19,6 +19,10 @@ export class Discount {
   }
 
   public useDiscountQty(qtyToUse: number): boolean {
+    if (this.type === DiscountType.limited && qtyToUse > (this.qty || 0))
+      throw new DiscountStoreError('This voucher is not available any more.', {
+        code: this.code,
+      });
     if (this.qty) {
       this.qty -= qtyToUse;
       return true;

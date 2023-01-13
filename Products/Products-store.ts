@@ -1,27 +1,27 @@
 import { DAOinterface } from 'DAO/DAO.interface';
 import { PizzaItem } from '../Kitchen/Pizzas/PizzaItem.type';
 import { ProductItem } from './ProductItem.type';
-import { ProductsServiceError } from './Products-service.exception';
+import { ProductsStoreError } from './Products-store.exception';
 
-export class ProductsService
+export class ProductsStore
   implements DAOinterface<ProductItem, PizzaItem, number, null>
 {
-  static instance: ProductsService | null;
+  static instance: ProductsStore | null;
   private readonly products: Map<string, ProductItem> = new Map();
 
   private constructor() {}
 
   public static getInstance() {
-    if (ProductsService.instance) return ProductsService.instance;
-    return (ProductsService.instance = new ProductsService());
+    if (ProductsStore.instance) return ProductsStore.instance;
+    return (ProductsStore.instance = new ProductsStore());
   }
 
   public static resetInstance() {
-    ProductsService.instance = null;
+    ProductsStore.instance = null;
   }
-  //TODO to remove
-  test() {
-    return new Map(this.products);
+
+  public getProductArr(): ProductItem[] {
+    return Array.from(this.products, ([_, value]) => value);
   }
 
   public findItemById(id: string): ProductItem {
@@ -55,7 +55,7 @@ export class ProductsService
   private validateIfExisting(id: string): ProductItem {
     const foundWorker = this.products.get(id);
     if (!foundWorker)
-      throw new ProductsServiceError(
+      throw new ProductsStoreError(
         'Product with passed id not found in service, could not proceed.',
         { id }
       );

@@ -12,6 +12,9 @@ import { ServiceError } from '../Orders/Order/Service.exception';
 import { DiscountStore } from '../Discounts/Discount-store.class';
 import { OrdersService } from '../Orders/Orders-service.class';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
+import { ProductsStore } from '../Products/Products-store';
+import { PizzaItem } from '../Kitchen/Pizzas/PizzaItem.type';
+import { Discount } from 'Discounts/Discount/Discount.class';
 
 export class Service {
   static instance: Service | null;
@@ -20,6 +23,7 @@ export class Service {
   private readonly workers: WorkersStore;
   private readonly orders: OrdersService;
   private readonly discounts: DiscountStore;
+  private readonly products: ProductsStore;
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
@@ -27,6 +31,7 @@ export class Service {
     this.workers = WorkersStore.getInstance();
     this.orders = OrdersService.getInstance();
     this.discounts = DiscountStore.getInstance();
+    this.products = ProductsStore.getInstance();
   }
 
   public static getInstance() {
@@ -38,10 +43,14 @@ export class Service {
     Service.instance = null;
   }
 
+  public getMenu(): ProductItem[] {
+    return [...this.products.getProductArr()];
+  }
+
   public listOrders(
     ordersType: OrdersServiceCollections
-  ): Map<string, Order<WorkerItem, WorkerItem | null, TableItem | null>> {
-    return new Map(this.orders[ordersType]);
+  ): Order<WorkerItem, WorkerItem | null, TableItem | null>[] {
+    return Array.from(this.orders[ordersType], ([_, value]) => value);
   }
 
   public orderToGo(
@@ -51,9 +60,9 @@ export class Service {
     }[],
     discount?: string
   ): Order<null, WorkerItem, null> {
-    const discountPercent: number = discount
-      ? this.discounts.findItemById(discount).discountPercent
-      : 0;
+    let discountInstance: Discount | null = null;
+    if (discount) discountInstance = this.discounts.findItemById(discount);
+    const discountPercent: number = discountInstance?.discountPercent || 0;
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
       throw new ServiceError(
@@ -74,6 +83,7 @@ export class Service {
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, false);
     this.kitchen.cookPizzas(ingredients);
+    discountInstance?.useDiscountQty(1);
     this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     return newOrder;
   }
@@ -86,9 +96,9 @@ export class Service {
     tablePerson: number,
     discount?: string
   ): Order<null, WorkerItem | null, TableItem> {
-    const discountPercent: number = discount
-      ? this.discounts.findItemById(discount).discountPercent
-      : 0;
+    let discountInstance: Discount | null = null;
+    if (discount) discountInstance = this.discounts.findItemById(discount);
+    const discountPercent: number = discountInstance?.discountPercent || 0;
     const table: TableItem | null = this.tables.findFreeTable(tablePerson);
     if (!table)
       throw new ServiceError(
@@ -119,10 +129,12 @@ export class Service {
       this.workers.addOrUpdateItem(cook.worker, false);
       this.kitchen.cookPizzas(ingredients);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
+      discountInstance?.useDiscountQty(1);
       return newOrder;
     } else {
       newOrder = new Order(orderItems, totalValue, null, table);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
+      discountInstance?.useDiscountQty(1);
       return newOrder;
     }
   }
