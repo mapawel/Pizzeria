@@ -1,9 +1,11 @@
 import { WorkerItem } from '../Workers/WorkerItem.type';
-import { Order } from '../Orders/Order/Order.class';
+import { Order } from './Order/Order.class';
 import { TableItem } from '../Tables/TableItem.type';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
+import { OrdersServiceError } from './Orders-service.exception';
+import { IOrdersService } from './Orders-service.interface';
 
-export class OrdersService {
+export class OrdersService implements IOrdersService {
   static instance: OrdersService | null;
   private readonly ordersPending: Map<
     string,
@@ -38,8 +40,9 @@ export class OrdersService {
         orderType === OrdersServiceCollections.ordersFinished) &&
       !order.cook
     )
-      throw new Error(
-        'Cook has to be passed while adding these types of orders'
+      throw new OrdersServiceError(
+        'Cook has to be passed while adding these types of orders',
+        { order, orderType }
       );
     this[orderType].set(order.id, order);
     return true;

@@ -19,10 +19,6 @@ export class IngredientsStore
   public static resetInstance() {
     IngredientsStore.instance = null;
   }
-  //TODO to remove
-  test() {
-    return new Map(this.ingredients);
-  }
 
   public findItemById(nameId: string): IngredientItem {
     return this.validateIfExisting(nameId);

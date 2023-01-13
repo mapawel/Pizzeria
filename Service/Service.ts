@@ -8,12 +8,11 @@ import { Role } from '../Workers/Worker/Roles.enum';
 import { ProductItem } from '../Products/ProductItem.type';
 import { OrderItem } from '../Orders/Order/OrderItem.type';
 import { IngredientItem } from 'Kitchen/Ingredients/Ingredient-item.type';
-import { ServiceError } from '../Orders/Order/Service.exception';
+import { ServiceError } from './Service.exception';
 import { DiscountStore } from '../Discounts/Discount-store.class';
 import { OrdersService } from '../Orders/Orders-service.class';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { ProductsStore } from '../Products/Products-store';
-import { PizzaItem } from '../Kitchen/Pizzas/PizzaItem.type';
 import { Discount } from 'Discounts/Discount/Discount.class';
 
 export class Service {
@@ -63,22 +62,22 @@ export class Service {
     let discountInstance: Discount | null = null;
     if (discount) discountInstance = this.discounts.findItemById(discount);
     const discountPercent: number = discountInstance?.discountPercent || 0;
+
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
       throw new ServiceError(
         'This order cannot be delivered - no cook available.',
         { preOrdersArr, discount }
       );
+
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
       discountPercent
     );
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
-    const totalValue: number = orderItems.reduce(
-      (acc: number, x: OrderItem) => acc + x.value,
-      0
-    );
+    const totalValue: number = this.getTotalOrderValue(orderItems);
+
     const newOrder = new Order(orderItems, totalValue, cook, null);
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, false);
@@ -115,10 +114,7 @@ export class Service {
     );
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
-    const totalValue: number = orderItems.reduce(
-      (acc: number, x: OrderItem) => acc + x.value,
-      0
-    );
+    const totalValue: number = this.getTotalOrderValue(orderItems);
 
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     let newOrder;
@@ -129,14 +125,12 @@ export class Service {
       this.workers.addOrUpdateItem(cook.worker, false);
       this.kitchen.cookPizzas(ingredients);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
-      discountInstance?.useDiscountQty(1);
-      return newOrder;
     } else {
       newOrder = new Order(orderItems, totalValue, null, table);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
-      discountInstance?.useDiscountQty(1);
-      return newOrder;
     }
+    discountInstance?.useDiscountQty(1);
+    return newOrder;
   }
 
   public executePendingOrder(
@@ -170,6 +164,10 @@ export class Service {
   ): boolean {
     this.tables.addOrUpdateItem(order.table.table, 0, true);
     return true;
+  }
+
+  private getTotalOrderValue(orderItems: OrderItem[]): number {
+    return orderItems.reduce((acc: number, x: OrderItem) => acc + x.value, 0);
   }
 
   private createOrderItems(

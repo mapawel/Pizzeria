@@ -29,4 +29,8 @@ export class Discount {
     }
     return false;
   }
+
+  public getQty(): number {
+    return this?.qty || 0;
+  }
 }

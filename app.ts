@@ -85,7 +85,6 @@ const pizzaCapri = pstore.createAndAddNewPizza(
 
 const prodMarg = products.addOrUpdateItem(pizzaMarg, 84);
 const prodCapri = products.addOrUpdateItem(pizzaCapri, 66);
-console.log('infgredients ----> ', ingredients.test());
 
 const order = mainService.orderWhReservation(
   [
@@ -123,4 +122,3 @@ console.log(
 );
 mainService.makeTableFree(executingOrder);
 mainService.finishOrderByCook(executingOrder);
-console.log('infgredients ----> ', ingredients.test());

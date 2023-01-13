@@ -1,4 +1,5 @@
 import { DiscountError } from './Discount.exception';
+import { DiscountType } from './Discount/Discount-type.enum';
 import { Discount } from './Discount/Discount.class';
 
 export class DiscountStore {
@@ -17,7 +18,15 @@ export class DiscountStore {
   }
 
   public findItemById(code: string): Discount {
-    return this.validateIfExisting(code);
+    const foundDiscount = this.validateIfExisting(code);
+    if (
+      foundDiscount.type === DiscountType.limited &&
+      foundDiscount?.getQty() < 1
+    )
+      throw new DiscountError('This voucher is not available any more.', {
+        code,
+      });
+    return foundDiscount;
   }
 
   public addOrUpdateItem(discount: Discount): boolean {

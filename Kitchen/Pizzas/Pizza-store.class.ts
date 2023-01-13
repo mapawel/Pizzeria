@@ -3,7 +3,7 @@ import { DAOinterface } from '../../DAO/DAO.interface';
 import { Pizza } from './Pizza/Pizza.class';
 import { PizzaItem } from './PizzaItem.type';
 import { PizzaStoreError } from './Pizza-store.exception';
-import { Ingredient } from 'Kitchen/Ingredients/Ingredient/Ingredient.class';
+import { Ingredient } from '../Ingredients/Ingredient/Ingredient.class';
 
 export class PizzaStore
   implements
