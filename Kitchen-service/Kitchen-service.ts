@@ -3,6 +3,9 @@ import { IngredientItem } from './Ingredients/Ingredient-item.type';
 import { IngredientsStore } from './Ingredients/Ingredients-store.class';
 import { PizzaStore } from './Pizzas/Pizza-store.class';
 import { IKitchenService } from './Kitchen-service.interface';
+import { Ingredient } from './Ingredients/Ingredient/Ingredient.class';
+import { PizzaItem } from './Pizzas/PizzaItem.type';
+import { Pizza } from './Pizzas/Pizza/Pizza.class';
 
 export class KitchenService implements IKitchenService {
   static instance: KitchenService | null;
@@ -21,6 +24,47 @@ export class KitchenService implements IKitchenService {
 
   public static resetInstance() {
     KitchenService.instance = null;
+  }
+
+  public getAllIngredients(): IngredientItem[] {
+    return this.ingredientsStore.getAllIngredientsArr();
+  }
+
+//TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
+  public addIngredient(ingredient: Ingredient, qty: number): boolean {
+    return this.ingredientsStore.addOrUpdateItem(ingredient, qty);
+  }
+
+  public updateIngredient(ingredient: Ingredient, qty: number): boolean {
+    return this.ingredientsStore.updateExistingItemParam(ingredient, qty);
+  }
+
+  public removeIngredient(ingredient: Ingredient): boolean {
+    return this.ingredientsStore.removeExistingItem(ingredient);
+  }
+
+  public getAllPizzas(): PizzaItem[] {
+    return this.pizzasStore.getAllPizzasArr();
+  }
+
+  public createAndAddNewPizza(
+    name: string,
+    ingredientsWhQty: { ingredient: Ingredient; qty: number }[],
+    time: number
+  ): PizzaItem {
+    return this.pizzasStore.createAndAddNewPizza(name, ingredientsWhQty, time);
+  }
+
+  public updatePizza(
+    pizza: Pizza,
+    recipe: Map<string, IngredientItem>,
+    time: number
+  ): boolean {
+    return this.pizzasStore.updateExistingItemParam(pizza, recipe, time);
+  }
+
+  public removePizza(pizza: Pizza): boolean {
+    return this.pizzasStore.removeExistingItem(pizza);
   }
 
   public cookPizzas(totalIngredientsArr: IngredientItem[]): boolean {

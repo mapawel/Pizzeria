@@ -20,6 +20,10 @@ export class IngredientsStore
     IngredientsStore.instance = null;
   }
 
+  public getAllIngredientsArr(): IngredientItem[] {
+    return Array.from(this.ingredients, ([_, value]) => value);
+  }
+
   public findItemById(nameId: string): IngredientItem {
     return this.validateIfExisting(nameId);
   }

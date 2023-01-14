@@ -1,7 +1,7 @@
 import { OrderItem } from '../Orders/Order/OrderItem.type';
 import { ProductItem } from '../Products/ProductItem.type';
 
-export class ServiceError extends Error {
+export class CustomerServiceError extends Error {
   constructor(
     readonly message: string,
     readonly payload?: {

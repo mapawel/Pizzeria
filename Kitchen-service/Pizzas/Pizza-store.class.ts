@@ -1,4 +1,4 @@
-import { IngredientItem } from 'Kitchen/Ingredients/Ingredient-item.type';
+import { IngredientItem } from 'Kitchen-service/Ingredients/Ingredient-item.type';
 import { DAOinterface } from '../../DAO/DAO.interface';
 import { Pizza } from './Pizza/Pizza.class';
 import { PizzaItem } from './PizzaItem.type';
@@ -21,6 +21,10 @@ export class PizzaStore
 
   public static resetInstance() {
     PizzaStore.instance = null;
+  }
+
+  public getAllPizzasArr(): PizzaItem[] {
+    return Array.from(this.pizzas, ([_, value]) => value);
   }
 
   public findItemById(nameId: string): PizzaItem {

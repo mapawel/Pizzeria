@@ -1,4 +1,4 @@
-import { PizzaItem } from '../Kitchen/Pizzas/PizzaItem.type';
+import { PizzaItem } from '../Kitchen-service/Pizzas/PizzaItem.type';
 
 export type ProductItem = {
   pizzaItem: PizzaItem;

@@ -3,7 +3,7 @@ import { WorkerItem } from 'Workers/WorkerItem.type';
 import { TableItem } from 'Tables/TableItem.type';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
 
-export class OrdersServiceError extends Error {
+export class OrdersStoreError extends Error {
   constructor(
     readonly message: string,
     readonly payload?: {

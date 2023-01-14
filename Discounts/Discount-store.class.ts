@@ -29,6 +29,10 @@ export class DiscountStore {
     return foundDiscount;
   }
 
+  public getAllDiscountsArr(): Discount[] {
+    return Array.from(this.discounts, ([_, value]) => value);
+  }
+
   public addOrUpdateItem(discount: Discount): boolean {
     // qty VALIDATOR to ADD here
     this.discounts.set(discount.code, discount);

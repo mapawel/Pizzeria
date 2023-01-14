@@ -2,11 +2,10 @@ import { WorkerItem } from '../Workers/WorkerItem.type';
 import { Order } from './Order/Order.class';
 import { TableItem } from '../Tables/TableItem.type';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
-import { OrdersServiceError } from './Orders-service.exception';
-import { IOrdersService } from './Orders-service.interface';
+import { OrdersStoreError } from './Orders-store.exception';
 
-export class OrdersService implements IOrdersService {
-  static instance: OrdersService | null;
+export class OrdersStore {
+  static instance: OrdersStore | null;
   private readonly ordersPending: Map<
     string,
     Order<WorkerItem, WorkerItem | null, TableItem | null>
@@ -23,12 +22,12 @@ export class OrdersService implements IOrdersService {
   private constructor() {}
 
   public static getInstance() {
-    if (OrdersService.instance) return OrdersService.instance;
-    return (OrdersService.instance = new OrdersService());
+    if (OrdersStore.instance) return OrdersStore.instance;
+    return (OrdersStore.instance = new OrdersStore());
   }
 
   public static resetInstance() {
-    OrdersService.instance = null;
+    OrdersStore.instance = null;
   }
 
   public addOrder(
@@ -40,7 +39,7 @@ export class OrdersService implements IOrdersService {
         orderType === OrdersServiceCollections.ordersFinished) &&
       !order.cook
     )
-      throw new OrdersServiceError(
+      throw new OrdersStoreError(
         'Cook has to be passed while adding these types of orders',
         { order, orderType }
       );

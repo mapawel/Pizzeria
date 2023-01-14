@@ -1,5 +1,5 @@
 import { WorkerItem } from '../Workers/WorkerItem.type';
-import { KitchenService } from '../Kitchen/Kitchen-service';
+import { KitchenService } from '../Kitchen-service/Kitchen-service';
 import { TablesStore } from '../Tables/Tables-store.class';
 import { WorkersStore } from '../Workers/Workers-store.class';
 import { Order } from '../Orders/Order/Order.class';
@@ -7,20 +7,20 @@ import { TableItem } from '../Tables/TableItem.type';
 import { Role } from '../Workers/Worker/Roles.enum';
 import { ProductItem } from '../Products/ProductItem.type';
 import { OrderItem } from '../Orders/Order/OrderItem.type';
-import { IngredientItem } from 'Kitchen/Ingredients/Ingredient-item.type';
-import { ServiceError } from './Service.exception';
+import { IngredientItem } from 'Kitchen-service/Ingredients/Ingredient-item.type';
+import { CustomerServiceError } from './Customer-ervice.exception';
 import { DiscountStore } from '../Discounts/Discount-store.class';
-import { OrdersService } from '../Orders/Orders-service.class';
+import { OrdersStore } from '../Orders/Orders-store.class';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { ProductsStore } from '../Products/Products-store';
-import { Discount } from 'Discounts/Discount/Discount.class';
+import { Discount } from '../Discounts/Discount/Discount.class';
 
-export class Service {
-  static instance: Service | null;
+export class CustomerService {
+  static instance: CustomerService | null;
   private readonly kitchen: KitchenService;
   private readonly tables: TablesStore;
   private readonly workers: WorkersStore;
-  private readonly orders: OrdersService;
+  private readonly orders: OrdersStore;
   private readonly discounts: DiscountStore;
   private readonly products: ProductsStore;
 
@@ -28,18 +28,18 @@ export class Service {
     this.kitchen = KitchenService.getInstance();
     this.tables = TablesStore.getInstance();
     this.workers = WorkersStore.getInstance();
-    this.orders = OrdersService.getInstance();
+    this.orders = OrdersStore.getInstance();
     this.discounts = DiscountStore.getInstance();
     this.products = ProductsStore.getInstance();
   }
 
   public static getInstance() {
-    if (Service.instance) return Service.instance;
-    return (Service.instance = new Service());
+    if (CustomerService.instance) return CustomerService.instance;
+    return (CustomerService.instance = new CustomerService());
   }
 
   public static resetInstance() {
-    Service.instance = null;
+    CustomerService.instance = null;
   }
 
   public getMenu(): ProductItem[] {
@@ -65,7 +65,7 @@ export class Service {
 
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
-      throw new ServiceError(
+      throw new CustomerServiceError(
         'This order cannot be delivered - no cook available.',
         { preOrdersArr, discount }
       );
@@ -100,7 +100,7 @@ export class Service {
     const discountPercent: number = discountInstance?.discountPercent || 0;
     const table: TableItem | null = this.tables.findFreeTable(tablePerson);
     if (!table)
-      throw new ServiceError(
+      throw new CustomerServiceError(
         'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
         { preOrdersArr, discount, tablePerson }
       );

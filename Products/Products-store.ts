@@ -1,5 +1,5 @@
 import { DAOinterface } from 'DAO/DAO.interface';
-import { PizzaItem } from '../Kitchen/Pizzas/PizzaItem.type';
+import { PizzaItem } from '../Kitchen-service/Pizzas/PizzaItem.type';
 import { ProductItem } from './ProductItem.type';
 import { ProductsStoreError } from './Products-store.exception';
 
