@@ -20,10 +20,6 @@ export class WorkersStore
   public static resetInstance() {
     WorkersStore.instance = null;
   }
-  //TODO to remove
-  test() {
-    return new Map(this.workers);
-  }
 
   public findItemById(id: string): WorkerItem {
     return this.validateIfExisting(id);
@@ -68,11 +64,6 @@ export class WorkersStore
     if (!workerAvailable) return null;
     return workerAvailable;
   }
-
-  // private checkIfAvailable(id: string): boolean {
-  //   const currentWorker = this.validateIfExisting(id);
-  //   return currentWorker.isAvailable;
-  // }
 
   private validateIfExisting(id: string): WorkerItem {
     const foundWorker = this.workers.get(id);

@@ -20,10 +20,6 @@ export class TablesStore
   public static resetInstance() {
     TablesStore.instance = null;
   }
-  //TODO to remove
-  test() {
-    return new Map(this.tables);
-  }
 
   public findItemById(id: string): TableItem {
     return this.validateIfExisting(id);
