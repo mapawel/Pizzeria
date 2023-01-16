@@ -54,10 +54,11 @@ const table1 = new Table('1', 4);
 const table2 = new Table('2', 4);
 
 backoffice.addWorker(cook1, true);
+backoffice.addTable(table1, 0, true)
 
-const o1 = service.orderToGo([
+const order1 = service.orderWhReservation([
   { product: margerittaProduct, qty: 2 },
   { product: salameProduct, qty: 1 },
-]);
+], 3);
 
-console.log(o1);
+console.log(order1);

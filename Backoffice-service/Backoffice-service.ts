@@ -44,7 +44,7 @@ export class BackofficeService {
     return this.tables.findItemById(id);
   }
 
-  public addOrUpdateItem(
+  public addTable(
     table: Table,
     sitsToReserve: number,
     isAvailable: boolean
@@ -56,7 +56,7 @@ export class BackofficeService {
     return this.tables.removeExistingItem(table);
   }
 
-  public updateExistingItemParam(
+  public updateTable(
     table: Table,
     sitsToReserve: number,
     isAvailable: boolean
