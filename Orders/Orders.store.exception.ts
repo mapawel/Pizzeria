@@ -7,7 +7,7 @@ export class OrdersStoreError extends Error {
   constructor(
     readonly message: string,
     readonly payload?: {
-      order?: Order<WorkerItem, WorkerItem | null, TableItem | null>;
+      order?: Order<WorkerItem | null, TableItem | null>;
       orderType?: OrdersServiceCollections;
     }
   ) {

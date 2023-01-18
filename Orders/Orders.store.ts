@@ -8,15 +8,15 @@ export class OrdersStore {
   static instance: OrdersStore | null;
   private readonly ordersPending: Map<
     string,
-    Order<WorkerItem, WorkerItem | null, TableItem | null>
+    Order<WorkerItem | null, TableItem | null>
   > = new Map();
   private readonly ordersInProgress: Map<
     string,
-    Order<WorkerItem, WorkerItem | null, TableItem | null>
+    Order<WorkerItem | null, TableItem | null>
   > = new Map();
   private readonly ordersFinished: Map<
     string,
-    Order<WorkerItem, WorkerItem | null, TableItem | null>
+    Order<WorkerItem | null, TableItem | null>
   > = new Map();
 
   private constructor() {}
@@ -31,7 +31,7 @@ export class OrdersStore {
   }
 
   public addOrder(
-    order: Order<WorkerItem, WorkerItem | null, TableItem | null>,
+    order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
   ): boolean {
     if (
@@ -48,7 +48,7 @@ export class OrdersStore {
   }
 
   public deleteOrder(
-    order: Order<WorkerItem, WorkerItem | null, TableItem | null>,
+    order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
   ): boolean {
     this[orderType].delete(order.id);

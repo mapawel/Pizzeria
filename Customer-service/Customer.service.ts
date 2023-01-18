@@ -48,7 +48,7 @@ export class CustomerService {
 
   public listOrders(
     ordersType: OrdersServiceCollections
-  ): Order<WorkerItem, WorkerItem | null, TableItem | null>[] {
+  ): Order<WorkerItem | null, TableItem | null>[] {
     return Array.from(this.orders[ordersType], ([_, value]) => value);
   }
 
@@ -58,7 +58,7 @@ export class CustomerService {
       qty: number;
     }[],
     discount?: string
-  ): Order<null, WorkerItem, null> {
+  ): Order<WorkerItem, null> {
     let discountInstance: Discount | null = null;
     if (discount) discountInstance = this.discounts.findItemById(discount);
     const discountPercent: number = discountInstance?.discountPercent || 0;
@@ -94,7 +94,7 @@ export class CustomerService {
     }[],
     tablePerson: number,
     discount?: string
-  ): Order<null, WorkerItem | null, TableItem> {
+  ): Order<WorkerItem | null, TableItem> {
     let discountInstance: Discount | null = null;
     if (discount) discountInstance = this.discounts.findItemById(discount);
     const discountPercent: number = discountInstance?.discountPercent || 0;
@@ -134,9 +134,9 @@ export class CustomerService {
   }
 
   public executePendingOrder(
-    order: Order<WorkerItem, WorkerItem | null, TableItem>,
+    order: Order<WorkerItem | null, TableItem>,
     cook: WorkerItem
-  ): Order<WorkerItem, WorkerItem, TableItem> {
+  ): Order<WorkerItem, TableItem> {
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, false);
 
@@ -147,11 +147,11 @@ export class CustomerService {
     this.orders.deleteOrder(order, OrdersServiceCollections.ordersPending);
     order.cook = cook;
     this.orders.addOrder(order, OrdersServiceCollections.ordersInProgress);
-    return order as Order<null, WorkerItem, TableItem>;
+    return order as Order<WorkerItem, TableItem>;
   }
 
   public finishOrderByCook(
-    order: Order<WorkerItem, WorkerItem, TableItem | null>
+    order: Order<WorkerItem, TableItem | null>
   ): boolean {
     this.workers.addOrUpdateItem(order.cook.worker, true);
     this.orders.deleteOrder(order, OrdersServiceCollections.ordersInProgress);
@@ -159,9 +159,7 @@ export class CustomerService {
     return true;
   }
 
-  public makeTableFree(
-    order: Order<WorkerItem, WorkerItem | null, TableItem>
-  ): boolean {
+  public makeTableFree(order: Order<WorkerItem | null, TableItem>): boolean {
     this.tables.addOrUpdateItem(order.table.table, 0, true);
     return true;
   }
