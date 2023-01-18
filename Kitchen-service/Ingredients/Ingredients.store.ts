@@ -4,7 +4,7 @@ import { IDA } from '../../Data-access/DA.interface';
 import { IngretientStoreError } from './Ingredient.store.exception';
 
 export class IngredientsStore
-  implements IDA<IngredientItem, Ingredient, number, null>
+  implements IDA<IngredientItem, Ingredient, { qty: number }>
 {
   static instance: IngredientsStore | null;
   private readonly ingredients: Map<string, IngredientItem> = new Map();
@@ -28,7 +28,10 @@ export class IngredientsStore
     return this.validateIfExisting(nameId);
   }
 
-  public addOrUpdateItem(ingredient: Ingredient, qty: number): boolean {
+  public addOrUpdateItem(
+    ingredient: Ingredient,
+    { qty }: { qty: number }
+  ): boolean {
     // qty VALIDATOR to ADD here
     this.ingredients.set(ingredient.nameId, {
       ingredient,
@@ -43,7 +46,10 @@ export class IngredientsStore
     return true;
   }
 
-  public updateExistingItemParam(ingredient: Ingredient, qty: number): boolean {
+  public updateExistingItemParam(
+    ingredient: Ingredient,
+    { qty }: { qty: number }
+  ): boolean {
     // qty VALIDATOR to ADD here
     const foundIngredient =
       qty < 0

@@ -80,7 +80,7 @@ export class CustomerService {
 
     const newOrder = new Order(orderItems, totalValue, cook, null);
     cook.isAvailable = false;
-    this.workers.addOrUpdateItem(cook.worker, false);
+    this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
     this.kitchen.cookPizzas(ingredients);
     discountInstance?.useDiscountQty(1);
     this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
@@ -106,7 +106,10 @@ export class CustomerService {
       );
     table.sitsAvailable = table.sitsAvailable - tablePerson;
     table.isAvailable = false;
-    this.tables.addOrUpdateItem(table.table, tablePerson, false);
+    this.tables.addOrUpdateItem(table.table, {
+      sitsToReserve: tablePerson,
+      isAvailable: false,
+    });
 
     const orderItems: OrderItem[] = this.createOrderItems(
       preOrdersArr,
@@ -122,7 +125,7 @@ export class CustomerService {
     if (cook) {
       newOrder = new Order(orderItems, totalValue, cook, table);
       cook.isAvailable = false;
-      this.workers.addOrUpdateItem(cook.worker, false);
+      this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
       this.kitchen.cookPizzas(ingredients);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     } else {
@@ -138,7 +141,7 @@ export class CustomerService {
     cook: WorkerItem
   ): Order<WorkerItem, TableItem> {
     cook.isAvailable = false;
-    this.workers.addOrUpdateItem(cook.worker, false);
+    this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
 
     const ingredients: IngredientItem[] = this.kitchen.takeIngredientsForOrder(
       order.orderItems
@@ -153,14 +156,17 @@ export class CustomerService {
   public finishOrderByCook(
     order: Order<WorkerItem, TableItem | null>
   ): boolean {
-    this.workers.addOrUpdateItem(order.cook.worker, true);
+    this.workers.addOrUpdateItem(order.cook.worker, { isAvailable: true });
     this.orders.deleteOrder(order, OrdersServiceCollections.ordersInProgress);
     this.orders.addOrder(order, OrdersServiceCollections.ordersFinished);
     return true;
   }
 
   public makeTableFree(order: Order<WorkerItem | null, TableItem>): boolean {
-    this.tables.addOrUpdateItem(order.table.table, 0, true);
+    this.tables.addOrUpdateItem(order.table.table, {
+      sitsToReserve: 0,
+      isAvailable: true,
+    });
     return true;
   }
 

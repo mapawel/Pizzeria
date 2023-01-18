@@ -31,11 +31,11 @@ export class KitchenService {
 
   //TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
   public addIngredient(ingredient: Ingredient, qty: number): boolean {
-    return this.ingredientsStore.addOrUpdateItem(ingredient, qty);
+    return this.ingredientsStore.addOrUpdateItem(ingredient, { qty });
   }
 
   public updateIngredient(ingredient: Ingredient, qty: number): boolean {
-    return this.ingredientsStore.updateExistingItemParam(ingredient, qty);
+    return this.ingredientsStore.updateExistingItemParam(ingredient, { qty });
   }
 
   public removeIngredient(ingredient: Ingredient): boolean {
@@ -59,7 +59,7 @@ export class KitchenService {
     recipe: Map<string, IngredientItem>,
     time: number
   ): boolean {
-    return this.pizzasStore.updateExistingItemParam(pizza, recipe, time);
+    return this.pizzasStore.updateExistingItemParam(pizza, { recipe, time });
   }
 
   public removePizza(pizza: Pizza): boolean {
@@ -68,7 +68,9 @@ export class KitchenService {
 
   public cookPizzas(totalIngredientsArr: IngredientItem[]): boolean {
     totalIngredientsArr.forEach((item: IngredientItem) => {
-      this.ingredientsStore.updateExistingItemParam(item.ingredient, -item.qty);
+      this.ingredientsStore.updateExistingItemParam(item.ingredient, {
+        qty: -item.qty,
+      });
     });
     return true;
   }

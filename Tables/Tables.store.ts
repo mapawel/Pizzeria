@@ -4,7 +4,10 @@ import { Table } from './Table/Table.class';
 import { TableItem } from './Table-item.type';
 import { TablesStoreError } from './Tables.store.exception';
 
-export class TablesStore implements IDA<TableItem, Table, number, boolean> {
+export class TablesStore
+  implements
+    IDA<TableItem, Table, { sitsToReserve: number; isAvailable: boolean }>
+{
   static instance: TablesStore | null;
   private readonly tables: Map<string, TableItem> = new Map();
 
@@ -25,8 +28,10 @@ export class TablesStore implements IDA<TableItem, Table, number, boolean> {
 
   public addOrUpdateItem(
     table: Table,
-    sitsToReserve: number,
-    isAvailable: boolean
+    {
+      sitsToReserve,
+      isAvailable,
+    }: { sitsToReserve: number; isAvailable: boolean }
   ): boolean {
     this.tables.set(table.id, {
       table,
@@ -44,8 +49,10 @@ export class TablesStore implements IDA<TableItem, Table, number, boolean> {
 
   public updateExistingItemParam(
     table: Table,
-    sitsToReserve: number,
-    isAvailable: boolean
+    {
+      sitsToReserve,
+      isAvailable,
+    }: { sitsToReserve: number; isAvailable: boolean }
   ): boolean {
     this.validateIfExisting(table.id);
     this.tables.set(table.id, {

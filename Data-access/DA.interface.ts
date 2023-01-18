@@ -1,14 +1,12 @@
-export interface IDA<Item, Element, Param1, Param2> {
+export interface IDA<Item, Element, Params> {
   findItemById(id: string): Item;
   addOrUpdateItem(
     element: Element,
-    param1?: Param1,
-    param2?: Param2
+    params: Params,
   ): boolean | Item;
   removeExistingItem(element: Element): boolean;
   updateExistingItemParam(
     element: Element,
-    param1?: Param1,
-    param2?: Param2
+    params: Params,
   ): boolean;
 }

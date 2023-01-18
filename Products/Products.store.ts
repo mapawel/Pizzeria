@@ -4,7 +4,7 @@ import { ProductItem } from './Product-item.type';
 import { ProductsStoreError } from './Products.store.exception';
 
 export class ProductsStore
-  implements IDA<ProductItem, PizzaItem, number, null>
+  implements IDA<ProductItem, PizzaItem, { price: number }>
 {
   static instance: ProductsStore | null;
   private readonly products: Map<string, ProductItem> = new Map();
@@ -28,7 +28,10 @@ export class ProductsStore
     return this.validateIfExisting(id);
   }
 
-  public addOrUpdateItem(pizzaItem: PizzaItem, price: number): ProductItem {
+  public addOrUpdateItem(
+    pizzaItem: PizzaItem,
+    { price }: { price: number }
+  ): ProductItem {
     const productItem: ProductItem = {
       pizzaItem,
       price,
@@ -43,7 +46,10 @@ export class ProductsStore
     return true;
   }
 
-  public updateExistingItemParam(pizzaItem: PizzaItem, price: number): boolean {
+  public updateExistingItemParam(
+    pizzaItem: PizzaItem,
+    { price }: { price: number }
+  ): boolean {
     this.validateIfExisting(pizzaItem.pizza.nameId);
     this.products.set(pizzaItem.pizza.nameId, {
       pizzaItem,

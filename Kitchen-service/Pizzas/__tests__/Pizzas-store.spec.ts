@@ -80,11 +80,10 @@ describe('Pizzas store tests suite:', () => {
         })
       );
       const newPizzaTime = 15;
-      pizzaStore.updateExistingItemParam(
-        expectedFoundPizza.pizza,
-        recipeMap2,
-        newPizzaTime
-      );
+      pizzaStore.updateExistingItemParam(expectedFoundPizza.pizza, {
+        recipe: recipeMap2,
+        time: newPizzaTime,
+      });
 
       const expectedUpdatedPizza = pizzaStore.findItemById(
         pizzaName.replace(/\s/g, '').toUpperCase()

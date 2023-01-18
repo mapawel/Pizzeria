@@ -4,7 +4,9 @@ import { Worker } from './Worker/Worker.class';
 import { WorkersStoreError } from './Workers.store.exception';
 import { Role } from './Worker/Roles.enum';
 
-export class WorkersStore implements IDA<WorkerItem, Worker, boolean, null> {
+export class WorkersStore
+  implements IDA<WorkerItem, Worker, { isAvailable: boolean }>
+{
   static instance: WorkersStore | null;
   private readonly workers: Map<string, WorkerItem> = new Map();
 
@@ -23,7 +25,10 @@ export class WorkersStore implements IDA<WorkerItem, Worker, boolean, null> {
     return this.validateIfExisting(id);
   }
 
-  public addOrUpdateItem(worker: Worker, isAvailable: boolean): boolean {
+  public addOrUpdateItem(
+    worker: Worker,
+    { isAvailable }: { isAvailable: boolean }
+  ): boolean {
     this.workers.set(worker.name, {
       worker,
       isAvailable,
@@ -39,7 +44,7 @@ export class WorkersStore implements IDA<WorkerItem, Worker, boolean, null> {
 
   public updateExistingItemParam(
     worker: Worker,
-    isAvailable: boolean
+    { isAvailable }: { isAvailable: boolean }
   ): boolean {
     this.validateIfExisting(worker.id);
     this.workers.set(worker.name, {

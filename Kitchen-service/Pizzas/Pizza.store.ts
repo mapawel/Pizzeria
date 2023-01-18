@@ -6,7 +6,12 @@ import { PizzaStoreError } from './Pizza.store.exception';
 import { Ingredient } from '../Ingredients/Ingredient/Ingredient.class';
 
 export class PizzaStore
-  implements IDA<PizzaItem, Pizza, Map<string, IngredientItem>, number>
+  implements
+    IDA<
+      PizzaItem,
+      Pizza,
+      { recipe: Map<string, IngredientItem>; time: number }
+    >
 {
   static instance: PizzaStore | null;
   private readonly pizzas: Map<string, PizzaItem> = new Map();
@@ -44,13 +49,12 @@ export class PizzaStore
         qty,
       })
     );
-    return this.addOrUpdateItem(newPizza, ingredientsMap, time);
+    return this.addOrUpdateItem(newPizza, { recipe: ingredientsMap, time });
   }
 
   public addOrUpdateItem(
     pizza: Pizza,
-    recipe: Map<string, IngredientItem>,
-    time: number
+    { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
   ): PizzaItem {
     // qty VALIDATOR to ADD here
     const pizzaItem: PizzaItem = {
@@ -70,8 +74,7 @@ export class PizzaStore
 
   public updateExistingItemParam(
     pizza: Pizza,
-    recipe: Map<string, IngredientItem>,
-    time: number
+    { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
   ): boolean {
     const foundPizza = this.validateIfExisting(pizza.nameId);
     this.pizzas.set(pizza.nameId, {

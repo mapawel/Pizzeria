@@ -29,7 +29,7 @@ export class BackofficeService {
   }
 
   public addWorker(worker: Worker, isAvailable: boolean): boolean {
-    return this.workers.addOrUpdateItem(worker, isAvailable);
+    return this.workers.addOrUpdateItem(worker, { isAvailable });
   }
 
   public removeWorker(worker: Worker): boolean {
@@ -37,7 +37,7 @@ export class BackofficeService {
   }
 
   public updateWorker(worker: Worker, isAvailable: boolean): boolean {
-    return this.workers.updateExistingItemParam(worker, isAvailable);
+    return this.workers.updateExistingItemParam(worker, { isAvailable });
   }
 
   public getTableById(id: string): TableItem {
@@ -49,7 +49,7 @@ export class BackofficeService {
     sitsToReserve: number,
     isAvailable: boolean
   ): boolean {
-    return this.tables.addOrUpdateItem(table, sitsToReserve, isAvailable);
+    return this.tables.addOrUpdateItem(table, { sitsToReserve, isAvailable });
   }
 
   public removeTable(table: Table): boolean {
@@ -61,10 +61,9 @@ export class BackofficeService {
     sitsToReserve: number,
     isAvailable: boolean
   ): boolean {
-    return this.tables.updateExistingItemParam(
-      table,
+    return this.tables.updateExistingItemParam(table, {
       sitsToReserve,
-      isAvailable
-    );
+      isAvailable,
+    });
   }
 }

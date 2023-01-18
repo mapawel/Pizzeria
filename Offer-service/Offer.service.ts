@@ -28,11 +28,11 @@ export class OfferService {
   }
 
   public addMenuProduct(pizzaItem: PizzaItem, price: number): ProductItem {
-    return this.products.addOrUpdateItem(pizzaItem, price);
+    return this.products.addOrUpdateItem(pizzaItem, {price});
   }
 
   public updateMenuProduct(pizzaItem: PizzaItem, price: number): boolean {
-    return this.products.updateExistingItemParam(pizzaItem, price);
+    return this.products.updateExistingItemParam(pizzaItem, {price});
   }
 
   public removeMenuProduct(pizzaItem: PizzaItem): boolean {
