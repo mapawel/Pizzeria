@@ -6,7 +6,7 @@ import { IngretientStoreError } from './Ingredient.store.exception';
 export class IngredientsStore
   implements IDA<IngredientItem, Ingredient, { qty: number }>
 {
-  static instance: IngredientsStore | null;
+  private static instance: IngredientsStore | null;
   private readonly ingredients: Map<string, IngredientItem> = new Map();
 
   private constructor() {}

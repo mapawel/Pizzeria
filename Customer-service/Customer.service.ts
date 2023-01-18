@@ -16,7 +16,7 @@ import { ProductsStore } from '../Products/Products.store';
 import { Discount } from '../Discounts/Discount/Discount.class';
 
 export class CustomerService {
-  static instance: CustomerService | null;
+  private static instance: CustomerService | null;
   private readonly kitchen: KitchenService;
   private readonly tables: TablesStore;
   private readonly workers: WorkersStore;

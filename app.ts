@@ -18,10 +18,10 @@ const cheese = new Ingredient('cheese');
 const salami = new Ingredient('salami');
 const onion = new Ingredient('onion');
 
-kitchen.addIngredient(cake, 1000);
-kitchen.addIngredient(sose, 1000);
-kitchen.addIngredient(cheese, 1000);
-kitchen.addIngredient(salami, 1000);
+kitchen.addIngredient(cake, { qty: 1000 });
+kitchen.addIngredient(sose, { qty: 1000 });
+kitchen.addIngredient(cheese, { qty: 1000 });
+kitchen.addIngredient(salami, { qty: 1000 });
 
 const margeritta = kitchen.createAndAddNewPizza(
   'margeritta',
@@ -44,8 +44,8 @@ const salame = kitchen.createAndAddNewPizza(
   10
 );
 
-const margerittaProduct = offer.addMenuProduct(margeritta, 30);
-const salameProduct = offer.addMenuProduct(salame, 36);
+const margerittaProduct = offer.addMenuProduct(margeritta, { price: 30 });
+const salameProduct = offer.addMenuProduct(salame, { price: 36 });
 
 const cook1 = new Worker('andrzej', Role.cook);
 const cook2 = new Worker('janusz', Role.cook);
@@ -53,8 +53,8 @@ const cook2 = new Worker('janusz', Role.cook);
 const table1 = new Table('1', 4);
 const table2 = new Table('2', 4);
 
-backoffice.addWorker(cook1, true);
-backoffice.addTable(table1, 0, true);
+backoffice.addWorker(cook1, { isAvailable: true });
+backoffice.addTable(table1, { sitsToReserve: 0, isAvailable: true });
 
 const order1 = service.orderWhReservation(
   [

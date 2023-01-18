@@ -3,7 +3,7 @@ import { DiscountType } from './Discount/Discount-type.enum';
 import { Discount } from './Discount/Discount.class';
 
 export class DiscountStore {
-  static instance: DiscountStore | null;
+  private static instance: DiscountStore | null;
   private readonly discounts: Map<string, Discount> = new Map();
 
   private constructor() {}

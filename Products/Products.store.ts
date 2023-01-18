@@ -6,7 +6,7 @@ import { ProductsStoreError } from './Products.store.exception';
 export class ProductsStore
   implements IDA<ProductItem, PizzaItem, { price: number }>
 {
-  static instance: ProductsStore | null;
+  private static instance: ProductsStore | null;
   private readonly products: Map<string, ProductItem> = new Map();
 
   private constructor() {}

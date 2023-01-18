@@ -13,7 +13,7 @@ export class PizzaStore
       { recipe: Map<string, IngredientItem>; time: number }
     >
 {
-  static instance: PizzaStore | null;
+  private static instance: PizzaStore | null;
   private readonly pizzas: Map<string, PizzaItem> = new Map();
 
   private constructor() {}

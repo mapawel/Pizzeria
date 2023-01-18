@@ -5,7 +5,7 @@ import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
 import { Discount } from '../Discounts/Discount/Discount.class';
 
 export class OfferService {
-  static instance: OfferService | null;
+  private static instance: OfferService | null;
   private readonly discounts: DiscountStore;
   private readonly products: ProductsStore;
 
@@ -27,12 +27,18 @@ export class OfferService {
     return this.products.getProductArr();
   }
 
-  public addMenuProduct(pizzaItem: PizzaItem, price: number): ProductItem {
-    return this.products.addOrUpdateItem(pizzaItem, {price});
+  public addMenuProduct(
+    pizzaItem: PizzaItem,
+    { price }: { price: number }
+  ): ProductItem {
+    return this.products.addOrUpdateItem(pizzaItem, { price });
   }
 
-  public updateMenuProduct(pizzaItem: PizzaItem, price: number): boolean {
-    return this.products.updateExistingItemParam(pizzaItem, {price});
+  public updateMenuProduct(
+    pizzaItem: PizzaItem,
+    { price }: { price: number }
+  ): boolean {
+    return this.products.updateExistingItemParam(pizzaItem, { price });
   }
 
   public removeMenuProduct(pizzaItem: PizzaItem): boolean {

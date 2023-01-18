@@ -5,7 +5,7 @@ import { OrdersServiceCollections } from './Order/Orders-service.collections.enu
 import { OrdersStoreError } from './Orders.store.exception';
 
 export class OrdersStore {
-  static instance: OrdersStore | null;
+  private static instance: OrdersStore | null;
   private readonly ordersPending: Map<
     string,
     Order<WorkerItem | null, TableItem | null>

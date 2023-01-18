@@ -7,7 +7,7 @@ import { Role } from './Worker/Roles.enum';
 export class WorkersStore
   implements IDA<WorkerItem, Worker, { isAvailable: boolean }>
 {
-  static instance: WorkersStore | null;
+  private static instance: WorkersStore | null;
   private readonly workers: Map<string, WorkerItem> = new Map();
 
   private constructor() {}

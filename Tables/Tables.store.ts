@@ -8,7 +8,7 @@ export class TablesStore
   implements
     IDA<TableItem, Table, { sitsToReserve: number; isAvailable: boolean }>
 {
-  static instance: TablesStore | null;
+  private static instance: TablesStore | null;
   private readonly tables: Map<string, TableItem> = new Map();
 
   private constructor() {}
