@@ -1,18 +1,18 @@
-import { WorkerItem } from '../Workers/WorkerItem.type';
-import { KitchenService } from '../Kitchen-service/Kitchen-service';
-import { TablesStore } from '../Tables/Tables-store.class';
-import { WorkersStore } from '../Workers/Workers-store.class';
+import { WorkerItem } from '../Workers/Worker-item.type';
+import { KitchenService } from '../Kitchen-service/Kitchen.service';
+import { TablesStore } from '../Tables/Tables.store';
+import { WorkersStore } from '../Workers/Workers.store';
 import { Order } from '../Orders/Order/Order.class';
-import { TableItem } from '../Tables/TableItem.type';
+import { TableItem } from '../Tables/Table-item.type';
 import { Role } from '../Workers/Worker/Roles.enum';
-import { ProductItem } from '../Products/ProductItem.type';
-import { OrderItem } from '../Orders/Order/OrderItem.type';
+import { ProductItem } from '../Products/Product-item.type';
+import { OrderItem } from '../Orders/Order/Order-item.type';
 import { IngredientItem } from 'Kitchen-service/Ingredients/Ingredient-item.type';
-import { CustomerServiceError } from './Customer-ervice.exception';
-import { DiscountStore } from '../Discounts/Discount-store.class';
-import { OrdersStore } from '../Orders/Orders-store.class';
+import { CustomerServiceError } from './Customer.service.exception';
+import { DiscountStore } from '../Discounts/Discount.store';
+import { OrdersStore } from '../Orders/Orders.store';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
-import { ProductsStore } from '../Products/Products-store';
+import { ProductsStore } from '../Products/Products.store';
 import { Discount } from '../Discounts/Discount/Discount.class';
 
 export class CustomerService {

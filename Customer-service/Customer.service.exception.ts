@@ -1,5 +1,5 @@
-import { OrderItem } from '../Orders/Order/OrderItem.type';
-import { ProductItem } from '../Products/ProductItem.type';
+import { OrderItem } from '../Orders/Order/Order-item.type';
+import { ProductItem } from '../Products/Product-item.type';
 
 export class CustomerServiceError extends Error {
   constructor(

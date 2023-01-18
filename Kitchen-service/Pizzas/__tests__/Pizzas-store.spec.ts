@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { PizzaStore } from '../Pizza-store.class';
+import { PizzaStore } from '../Pizza.store';
 import { Pizza } from '../Pizza/Pizza.class';
 import { recipe, recipe2 } from './recipes';
 describe('Pizzas store tests suite:', () => {

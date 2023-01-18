@@ -1,10 +1,10 @@
 import { Ingredient } from './Ingredient/Ingredient.class';
 import { IngredientItem } from './Ingredient-item.type';
-import { DAOinterface } from '../../DAO/DAO.interface';
-import { IngretientStoreError } from './Ingredient-store.exception';
+import { IDA } from '../../Data-access/DA.interface';
+import { IngretientStoreError } from './Ingredient.store.exception';
 
 export class IngredientsStore
-  implements DAOinterface<IngredientItem, Ingredient, number, null>
+  implements IDA<IngredientItem, Ingredient, number, null>
 {
   static instance: IngredientsStore | null;
   private readonly ingredients: Map<string, IngredientItem> = new Map();

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { IngredientsStore } from '../Ingredients-store.class';
+import { IngredientsStore } from '../Ingredients.store';
 import { ingredient1Mock } from './ingredient1Mock';
 
 describe('Ingredient store tests suite:', () => {

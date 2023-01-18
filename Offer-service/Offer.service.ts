@@ -1,8 +1,8 @@
-import { DiscountStore } from '../Discounts/Discount-store.class';
-import { ProductsStore } from '../Products/Products-store';
-import { ProductItem } from 'Products/ProductItem.type';
-import { PizzaItem } from 'Kitchen-service/Pizzas/PizzaItem.type';
-import { Discount } from 'Discounts/Discount/Discount.class';
+import { DiscountStore } from '../Discounts/Discount.store';
+import { ProductsStore } from '../Products/Products.store';
+import { ProductItem } from '../Products/Product-item.type';
+import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
+import { Discount } from '../Discounts/Discount/Discount.class';
 
 export class OfferService {
   static instance: OfferService | null;

@@ -1,12 +1,12 @@
-import { WorkersStore } from '../Workers/Workers-store.class';
-import { TablesStore } from '../Tables/Tables-store.class';
+import { WorkersStore } from '../Workers/Workers.store';
+import { TablesStore } from '../Tables/Tables.store';
 import { Worker } from 'Workers/Worker/Worker.class';
-import { WorkerItem } from 'Workers/WorkerItem.type';
-import { TableItem } from 'Tables/TableItem.type';
+import { WorkerItem } from 'Workers/Worker-item.type';
+import { TableItem } from 'Tables/Table-item.type';
 import { Table } from 'Tables/Table/Table.class';
 
 export class BackofficeService {
-  static instance: BackofficeService | null;
+  private static instance: BackofficeService | null;
   private readonly workers: WorkersStore;
   private readonly tables: TablesStore;
 

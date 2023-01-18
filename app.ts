@@ -2,10 +2,10 @@ import { Ingredient } from './Kitchen-service/Ingredients/Ingredient/Ingredient.
 import { Worker } from './Workers/Worker/Worker.class';
 import { Role } from './Workers/Worker/Roles.enum';
 import { Table } from './Tables/Table/Table.class';
-import { BackofficeService } from './Backoffice-service/Backoffice-service';
-import { KitchenService } from './Kitchen-service/Kitchen-service';
-import { OfferService } from './Offer-service/Offer-service';
-import { CustomerService } from './Customer-service/Customer-service';
+import { BackofficeService } from './Backoffice-service/Backoffice.service';
+import { KitchenService } from './Kitchen-service/Kitchen.service';
+import { OfferService } from './Offer-service/Offer.service';
+import { CustomerService } from './Customer-service/Customer.service';
 
 const kitchen = KitchenService.getInstance();
 const backoffice = BackofficeService.getInstance();
@@ -54,11 +54,14 @@ const table1 = new Table('1', 4);
 const table2 = new Table('2', 4);
 
 backoffice.addWorker(cook1, true);
-backoffice.addTable(table1, 0, true)
+backoffice.addTable(table1, 0, true);
 
-const order1 = service.orderWhReservation([
-  { product: margerittaProduct, qty: 2 },
-  { product: salameProduct, qty: 1 },
-], 3);
+const order1 = service.orderWhReservation(
+  [
+    { product: margerittaProduct, qty: 2 },
+    { product: salameProduct, qty: 1 },
+  ],
+  3
+);
 
 console.log(order1);

@@ -1,4 +1,4 @@
-export interface DAOinterface<Item, Element, Param1, Param2> {
+export interface IDA<Item, Element, Param1, Param2> {
   findItemById(id: string): Item;
   addOrUpdateItem(
     element: Element,

@@ -1,12 +1,10 @@
-import { DAOinterface } from 'DAO/DAO.interface';
-import { WorkerItem } from 'Workers/WorkerItem.type';
+import { IDA } from 'Data-access/DA.interface';
+import { WorkerItem } from 'Workers/Worker-item.type';
 import { Table } from './Table/Table.class';
-import { TableItem } from './TableItem.type';
-import { TablesStoreError } from './Tables-store.exception';
+import { TableItem } from './Table-item.type';
+import { TablesStoreError } from './Tables.store.exception';
 
-export class TablesStore
-  implements DAOinterface<TableItem, Table, number, boolean>
-{
+export class TablesStore implements IDA<TableItem, Table, number, boolean> {
   static instance: TablesStore | null;
   private readonly tables: Map<string, TableItem> = new Map();
 

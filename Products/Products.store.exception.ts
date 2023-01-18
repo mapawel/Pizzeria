@@ -1,4 +1,4 @@
-import { ProductItem } from './ProductItem.type';
+import { ProductItem } from './Product-item.type';
 
 export class ProductsStoreError extends Error {
   constructor(

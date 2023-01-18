@@ -1,10 +1,10 @@
-import { DAOinterface } from 'DAO/DAO.interface';
-import { PizzaItem } from '../Kitchen-service/Pizzas/PizzaItem.type';
-import { ProductItem } from './ProductItem.type';
-import { ProductsStoreError } from './Products-store.exception';
+import { IDA } from 'Data-access/DA.interface';
+import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
+import { ProductItem } from './Product-item.type';
+import { ProductsStoreError } from './Products.store.exception';
 
 export class ProductsStore
-  implements DAOinterface<ProductItem, PizzaItem, number, null>
+  implements IDA<ProductItem, PizzaItem, number, null>
 {
   static instance: ProductsStore | null;
   private readonly products: Map<string, ProductItem> = new Map();

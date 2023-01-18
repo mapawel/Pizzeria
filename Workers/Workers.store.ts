@@ -1,12 +1,10 @@
-import { DAOinterface } from 'DAO/DAO.interface';
-import { WorkerItem } from './WorkerItem.type';
+import { IDA } from 'Data-access/DA.interface';
+import { WorkerItem } from './Worker-item.type';
 import { Worker } from './Worker/Worker.class';
-import { WorkersStoreError } from './Workers-store.exception';
+import { WorkersStoreError } from './Workers.store.exception';
 import { Role } from './Worker/Roles.enum';
 
-export class WorkersStore
-  implements DAOinterface<WorkerItem, Worker, boolean, null>
-{
+export class WorkersStore implements IDA<WorkerItem, Worker, boolean, null> {
   static instance: WorkersStore | null;
   private readonly workers: Map<string, WorkerItem> = new Map();
 

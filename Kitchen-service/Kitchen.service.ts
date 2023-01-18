@@ -1,13 +1,12 @@
-import { OrderItem } from 'Orders/Order/OrderItem.type';
+import { OrderItem } from 'Orders/Order/Order-item.type';
 import { IngredientItem } from './Ingredients/Ingredient-item.type';
-import { IngredientsStore } from './Ingredients/Ingredients-store.class';
-import { PizzaStore } from './Pizzas/Pizza-store.class';
-import { IKitchenService } from './Kitchen-service.interface';
+import { IngredientsStore } from './Ingredients/Ingredients.store';
+import { PizzaStore } from './Pizzas/Pizza.store';
 import { Ingredient } from './Ingredients/Ingredient/Ingredient.class';
-import { PizzaItem } from './Pizzas/PizzaItem.type';
+import { PizzaItem } from './Pizzas/Pizza-item.type';
 import { Pizza } from './Pizzas/Pizza/Pizza.class';
 
-export class KitchenService implements IKitchenService {
+export class KitchenService {
   static instance: KitchenService | null;
   private readonly ingredientsStore: IngredientsStore;
   private readonly pizzasStore: PizzaStore;
@@ -30,7 +29,7 @@ export class KitchenService implements IKitchenService {
     return this.ingredientsStore.getAllIngredientsArr();
   }
 
-//TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
+  //TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
   public addIngredient(ingredient: Ingredient, qty: number): boolean {
     return this.ingredientsStore.addOrUpdateItem(ingredient, qty);
   }

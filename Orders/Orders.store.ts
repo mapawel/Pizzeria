@@ -1,8 +1,8 @@
-import { WorkerItem } from '../Workers/WorkerItem.type';
+import { WorkerItem } from '../Workers/Worker-item.type';
 import { Order } from './Order/Order.class';
-import { TableItem } from '../Tables/TableItem.type';
+import { TableItem } from '../Tables/Table-item.type';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
-import { OrdersStoreError } from './Orders-store.exception';
+import { OrdersStoreError } from './Orders.store.exception';
 
 export class OrdersStore {
   static instance: OrdersStore | null;
