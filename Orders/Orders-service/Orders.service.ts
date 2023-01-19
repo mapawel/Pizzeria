@@ -52,10 +52,6 @@ export class OrdersService {
     }[],
     discount?: string
   ): Order<WorkerItem, null> {
-    let discountInstance: Discount | null = null;
-    if (discount) discountInstance = this.discounts.findItemById(discount);
-    const discountPercent: number = discountInstance?.discountPercent || 0;
-
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     if (!cook)
       throw new OrdersServiceError(
@@ -63,19 +59,17 @@ export class OrdersService {
         { preOrdersArr, discount }
       );
 
-    const orderItems: OrderItem[] = this.createOrderItems(
-      preOrdersArr,
-      discountPercent
-    );
+    const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
-    const totalValue: number = this.getTotalOrderValue(orderItems);
+
+    const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 
     const newOrder = new Order(orderItems, totalValue, cook, null);
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
     this.kitchen.cookPizzas(ingredients);
-    discountInstance?.useDiscountQty(1);
+    // discountInstance?.useDiscountQty(1); //TODO doscount using
     this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     return newOrder;
   }
@@ -88,9 +82,6 @@ export class OrdersService {
     tablePerson: number,
     discount?: string
   ): Order<WorkerItem | null, TableItem> {
-    let discountInstance: Discount | null = null;
-    if (discount) discountInstance = this.discounts.findItemById(discount);
-    const discountPercent: number = discountInstance?.discountPercent || 0;
     const table: TableItem | null = this.tables.findFreeTable(tablePerson);
     if (!table)
       throw new OrdersServiceError(
@@ -104,13 +95,10 @@ export class OrdersService {
       isAvailable: false,
     });
 
-    const orderItems: OrderItem[] = this.createOrderItems(
-      preOrdersArr,
-      discountPercent
-    );
+    const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
     const ingredients: IngredientItem[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
-    const totalValue: number = this.getTotalOrderValue(orderItems);
+    const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 
     const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
     let newOrder;
@@ -125,7 +113,7 @@ export class OrdersService {
       newOrder = new Order(orderItems, totalValue, null, table);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
     }
-    discountInstance?.useDiscountQty(1);
+    // discountInstance?.useDiscountQty(1); //TODO discount using
     return newOrder;
   }
 
@@ -159,20 +147,29 @@ export class OrdersService {
     preOrdersArr: {
       product: ProductItem;
       qty: number;
-    }[],
-    discount: number
+    }[]
   ): OrderItem[] {
     return preOrdersArr.map(
       ({ product, qty }: { product: ProductItem; qty: number }) => ({
         product,
         qty,
-        unitPrice: product.price * (1 - discount),
-        value: product.price * qty * (1 - discount),
+        unitPrice: product.price,
+        value: product.price * qty,
       })
     );
   }
 
-  private getTotalOrderValue(orderItems: OrderItem[]): number {
-    return orderItems.reduce((acc: number, x: OrderItem) => acc + x.value, 0);
+  private getTotalOrderValue(
+    orderItems: OrderItem[],
+    discount?: string
+  ): number {
+    const discountPercent: number = discount
+      ? this.discounts.findItemById(discount).discountPercent
+      : 0;
+
+    return orderItems.reduce(
+      (acc: number, x: OrderItem) => acc + x.value * (1 - discountPercent),
+      0
+    );
   }
 }
