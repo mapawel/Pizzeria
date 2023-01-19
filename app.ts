@@ -6,9 +6,8 @@ import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { KitchenService } from './Kitchen-service/Kitchen.service';
 import { OfferService } from './Offer-service/Offer.service';
 import { CustomerService } from './Customer-service/Customer.service';
-import { DiscountStore } from './Discounts/Discount.store';
+import { DiscountStore } from './Discounts/Discount-store/Discount.store';
 import { Discount } from './Discounts/Discount/Discount.class';
-import { DiscountType } from './Discounts/Discount/Discount-type.enum';
 
 const kitchen = KitchenService.getInstance();
 const backoffice = BackofficeService.getInstance();
@@ -21,8 +20,8 @@ const sose = new Ingredient('sose');
 const cheese = new Ingredient('cheese');
 const salami = new Ingredient('salami');
 
-const d1 = new Discount('qwe', DiscountType.limited, 0.1, 10);
-discounts.addOrUpdateItem(d1);
+// const d1 = new Discount('qwe', DiscountType.limited, 0.1, 10);
+// discounts.addOrUpdateItem(d1);
 
 kitchen.addIngredient(cake, { qty: 1000 });
 kitchen.addIngredient(sose, { qty: 1000 });
@@ -67,8 +66,7 @@ const order1 = service.orderWhReservation(
     { product: margerittaProduct, qty: 2 },
     { product: salameProduct, qty: 1 },
   ],
-  3,
-  'qwe'
+  3
 );
 
 console.log(order1);

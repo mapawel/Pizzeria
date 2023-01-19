@@ -2,7 +2,7 @@ import { OrdersStore } from '../../Orders/Orders-store/Orders.store';
 import { KitchenService } from '../../Kitchen-service/Kitchen.service';
 import { TablesStore } from '../../Tables/Tables.store';
 import { WorkersStore } from '../../Workers/Workers.store';
-import { DiscountStore } from '../../Discounts/Discount.store';
+import { DiscountStore } from '../../Discounts/Discount-store/Discount.store';
 import { Order } from '../../Orders/Order/Order.class';
 import { OrdersServiceCollections } from '../../Orders/Order/Orders-service.collections.enum';
 import { WorkerItem } from '../../Workers/Worker-item.type';
@@ -164,7 +164,7 @@ export class OrdersService {
     discount?: string
   ): number {
     const discountPercent: number = discount
-      ? this.discounts.findItemById(discount).discountPercent
+      ? this.discounts.findItemById(discount).getPercent()
       : 0;
 
     return orderItems.reduce(

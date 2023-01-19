@@ -1,4 +1,4 @@
-import { DiscountStore } from '../Discounts/Discount.store';
+import { DiscountStore } from '../Discounts/Discount-store/Discount.store';
 import { ProductsStore } from '../Products/Products.store';
 import { ProductItem } from '../Products/Product-item.type';
 import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
