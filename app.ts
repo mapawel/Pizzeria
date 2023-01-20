@@ -20,8 +20,8 @@ const sose = new Ingredient('sose');
 const cheese = new Ingredient('cheese');
 const salami = new Ingredient('salami');
 
-// const d1 = new Discount('qwe', DiscountType.limited, 0.1, 10);
-// discounts.addOrUpdateItem(d1);
+const d1 = new Discount('qwe', 0.1);
+discounts.addOrUpdateDiscount(d1);
 
 kitchen.addIngredient(cake, { qty: 1000 });
 kitchen.addIngredient(sose, { qty: 1000 });
@@ -66,7 +66,8 @@ const order1 = service.orderWhReservation(
     { product: margerittaProduct, qty: 2 },
     { product: salameProduct, qty: 1 },
   ],
-  3
+  3,
+  'qwe'
 );
 
 console.log(order1);

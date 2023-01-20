@@ -20,11 +20,15 @@ export class DiscountService {
     DiscountService.instance = null;
   }
 
-  public findDiscountByCode(code: string): Discount {
+  public getAllDiscounts(): (Discount | DiscountLimited)[] {
+    return Array.from(this.discounts.getAllDiscounts(), ([_, value]) => value);
+  }
+
+  public findDiscountByCode(code: string): Discount | DiscountLimited {
     return this.discounts.findDiscountByCode(code);
   }
 
-  public addOrUpdateDiscount(element: Discount): boolean {
+  public addOrUpdateDiscount(element: Discount | DiscountLimited): boolean {
     return this.discounts.addOrUpdateDiscount(element);
   }
 

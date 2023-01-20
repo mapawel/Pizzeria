@@ -13,6 +13,7 @@ import { IngredientItem } from '../../Kitchen-service/Ingredients/Ingredient-ite
 import { OrdersServiceError } from './Orders.service.exception';
 import { OrderItem } from '../../Orders/Order/Order-item.type';
 import { Role } from '../../Workers/Worker/Roles.enum';
+import { DiscountService } from '../../Discounts/Discount-service/Discount.service';
 
 export class OrdersService {
   private static instance: OrdersService | null;
@@ -20,14 +21,14 @@ export class OrdersService {
   private readonly tables: TablesStore;
   private readonly workers: WorkersStore;
   private readonly orders: OrdersStore;
-  private readonly discounts: DiscountStore;
+  private readonly discounts: DiscountService;
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
     this.tables = TablesStore.getInstance();
     this.workers = WorkersStore.getInstance();
     this.orders = OrdersStore.getInstance();
-    this.discounts = DiscountStore.getInstance();
+    this.discounts = DiscountService.getInstance();
   }
 
   public static getInstance() {
@@ -164,7 +165,7 @@ export class OrdersService {
     discount?: string
   ): number {
     const discountPercent: number = discount
-      ? this.discounts.findItemById(discount).getPercent()
+      ? this.discounts.getValidDiscountPercent(discount)
       : 0;
 
     return orderItems.reduce(

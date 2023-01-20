@@ -1,16 +1,17 @@
-import { DiscountStore } from '../Discounts/Discount-store/Discount.store';
 import { ProductsStore } from '../Products/Products.store';
 import { ProductItem } from '../Products/Product-item.type';
 import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
 import { Discount } from '../Discounts/Discount/Discount.class';
+import { DiscountService } from '../Discounts/Discount-service/Discount.service';
+import { DiscountLimited } from '../Discounts/Discount/Discount-limited.class';
 
 export class OfferService {
   private static instance: OfferService | null;
-  private readonly discounts: DiscountStore;
+  private readonly discounts: DiscountService;
   private readonly products: ProductsStore;
 
   private constructor() {
-    this.discounts = DiscountStore.getInstance();
+    this.discounts = DiscountService.getInstance();
     this.products = ProductsStore.getInstance();
   }
 
@@ -45,16 +46,16 @@ export class OfferService {
     return this.products.removeExistingItem(pizzaItem);
   }
 
-  public getAllDiscountsArr(): Discount[] {
-    return this.discounts.getAllDiscountsArr();
+  public getAllDiscountsArr(): (Discount | DiscountLimited)[] {
+    return this.discounts.getAllDiscounts();
   }
 
   //TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
-  public addDiscount(discount: Discount): boolean {
-    return this.discounts.addOrUpdateItem(discount);
+  public addOrUpdateDiscount(discount: Discount | DiscountLimited): boolean {
+    return this.discounts.addOrUpdateDiscount(discount);
   }
 
-  public removeDiscount(discount: Discount): boolean {
-    return this.discounts.removeExistingItem(discount);
+  public removeDiscountByCode(code: string): boolean {
+    return this.discounts.removeDiscountByCode(code);
   }
 }

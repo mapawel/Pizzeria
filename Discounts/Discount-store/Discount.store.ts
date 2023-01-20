@@ -1,9 +1,10 @@
 import { DiscountError } from '../Discount.exception';
 import { Discount } from '../Discount/Discount.class';
-
+import { DiscountLimited } from '../Discount/Discount-limited.class';
 export class DiscountStore {
   private static instance: DiscountStore | null;
-  private readonly discounts: Map<string, Discount> = new Map();
+  private readonly discounts: Map<string, Discount | DiscountLimited> =
+    new Map();
 
   private constructor() {}
 
@@ -16,11 +17,15 @@ export class DiscountStore {
     DiscountStore.instance = null;
   }
 
-  public findDiscountByCode(code: string): Discount {
+  public getAllDiscounts(): Map<string, Discount | DiscountLimited> {
+    return new Map(this.discounts);
+  }
+
+  public findDiscountByCode(code: string): Discount | DiscountLimited {
     return this.validateIfExisting(this.unifyCode(code));
   }
 
-  public addOrUpdateDiscount(element: Discount): boolean {
+  public addOrUpdateDiscount(element: Discount | DiscountLimited): boolean {
     this.discounts.set(this.unifyCode(element.code), element);
     return true;
   }
@@ -31,7 +36,7 @@ export class DiscountStore {
     return true;
   }
 
-  private validateIfExisting(code: string): Discount {
+  private validateIfExisting(code: string): Discount | DiscountLimited {
     const foundDiscount = this.discounts.get(code);
     if (!foundDiscount)
       throw new DiscountError(
