@@ -70,7 +70,11 @@ export class OrdersService {
     cook.isAvailable = false;
     this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
     this.kitchen.cookPizzas(ingredients);
-    // discountInstance?.useDiscountQty(1); //TODO doscount using
+    if (discount)
+      this.discounts.useLimitedDiscount(
+        discount,
+        this.getTotalPizzasQty(orderItems)
+      );
     this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     return newOrder;
   }
@@ -114,7 +118,11 @@ export class OrdersService {
       newOrder = new Order(orderItems, totalValue, null, table);
       this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
     }
-    // discountInstance?.useDiscountQty(1); //TODO discount using
+    if (discount)
+      this.discounts.useLimitedDiscount(
+        discount,
+        this.getTotalPizzasQty(orderItems)
+      );
     return newOrder;
   }
 
@@ -165,12 +173,19 @@ export class OrdersService {
     discount?: string
   ): number {
     const discountPercent: number = discount
-      ? this.discounts.getValidDiscountPercent(discount)
+      ? this.discounts.getValidDiscountPercent(
+          discount,
+          this.getTotalPizzasQty(orderItems)
+        )
       : 0;
 
     return orderItems.reduce(
       (acc: number, x: OrderItem) => acc + x.value * (1 - discountPercent),
       0
     );
+  }
+
+  private getTotalPizzasQty(orderItems: OrderItem[]): number {
+    return orderItems.reduce((acc: number, x: OrderItem) => acc + x.qty, 0);
   }
 }

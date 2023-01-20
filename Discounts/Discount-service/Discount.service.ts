@@ -56,8 +56,9 @@ export class DiscountService {
       foundDiscountInstance.setNewLimitQty(
         foundDiscountInstance.getLimitQty() - qtyNeeded
       );
+      return true;
     }
-    return true;
+    return false;
   }
 
   private validateQtyVsNeeded(

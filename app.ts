@@ -8,6 +8,7 @@ import { OfferService } from './Offer-service/Offer.service';
 import { CustomerService } from './Customer-service/Customer.service';
 import { DiscountStore } from './Discounts/Discount-store/Discount.store';
 import { Discount } from './Discounts/Discount/Discount.class';
+import { DiscountLimited } from './Discounts/Discount/Discount-limited.class';
 
 const kitchen = KitchenService.getInstance();
 const backoffice = BackofficeService.getInstance();
@@ -20,8 +21,10 @@ const sose = new Ingredient('sose');
 const cheese = new Ingredient('cheese');
 const salami = new Ingredient('salami');
 
-const d1 = new Discount('qwe', 0.1);
+const d1 = new Discount('qwe', 0.2);
+const d2 = new DiscountLimited('asd', 0.1, 2);
 discounts.addOrUpdateDiscount(d1);
+discounts.addOrUpdateDiscount(d2);
 
 kitchen.addIngredient(cake, { qty: 1000 });
 kitchen.addIngredient(sose, { qty: 1000 });
@@ -63,11 +66,13 @@ backoffice.addTable(table1, { sitsToReserve: 0, isAvailable: true });
 
 const order1 = service.orderWhReservation(
   [
-    { product: margerittaProduct, qty: 2 },
+    { product: margerittaProduct, qty: 1 },
     { product: salameProduct, qty: 1 },
   ],
   3,
-  'qwe'
+  'asd'
 );
 
 console.log(order1);
+console.log(discounts.getAllDiscounts());
+
