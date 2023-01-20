@@ -21,6 +21,13 @@ export class WorkersStore
     WorkersStore.instance = null;
   }
 
+  public findAvailableCookById(id: string): WorkerItem {
+    const foundWorker: WorkerItem = this.validateIfExisting(id);
+    if (!foundWorker.isAvailable)
+      throw new WorkersStoreError('This worker is not available', { id });
+    return foundWorker;
+  }
+
   public findItemById(id: string): WorkerItem {
     return this.validateIfExisting(id);
   }
@@ -29,7 +36,7 @@ export class WorkersStore
     worker: Worker,
     { isAvailable }: { isAvailable: boolean }
   ): boolean {
-    this.workers.set(worker.name, {
+    this.workers.set(worker.id, {
       worker,
       isAvailable,
     });
@@ -47,7 +54,7 @@ export class WorkersStore
     { isAvailable }: { isAvailable: boolean }
   ): boolean {
     this.validateIfExisting(worker.id);
-    this.workers.set(worker.name, {
+    this.workers.set(worker.id, {
       worker,
       isAvailable,
     });

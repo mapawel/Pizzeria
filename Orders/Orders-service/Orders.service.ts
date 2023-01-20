@@ -14,7 +14,7 @@ import { OrdersServiceError } from './Orders.service.exception';
 import { OrderItem } from '../../Orders/Order/Order-item.type';
 import { Role } from '../../Workers/Worker/Roles.enum';
 import { DiscountService } from '../../Discounts/Discount-service/Discount.service';
-
+import { OfferService } from '../../Offer-service/Offer.service';
 export class OrdersService {
   private static instance: OrdersService | null;
   private readonly kitchen: KitchenService;
@@ -22,6 +22,7 @@ export class OrdersService {
   private readonly workers: WorkersStore;
   private readonly orders: OrdersStore;
   private readonly discounts: DiscountService;
+  private readonly products: OfferService;
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
@@ -29,6 +30,7 @@ export class OrdersService {
     this.workers = WorkersStore.getInstance();
     this.orders = OrdersStore.getInstance();
     this.discounts = DiscountService.getInstance();
+    this.products = OfferService.getInstance();
   }
 
   public static getInstance() {
@@ -48,7 +50,7 @@ export class OrdersService {
 
   public orderToGo(
     preOrdersArr: {
-      product: ProductItem;
+      productNameId: string;
       qty: number;
     }[],
     discount?: string
@@ -81,7 +83,7 @@ export class OrdersService {
 
   public orderWhReservation(
     preOrdersArr: {
-      product: ProductItem;
+      productNameId: string;
       qty: number;
     }[],
     tablePerson: number,
@@ -126,45 +128,23 @@ export class OrdersService {
     return newOrder;
   }
 
-  public executePendingOrder(
-    order: Order<WorkerItem | null, TableItem>,
-    cook: WorkerItem
-  ): Order<WorkerItem, TableItem> {
-    cook.isAvailable = false;
-    this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
-
-    const ingredients: IngredientItem[] = this.kitchen.takeIngredientsForOrder(
-      order.orderItems
-    );
-    this.kitchen.cookPizzas(ingredients);
-    this.orders.deleteOrder(order, OrdersServiceCollections.ordersPending);
-    order.cook = cook;
-    this.orders.addOrder(order, OrdersServiceCollections.ordersInProgress);
-    return order as Order<WorkerItem, TableItem>;
-  }
-
-  public finishOrderByCook(
-    order: Order<WorkerItem, TableItem | null>
-  ): boolean {
-    this.workers.addOrUpdateItem(order.cook.worker, { isAvailable: true });
-    this.orders.deleteOrder(order, OrdersServiceCollections.ordersInProgress);
-    this.orders.addOrder(order, OrdersServiceCollections.ordersFinished);
-    return true;
-  }
-
   private createOrderItems(
     preOrdersArr: {
-      product: ProductItem;
+      productNameId: string;
       qty: number;
     }[]
   ): OrderItem[] {
     return preOrdersArr.map(
-      ({ product, qty }: { product: ProductItem; qty: number }) => ({
-        product,
-        qty,
-        unitPrice: product.price,
-        value: product.price * qty,
-      })
+      ({ productNameId, qty }: { productNameId: string; qty: number }) => {
+        const product: ProductItem =
+          this.products.getMenuProduct(productNameId);
+        return {
+          product,
+          qty,
+          unitPrice: product.price,
+          value: product.price * qty,
+        };
+      }
     );
   }
 

@@ -1,18 +1,28 @@
 import { WorkersStore } from '../Workers/Workers.store';
 import { TablesStore } from '../Tables/Tables.store';
-import { Worker } from 'Workers/Worker/Worker.class';
-import { WorkerItem } from 'Workers/Worker-item.type';
-import { TableItem } from 'Tables/Table-item.type';
-import { Table } from 'Tables/Table/Table.class';
+import { Worker } from '../Workers/Worker/Worker.class';
+import { WorkerItem } from '../Workers/Worker-item.type';
+import { TableItem } from '../Tables/Table-item.type';
+import { Table } from '../Tables/Table/Table.class';
+import { Order } from '../Orders/Order/Order.class';
+import { IngredientItem } from '../Kitchen-service/Ingredients/Ingredient-item.type';
+import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
+import { KitchenService } from '../Kitchen-service/Kitchen.service';
+import { OrdersStore } from '../Orders/Orders-store/Orders.store';
+import { OrderItem } from 'Orders/Order/Order-item.type';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;
   private readonly workers: WorkersStore;
   private readonly tables: TablesStore;
+  private readonly kitchen: KitchenService;
+  private readonly orders: OrdersStore;
 
   private constructor() {
     this.workers = WorkersStore.getInstance();
     this.tables = TablesStore.getInstance();
+    this.kitchen = KitchenService.getInstance();
+    this.orders = OrdersStore.getInstance();
   }
 
   public static getInstance() {
@@ -24,8 +34,56 @@ export class BackofficeService {
     BackofficeService.instance = null;
   }
 
-  public getWorkerByName(name: string): WorkerItem {
-    return this.workers.findItemById(name);
+  public executePendingOrder(
+    orderId: string,
+    cookId: string
+  ): Order<WorkerItem, TableItem> {
+    const foundOrder: Order<WorkerItem | null, TableItem | null> =
+      this.orders.findOrderById(
+        orderId,
+        OrdersServiceCollections.ordersPending
+      );
+    const { id, orderItems }: { id: string; orderItems: OrderItem[] } =
+      foundOrder;
+
+    const ingredients: IngredientItem[] =
+      this.kitchen.takeIngredientsForOrder(orderItems);
+
+    const workerItem: WorkerItem = this.workers.findAvailableCookById(cookId);
+    const { worker }: { worker: Worker } = workerItem;
+
+    this.workers.addOrUpdateItem(worker, { isAvailable: false });
+    this.kitchen.cookPizzas(ingredients);
+    const updatedOrder: Order<WorkerItem | null, TableItem | null> =
+      this.orders.setCookForOrderById(
+        id,
+        OrdersServiceCollections.ordersPending,
+        workerItem
+      );
+    this.orders.addOrder(
+      updatedOrder,
+      OrdersServiceCollections.ordersInProgress
+    );
+    this.orders.deleteOrder(id, OrdersServiceCollections.ordersPending);
+    return updatedOrder as Order<WorkerItem, TableItem>;
+
+    //TODO Worker still is Available???
+  }
+
+  public finishOrderByCook(
+    order: Order<WorkerItem, TableItem | null>
+  ): boolean {
+    this.workers.addOrUpdateItem(order.cook.worker, { isAvailable: true });
+    this.orders.deleteOrder(
+      order.id,
+      OrdersServiceCollections.ordersInProgress
+    );
+    this.orders.addOrder(order, OrdersServiceCollections.ordersFinished);
+    return true;
+  }
+
+  public getWorkerById(id: string): WorkerItem {
+    return this.workers.findItemById(id);
   }
 
   public addWorker(

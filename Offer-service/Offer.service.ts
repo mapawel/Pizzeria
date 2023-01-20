@@ -28,6 +28,10 @@ export class OfferService {
     return this.products.getProductArr();
   }
 
+  public getMenuProduct(nameId: string): ProductItem {
+    return this.products.findItemById(nameId);
+  }
+
   public addMenuProduct(
     pizzaItem: PizzaItem,
     { price }: { price: number }

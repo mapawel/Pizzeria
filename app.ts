@@ -42,7 +42,7 @@ const margeritta = kitchen.createAndAddNewPizza(
 );
 
 const salame = kitchen.createAndAddNewPizza(
-  'margeritta',
+  'salame',
   [
     { ingredient: cake, qty: 200 },
     { ingredient: cheese, qty: 100 },
@@ -52,8 +52,8 @@ const salame = kitchen.createAndAddNewPizza(
   10
 );
 
-const margerittaProduct = offer.addMenuProduct(margeritta, { price: 30 });
-const salameProduct = offer.addMenuProduct(salame, { price: 36 });
+offer.addMenuProduct(margeritta, { price: 30 });
+offer.addMenuProduct(salame, { price: 36 });
 
 const cook1 = new Worker('andrzej', Role.cook);
 const cook2 = new Worker('janusz', Role.cook);
@@ -61,18 +61,22 @@ const cook2 = new Worker('janusz', Role.cook);
 const table1 = new Table('1', 4);
 const table2 = new Table('2', 4);
 
-backoffice.addWorker(cook1, { isAvailable: true });
+backoffice.addWorker(cook1, { isAvailable: false });
 backoffice.addTable(table1, { sitsToReserve: 0, isAvailable: true });
 
 const order1 = service.orderWhReservation(
   [
-    { product: margerittaProduct, qty: 1 },
-    { product: salameProduct, qty: 1 },
+    { productNameId: 'MARGERITTA', qty: 1 },
+    { productNameId: 'SALAME', qty: 1 },
   ],
   3,
   'asd'
 );
 
-console.log(order1);
-console.log(discounts.getAllDiscounts());
+backoffice.updateWorker(cook1, { isAvailable: true });
 
+console.log();
+
+service.executePendingOrder(order1.id, cook1.id);
+
+console.log(order1);

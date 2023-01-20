@@ -30,6 +30,24 @@ export class OrdersStore {
     OrdersStore.instance = null;
   }
 
+  public findOrderById(
+    orderId: string,
+    orderType: OrdersServiceCollections
+  ): Order<WorkerItem | null, TableItem | null> {
+    return this.validateIfExisting(orderId, orderType);
+  }
+
+  public setCookForOrderById(
+    orderId: string,
+    orderType: OrdersServiceCollections,
+    cook: WorkerItem
+  ): Order<WorkerItem | null, TableItem | null> {
+    const foundOrder: Order<WorkerItem | null, TableItem | null> =
+      this.validateIfExisting(orderId, orderType);
+    foundOrder.cook = cook;
+    return foundOrder;
+  }
+
   public addOrder(
     order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
@@ -48,10 +66,24 @@ export class OrdersStore {
   }
 
   public deleteOrder(
-    order: Order<WorkerItem | null, TableItem | null>,
+    orderId: string,
     orderType: OrdersServiceCollections
   ): boolean {
-    this[orderType].delete(order.id);
+    const foundOrder = this.validateIfExisting(orderId, orderType);
+    this[orderType].delete(foundOrder.id);
     return true;
+  }
+
+  private validateIfExisting(
+    nameId: string,
+    orderType: OrdersServiceCollections
+  ): Order<WorkerItem | null, TableItem | null> {
+    const foundOrder = this[orderType].get(nameId);
+    if (!foundOrder)
+      throw new OrdersStoreError(
+        'Pizza with passed nameId not found in store, could not proceed.',
+        { nameId }
+      );
+    return foundOrder;
   }
 }

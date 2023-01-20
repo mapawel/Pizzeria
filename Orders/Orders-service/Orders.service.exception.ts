@@ -8,7 +8,7 @@ export class OrdersServiceError extends Error {
       preOrdersArr:
         | OrderItem[]
         | {
-            product: ProductItem;
+            productNameId: string;
             qty: number;
           }[];
       discount?: string;

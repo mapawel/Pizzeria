@@ -6,17 +6,20 @@ import { ProductItem } from '../Products/Product-item.type';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { ProductsStore } from '../Products/Products.store';
 import { OrdersService } from '../Orders/Orders-service/Orders.service';
+import { BackofficeService } from '../Backoffice-service/Backoffice.service';
 
 export class CustomerService {
   private static instance: CustomerService | null;
   private readonly products: ProductsStore;
   private readonly orders: OrdersService;
   private readonly tables: TablesStore;
+  private readonly backoffice: BackofficeService;
 
   private constructor() {
     this.products = ProductsStore.getInstance();
     this.orders = OrdersService.getInstance();
     this.tables = TablesStore.getInstance();
+    this.backoffice = BackofficeService.getInstance();
   }
 
   public static getInstance() {
@@ -40,7 +43,7 @@ export class CustomerService {
 
   public orderToGo(
     preOrdersArr: {
-      product: ProductItem;
+      productNameId: string;
       qty: number;
     }[],
     discount?: string
@@ -50,7 +53,7 @@ export class CustomerService {
 
   public orderWhReservation(
     preOrdersArr: {
-      product: ProductItem;
+      productNameId: string;
       qty: number;
     }[],
     tablePerson: number,
@@ -60,16 +63,16 @@ export class CustomerService {
   }
 
   public executePendingOrder(
-    order: Order<WorkerItem | null, TableItem>,
-    cook: WorkerItem
+    orderId: string,
+    cookId: string
   ): Order<WorkerItem, TableItem> {
-    return this.orders.executePendingOrder(order, cook);
+    return this.backoffice.executePendingOrder(orderId, cookId);
   }
 
   public finishOrderByCook(
     order: Order<WorkerItem, TableItem | null>
   ): boolean {
-    return this.orders.finishOrderByCook(order);
+    return this.backoffice.finishOrderByCook(order);
   }
 
   public makeTableFree(order: Order<WorkerItem | null, TableItem>): boolean {
