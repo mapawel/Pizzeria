@@ -75,8 +75,7 @@ const order1 = service.orderWhReservation(
 
 backoffice.updateWorker(cook1, { isAvailable: true });
 
-console.log();
 
-service.executePendingOrder(order1.id, cook1.id);
+const updated = service.executePendingOrder(order1.id, cook1.id);
 
-console.log(order1);
+console.log(updated);

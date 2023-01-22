@@ -8,5 +8,5 @@ export interface IDA<Item, Element, Params> {
   updateExistingItemParam(
     element: Element,
     params: Params,
-  ): boolean;
+  ): Item;
 }

@@ -42,7 +42,7 @@ export class OfferService {
   public updateMenuProduct(
     pizzaItem: PizzaItem,
     { price }: { price: number }
-  ): boolean {
+  ): ProductItem {
     return this.products.updateExistingItemParam(pizzaItem, { price });
   }
 

@@ -35,12 +35,12 @@ export class WorkersStore
   public addOrUpdateItem(
     worker: Worker,
     { isAvailable }: { isAvailable: boolean }
-  ): boolean {
-    this.workers.set(worker.id, {
+  ): WorkerItem {
+    const updatedMap = this.workers.set(worker.id, {
       worker,
       isAvailable,
     });
-    return true;
+    return updatedMap.get(worker.id) as WorkerItem;
   }
 
   public removeExistingItem(worker: Worker): boolean {
@@ -52,13 +52,13 @@ export class WorkersStore
   public updateExistingItemParam(
     worker: Worker,
     { isAvailable }: { isAvailable: boolean }
-  ): boolean {
+  ): WorkerItem {
     this.validateIfExisting(worker.id);
-    this.workers.set(worker.id, {
+    const updatedMap = this.workers.set(worker.id, {
       worker,
       isAvailable,
     });
-    return true;
+    return updatedMap.get(worker.id) as WorkerItem;
   }
 
   public findAvailableWorker(role: Role): WorkerItem | null {

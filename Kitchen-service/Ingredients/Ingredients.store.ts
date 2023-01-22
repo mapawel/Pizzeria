@@ -31,13 +31,13 @@ export class IngredientsStore
   public addOrUpdateItem(
     ingredient: Ingredient,
     { qty }: { qty: number }
-  ): boolean {
+  ): IngredientItem {
     // qty VALIDATOR to ADD here
-    this.ingredients.set(ingredient.nameId, {
+    const updatedMap = this.ingredients.set(ingredient.nameId, {
       ingredient,
       qty,
     });
-    return true;
+    return updatedMap.get(ingredient.nameId) as IngredientItem;
   }
 
   public removeExistingItem(ingredient: Ingredient): boolean {
@@ -49,17 +49,17 @@ export class IngredientsStore
   public updateExistingItemParam(
     ingredient: Ingredient,
     { qty }: { qty: number }
-  ): boolean {
+  ): IngredientItem {
     // qty VALIDATOR to ADD here
     const foundIngredient =
       qty < 0
         ? this.checkIfEnough(ingredient.nameId, -qty)
         : this.validateIfExisting(ingredient.nameId);
-    this.ingredients.set(ingredient.nameId, {
+    const updatedMap = this.ingredients.set(ingredient.nameId, {
       ingredient: foundIngredient.ingredient,
       qty: foundIngredient.qty + qty,
     });
-    return true;
+    return updatedMap.get(ingredient.nameId) as IngredientItem;
   }
 
   public checkIfEnough(nameId: string, qty: number) {

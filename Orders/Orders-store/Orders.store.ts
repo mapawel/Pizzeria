@@ -37,21 +37,21 @@ export class OrdersStore {
     return this.validateIfExisting(orderId, orderType);
   }
 
-  public setCookForOrderById(
-    orderId: string,
-    orderType: OrdersServiceCollections,
-    cook: WorkerItem
-  ): Order<WorkerItem | null, TableItem | null> {
-    const foundOrder: Order<WorkerItem | null, TableItem | null> =
-      this.validateIfExisting(orderId, orderType);
-    foundOrder.cook = cook;
-    return foundOrder;
-  }
+  // public setCookForOrderById(
+  //   orderId: string,
+  //   orderType: OrdersServiceCollections,
+  //   cook: WorkerItem
+  // ): Order<WorkerItem | null, TableItem | null> {
+  //   const foundOrder: Order<WorkerItem | null, TableItem | null> =
+  //     this.validateIfExisting(orderId, orderType);
+  //   foundOrder.cook = cook;
+  //   return foundOrder;
+  // }
 
-  public addOrder(
+  public addOrUpdateOrder(
     order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
-  ): boolean {
+  ): Order<WorkerItem | null, TableItem | null> {
     if (
       (orderType === OrdersServiceCollections.ordersInProgress ||
         orderType === OrdersServiceCollections.ordersFinished) &&
@@ -61,8 +61,9 @@ export class OrdersStore {
         'Cook has to be passed while adding these types of orders',
         { order, orderType }
       );
-    this[orderType].set(order.id, order);
-    return true;
+    const updatedMap = this[orderType].set(order.id, order);
+    
+    return updatedMap.get(order.id) as Order<WorkerItem | null, TableItem | null>;
   }
 
   public deleteOrder(

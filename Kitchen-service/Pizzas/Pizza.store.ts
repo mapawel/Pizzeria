@@ -75,14 +75,14 @@ export class PizzaStore
   public updateExistingItemParam(
     pizza: Pizza,
     { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
-  ): boolean {
+  ): PizzaItem {
     const foundPizza = this.validateIfExisting(pizza.nameId);
-    this.pizzas.set(pizza.nameId, {
+    const updatedMap = this.pizzas.set(pizza.nameId, {
       pizza: foundPizza.pizza,
       recipe,
       time,
     });
-    return true;
+    return updatedMap.get(pizza.nameId) as PizzaItem;
   }
 
   private validateIfExisting(nameId: string): PizzaItem {

@@ -50,24 +50,25 @@ export class BackofficeService {
       this.kitchen.takeIngredientsForOrder(orderItems);
 
     const workerItem: WorkerItem = this.workers.findAvailableCookById(cookId);
-    const { worker }: { worker: Worker } = workerItem;
 
-    this.workers.addOrUpdateItem(worker, { isAvailable: false });
+    const updatedWorkerItem = this.workers.addOrUpdateItem(workerItem.worker, {
+      isAvailable: false,
+    });
+
     this.kitchen.cookPizzas(ingredients);
+
     const updatedOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.setCookForOrderById(
-        id,
-        OrdersServiceCollections.ordersPending,
-        workerItem
+      this.orders.addOrUpdateOrder(
+        { ...foundOrder, cook: updatedWorkerItem },
+        OrdersServiceCollections.ordersPending
       );
-    this.orders.addOrder(
+    this.orders.addOrUpdateOrder(
       updatedOrder,
       OrdersServiceCollections.ordersInProgress
     );
     this.orders.deleteOrder(id, OrdersServiceCollections.ordersPending);
-    return updatedOrder as Order<WorkerItem, TableItem>;
 
-    //TODO Worker still is Available???
+    return updatedOrder as Order<WorkerItem, TableItem>;
   }
 
   public finishOrderByCook(
@@ -78,7 +79,10 @@ export class BackofficeService {
       order.id,
       OrdersServiceCollections.ordersInProgress
     );
-    this.orders.addOrder(order, OrdersServiceCollections.ordersFinished);
+    this.orders.addOrUpdateOrder(
+      order,
+      OrdersServiceCollections.ordersFinished
+    );
     return true;
   }
 
@@ -89,7 +93,7 @@ export class BackofficeService {
   public addWorker(
     worker: Worker,
     { isAvailable }: { isAvailable: boolean }
-  ): boolean {
+  ): WorkerItem {
     return this.workers.addOrUpdateItem(worker, { isAvailable });
   }
 
@@ -100,7 +104,7 @@ export class BackofficeService {
   public updateWorker(
     worker: Worker,
     { isAvailable }: { isAvailable: boolean }
-  ): boolean {
+  ): WorkerItem {
     return this.workers.updateExistingItemParam(worker, { isAvailable });
   }
 
@@ -128,7 +132,7 @@ export class BackofficeService {
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
-  ): boolean {
+  ): TableItem {
     return this.tables.updateExistingItemParam(table, {
       sitsToReserve,
       isAvailable,

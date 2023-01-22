@@ -77,7 +77,7 @@ export class OrdersService {
         discount,
         this.getTotalPizzasQty(orderItems)
       );
-    this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
+    this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     return newOrder;
   }
 
@@ -115,10 +115,10 @@ export class OrdersService {
       cook.isAvailable = false;
       this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
       this.kitchen.cookPizzas(ingredients);
-      this.orders.addOrder(newOrder, OrdersServiceCollections.ordersInProgress);
+      this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersInProgress);
     } else {
       newOrder = new Order(orderItems, totalValue, null, table);
-      this.orders.addOrder(newOrder, OrdersServiceCollections.ordersPending);
+      this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersPending);
     }
     if (discount)
       this.discounts.useLimitedDiscount(

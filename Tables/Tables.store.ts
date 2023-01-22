@@ -53,14 +53,14 @@ export class TablesStore
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
-  ): boolean {
+  ): TableItem {
     this.validateIfExisting(table.id);
-    this.tables.set(table.id, {
+    const updatedMap = this.tables.set(table.id, {
       table,
       sitsAvailable: table.sits - sitsToReserve,
       isAvailable,
     });
-    return true;
+    return updatedMap.get(table.id) as TableItem;
   }
 
   public findFreeTable(person: number): TableItem | null {

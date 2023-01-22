@@ -33,14 +33,14 @@ export class KitchenService {
   public addIngredient(
     ingredient: Ingredient,
     { qty }: { qty: number }
-  ): boolean {
+  ): IngredientItem {
     return this.ingredientsStore.addOrUpdateItem(ingredient, { qty });
   }
 
   public updateIngredient(
     ingredient: Ingredient,
     { qty }: { qty: number }
-  ): boolean {
+  ): IngredientItem {
     return this.ingredientsStore.updateExistingItemParam(ingredient, { qty });
   }
 
@@ -63,7 +63,7 @@ export class KitchenService {
   public updatePizza(
     pizza: Pizza,
     { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
-  ): boolean {
+  ): PizzaItem {
     return this.pizzasStore.updateExistingItemParam(pizza, { recipe, time });
   }
 

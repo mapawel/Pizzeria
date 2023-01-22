@@ -49,13 +49,13 @@ export class ProductsStore
   public updateExistingItemParam(
     pizzaItem: PizzaItem,
     { price }: { price: number }
-  ): boolean {
+  ): ProductItem {
     this.validateIfExisting(pizzaItem.pizza.nameId);
-    this.products.set(pizzaItem.pizza.nameId, {
+    const updatedMap = this.products.set(pizzaItem.pizza.nameId, {
       pizzaItem,
       price,
     });
-    return true;
+    return updatedMap.get(pizzaItem.pizza.nameId) as ProductItem;
   }
 
   private validateIfExisting(id: string): ProductItem {
