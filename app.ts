@@ -9,6 +9,7 @@ import { CustomerService } from './Customer-service/Customer.service';
 import { DiscountStore } from './Discounts/Discount-store/Discount.store';
 import { Discount } from './Discounts/Discount/Discount.class';
 import { DiscountLimited } from './Discounts/Discount/Discount-limited.class';
+import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
 
 const kitchen = KitchenService.getInstance();
 const backoffice = BackofficeService.getInstance();
@@ -75,7 +76,20 @@ const order1 = service.orderWhReservation(
 
 backoffice.updateWorker(cook1, { isAvailable: true });
 
+console.log('AFTER ORDER:', service.listOrders(OrdersServiceCollections.ordersPending));
+console.log('AFTER ORDER:', service.listOrders(OrdersServiceCollections.ordersInProgress));
+console.log('AFTER ORDER:', service.listOrders(OrdersServiceCollections.ordersFinished));
 
 const updated = service.executePendingOrder(order1.id, cook1.id);
 
-console.log(updated);
+console.log('AFTER EXECUTE:', service.listOrders(OrdersServiceCollections.ordersPending));
+console.log('AFTER EXECUTE:', service.listOrders(OrdersServiceCollections.ordersInProgress));
+console.log('AFTER EXECUTE:', service.listOrders(OrdersServiceCollections.ordersFinished));
+
+const updated2 = service.finishOrderByCook(order1.id, cook1.id);
+
+console.log('AFTER FINISH:', service.listOrders(OrdersServiceCollections.ordersPending));
+console.log('AFTER FINISH:', service.listOrders(OrdersServiceCollections.ordersInProgress));
+console.log('AFTER FINISH:', service.listOrders(OrdersServiceCollections.ordersFinished));
+
+

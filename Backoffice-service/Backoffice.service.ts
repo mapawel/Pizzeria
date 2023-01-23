@@ -71,17 +71,31 @@ export class BackofficeService {
     return updatedOrder as Order<WorkerItem, TableItem>;
   }
 
-  public finishOrderByCook(
-    order: Order<WorkerItem, TableItem | null>
-  ): boolean {
-    this.workers.addOrUpdateItem(order.cook.worker, { isAvailable: true });
-    this.orders.deleteOrder(
-      order.id,
-      OrdersServiceCollections.ordersInProgress
+  public finishOrderByCook(orderId: string, cookId: string): boolean {
+    const foundWorkerItem: WorkerItem = this.getWorkerById(cookId);
+    const foundOrder: Order<WorkerItem | null, TableItem | null> =
+      this.orders.findOrderById(
+        orderId,
+        OrdersServiceCollections.ordersInProgress
+      );
+    const updatedWorkerItem: WorkerItem = this.updateWorker(
+      foundWorkerItem.worker,
+      {
+        isAvailable: true,
+      }
     );
+    const updatedOrder: Order<WorkerItem | null, TableItem | null> =
+      this.orders.addOrUpdateOrder(
+        { ...foundOrder, cook: updatedWorkerItem },
+        OrdersServiceCollections.ordersInProgress
+      );
     this.orders.addOrUpdateOrder(
-      order,
+      updatedOrder,
       OrdersServiceCollections.ordersFinished
+    );
+    this.orders.deleteOrder(
+      updatedOrder.id,
+      OrdersServiceCollections.ordersInProgress
     );
     return true;
   }
