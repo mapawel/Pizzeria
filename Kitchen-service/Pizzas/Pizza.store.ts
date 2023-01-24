@@ -66,23 +66,23 @@ export class PizzaStore
     return pizzaItem;
   }
 
-  public removeExistingItem(pizza: Pizza): boolean {
-    this.validateIfExisting(pizza.nameId);
-    this.pizzas.delete(pizza.nameId);
+  public removeExistingItem(pizzaNameId: string): boolean {
+    this.validateIfExisting(pizzaNameId);
+    this.pizzas.delete(pizzaNameId);
     return true;
   }
 
   public updateExistingItemParam(
-    pizza: Pizza,
+    pizzaNameId: string,
     { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
   ): PizzaItem {
-    const foundPizza = this.validateIfExisting(pizza.nameId);
-    const updatedMap = this.pizzas.set(pizza.nameId, {
+    const foundPizza = this.validateIfExisting(pizzaNameId);
+    const updatedMap = this.pizzas.set(pizzaNameId, {
       pizza: foundPizza.pizza,
       recipe,
       time,
     });
-    return updatedMap.get(pizza.nameId) as PizzaItem;
+    return updatedMap.get(pizzaNameId) as PizzaItem;
   }
 
   private validateIfExisting(nameId: string): PizzaItem {

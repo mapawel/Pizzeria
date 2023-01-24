@@ -74,7 +74,7 @@ const order1 = service.orderWhReservation(
   'asd'
 );
 
-backoffice.updateWorker(cook1, { isAvailable: true });
+backoffice.updateWorker(cook1.id, { isAvailable: true });
 
 console.log('AFTER ORDER:', service.listOrders(OrdersServiceCollections.ordersPending));
 console.log('AFTER ORDER:', service.listOrders(OrdersServiceCollections.ordersInProgress));

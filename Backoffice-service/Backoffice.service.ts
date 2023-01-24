@@ -71,15 +71,18 @@ export class BackofficeService {
     return updatedOrder as Order<WorkerItem, TableItem>;
   }
 
-  public finishOrderByCook(orderId: string, cookId: string): boolean {
-    const foundWorkerItem: WorkerItem = this.getWorkerById(cookId);
+  public finishOrderByCook(
+    orderId: string,
+    cookId: string
+  ): Order<WorkerItem, TableItem | null> {
+    const foundWorkerItem: WorkerItem = this.findWorkerById(cookId);
     const foundOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.findOrderById(
         orderId,
         OrdersServiceCollections.ordersInProgress
       );
     const updatedWorkerItem: WorkerItem = this.updateWorker(
-      foundWorkerItem.worker,
+      foundWorkerItem.worker.id,
       {
         isAvailable: true,
       }
@@ -97,7 +100,7 @@ export class BackofficeService {
       updatedOrder.id,
       OrdersServiceCollections.ordersInProgress
     );
-    return true;
+    return updatedOrder as Order<WorkerItem, TableItem | null>;
   }
 
   public makeTableFree(orderId: string): boolean {
@@ -116,8 +119,8 @@ export class BackofficeService {
     return false;
   }
 
-  public getWorkerById(id: string): WorkerItem {
-    return this.workers.findItemById(id);
+  public findWorkerById(workerId: string): WorkerItem {
+    return this.workers.findItemById(workerId);
   }
 
   public addWorker(
@@ -127,15 +130,15 @@ export class BackofficeService {
     return this.workers.addOrUpdateItem(worker, { isAvailable });
   }
 
-  public removeWorker(worker: Worker): boolean {
-    return this.workers.removeExistingItem(worker);
+  public removeWorker(workerId: string): boolean {
+    return this.workers.removeExistingItem(workerId);
   }
 
   public updateWorker(
-    worker: Worker,
+    workerId: string,
     { isAvailable }: { isAvailable: boolean }
   ): WorkerItem {
-    return this.workers.updateExistingItemParam(worker, { isAvailable });
+    return this.workers.updateExistingItemParam(workerId, { isAvailable });
   }
 
   public getTableById(id: string): TableItem {
@@ -152,18 +155,18 @@ export class BackofficeService {
     return this.tables.addOrUpdateItem(table, { sitsToReserve, isAvailable });
   }
 
-  public removeTable(table: Table): boolean {
-    return this.tables.removeExistingItem(table);
+  public removeTable(tableId: string): boolean {
+    return this.tables.removeExistingItem(tableId);
   }
 
   public updateTable(
-    table: Table,
+    tableId: string,
     {
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
   ): TableItem {
-    return this.tables.updateExistingItemParam(table, {
+    return this.tables.updateExistingItemParam(tableId, {
       sitsToReserve,
       isAvailable,
     });

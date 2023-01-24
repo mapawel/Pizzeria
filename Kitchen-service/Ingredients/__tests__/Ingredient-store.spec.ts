@@ -57,7 +57,7 @@ describe('Ingredient store tests suite:', () => {
       assert.equal(expectedFoundIngredientItem.qty, qty);
 
       ingredientsStore.removeExistingItem(
-        expectedFoundIngredientItem.ingredient
+        expectedFoundIngredientItem.ingredient.nameId
       );
 
       assert.throws(() => {
@@ -67,7 +67,7 @@ describe('Ingredient store tests suite:', () => {
 
     it('should throw error on try to remove not existing ingredient', () => {
       assert.throws(() => {
-        ingredientsStore.removeExistingItem(ingredient1Mock);
+        ingredientsStore.removeExistingItem(ingredient1Mock.nameId);
       }, 'Ingredient with passet nameId not found in store, could not proceed.');
     });
   });
@@ -84,7 +84,7 @@ describe('Ingredient store tests suite:', () => {
       assert.equal(expectedFoundIngredientItem.qty, qty);
 
       ingredientsStore.updateExistingItemParam(
-        expectedFoundIngredientItem.ingredient,
+        expectedFoundIngredientItem.ingredient.nameId,
         {qty: qtyToModify}
       );
 
@@ -101,7 +101,7 @@ describe('Ingredient store tests suite:', () => {
 
     it('should throw error on try to remove not existing ingredient', () => {
       assert.throws(() => {
-        ingredientsStore.removeExistingItem(ingredient1Mock);
+        ingredientsStore.removeExistingItem(ingredient1Mock.nameId);
       }, 'Ingredient with passet nameId not found in store, could not proceed.');
     });
   });

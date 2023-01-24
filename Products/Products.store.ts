@@ -40,22 +40,22 @@ export class ProductsStore
     return productItem;
   }
 
-  public removeExistingItem(pizzaItem: PizzaItem): boolean {
-    this.validateIfExisting(pizzaItem.pizza.nameId);
-    this.products.delete(pizzaItem.pizza.nameId);
+  public removeExistingItem(pizzaNameId: string): boolean {
+    this.validateIfExisting(pizzaNameId);
+    this.products.delete(pizzaNameId);
     return true;
   }
 
   public updateExistingItemParam(
-    pizzaItem: PizzaItem,
+    pizzaNameId: string,
     { price }: { price: number }
   ): ProductItem {
-    this.validateIfExisting(pizzaItem.pizza.nameId);
-    const updatedMap = this.products.set(pizzaItem.pizza.nameId, {
-      pizzaItem,
+    const productItem: ProductItem = this.validateIfExisting(pizzaNameId);
+    const updatedMap = this.products.set(pizzaNameId, {
+      pizzaItem: productItem.pizzaItem,
       price,
     });
-    return updatedMap.get(pizzaItem.pizza.nameId) as ProductItem;
+    return updatedMap.get(pizzaNameId) as ProductItem;
   }
 
   private validateIfExisting(id: string): ProductItem {

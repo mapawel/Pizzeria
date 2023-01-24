@@ -40,14 +40,14 @@ export class OfferService {
   }
 
   public updateMenuProduct(
-    pizzaItem: PizzaItem,
+    pizzaNameId: string,
     { price }: { price: number }
   ): ProductItem {
-    return this.products.updateExistingItemParam(pizzaItem, { price });
+    return this.products.updateExistingItemParam(pizzaNameId, { price });
   }
 
-  public removeMenuProduct(pizzaItem: PizzaItem): boolean {
-    return this.products.removeExistingItem(pizzaItem);
+  public removeMenuProduct(pizzaNameId: string): boolean {
+    return this.products.removeExistingItem(pizzaNameId);
   }
 
   public getAllDiscountsArr(): (Discount | DiscountLimited)[] {

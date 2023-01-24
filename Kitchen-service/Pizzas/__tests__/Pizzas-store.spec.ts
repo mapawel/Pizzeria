@@ -50,7 +50,7 @@ describe('Pizzas store tests suite:', () => {
         pizzaName.replace(/\s/g, '').toUpperCase()
       );
 
-      pizzaStore.removeExistingItem(expectedFoundPizza.pizza);
+      pizzaStore.removeExistingItem(expectedFoundPizza.pizza.nameId);
 
       assert.throws(() => {
         pizzaStore.findItemById(pizzaName.replace(/\s/g, '').toUpperCase());
@@ -59,7 +59,7 @@ describe('Pizzas store tests suite:', () => {
 
     it('should throw error on try to remove not existing pizza', () => {
       assert.throws(() => {
-        pizzaStore.removeExistingItem({} as Pizza);
+        pizzaStore.removeExistingItem('nonExisting');
       }, 'Pizza with passed nameId not found in store, could not proceed.');
     });
   });
@@ -80,7 +80,7 @@ describe('Pizzas store tests suite:', () => {
         })
       );
       const newPizzaTime = 15;
-      pizzaStore.updateExistingItemParam(expectedFoundPizza.pizza, {
+      pizzaStore.updateExistingItemParam(expectedFoundPizza.pizza.nameId, {
         recipe: recipeMap2,
         time: newPizzaTime,
       });

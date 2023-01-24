@@ -43,22 +43,22 @@ export class WorkersStore
     return updatedMap.get(worker.id) as WorkerItem;
   }
 
-  public removeExistingItem(worker: Worker): boolean {
-    this.validateIfExisting(worker.id);
-    this.workers.delete(worker.id);
+  public removeExistingItem(workerId: string): boolean {
+    this.validateIfExisting(workerId);
+    this.workers.delete(workerId);
     return true;
   }
 
   public updateExistingItemParam(
-    worker: Worker,
+    workerId: string,
     { isAvailable }: { isAvailable: boolean }
   ): WorkerItem {
-    this.validateIfExisting(worker.id);
-    const updatedMap = this.workers.set(worker.id, {
-      worker,
+    const workerItem: WorkerItem = this.validateIfExisting(workerId);
+    const updatedMap = this.workers.set(workerId, {
+      worker: workerItem.worker,
       isAvailable,
     });
-    return updatedMap.get(worker.id) as WorkerItem;
+    return updatedMap.get(workerId) as WorkerItem;
   }
 
   public findAvailableWorker(role: Role): WorkerItem | null {

@@ -37,17 +37,6 @@ export class OrdersStore {
     return this.validateIfExisting(orderId, orderType);
   }
 
-  // public setCookForOrderById(
-  //   orderId: string,
-  //   orderType: OrdersServiceCollections,
-  //   cook: WorkerItem
-  // ): Order<WorkerItem | null, TableItem | null> {
-  //   const foundOrder: Order<WorkerItem | null, TableItem | null> =
-  //     this.validateIfExisting(orderId, orderType);
-  //   foundOrder.cook = cook;
-  //   return foundOrder;
-  // }
-
   public addOrUpdateOrder(
     order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
@@ -62,8 +51,11 @@ export class OrdersStore {
         { order, orderType }
       );
     const updatedMap = this[orderType].set(order.id, order);
-    
-    return updatedMap.get(order.id) as Order<WorkerItem | null, TableItem | null>;
+
+    return updatedMap.get(order.id) as Order<
+      WorkerItem | null,
+      TableItem | null
+    >;
   }
 
   public deleteOrder(

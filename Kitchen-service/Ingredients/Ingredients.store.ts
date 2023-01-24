@@ -40,26 +40,26 @@ export class IngredientsStore
     return updatedMap.get(ingredient.nameId) as IngredientItem;
   }
 
-  public removeExistingItem(ingredient: Ingredient): boolean {
-    this.validateIfExisting(ingredient.nameId);
-    this.ingredients.delete(ingredient.nameId);
+  public removeExistingItem(ingredientNameId: string): boolean {
+    this.validateIfExisting(ingredientNameId);
+    this.ingredients.delete(ingredientNameId);
     return true;
   }
 
   public updateExistingItemParam(
-    ingredient: Ingredient,
+    ingredientNameId: string,
     { qty }: { qty: number }
   ): IngredientItem {
     // qty VALIDATOR to ADD here
     const foundIngredient =
       qty < 0
-        ? this.checkIfEnough(ingredient.nameId, -qty)
-        : this.validateIfExisting(ingredient.nameId);
-    const updatedMap = this.ingredients.set(ingredient.nameId, {
+        ? this.checkIfEnough(ingredientNameId, -qty)
+        : this.validateIfExisting(ingredientNameId);
+    const updatedMap = this.ingredients.set(ingredientNameId, {
       ingredient: foundIngredient.ingredient,
       qty: foundIngredient.qty + qty,
     });
-    return updatedMap.get(ingredient.nameId) as IngredientItem;
+    return updatedMap.get(ingredientNameId) as IngredientItem;
   }
 
   public checkIfEnough(nameId: string, qty: number) {

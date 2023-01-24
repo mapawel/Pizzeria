@@ -69,7 +69,10 @@ export class CustomerService {
     return this.backoffice.executePendingOrder(orderId, cookId);
   }
 
-  public finishOrderByCook(orderId: string, cookId: string): boolean {
+  public finishOrderByCook(
+    orderId: string,
+    cookId: string
+  ): Order<WorkerItem, TableItem | null> {
     return this.backoffice.finishOrderByCook(orderId, cookId);
   }
 

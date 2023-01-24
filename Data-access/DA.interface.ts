@@ -4,9 +4,9 @@ export interface IDA<Item, Element, Params> {
     element: Element,
     params: Params,
   ): boolean | Item;
-  removeExistingItem(element: Element): boolean;
+  removeExistingItem(id: string): boolean;
   updateExistingItemParam(
-    element: Element,
+    id: string,
     params: Params,
   ): Item;
 }

@@ -41,26 +41,26 @@ export class TablesStore
     return true;
   }
 
-  public removeExistingItem(table: Table): boolean {
-    this.validateIfExisting(table.id);
-    this.tables.delete(table.id);
+  public removeExistingItem(tableId: string): boolean {
+    this.validateIfExisting(tableId);
+    this.tables.delete(tableId);
     return true;
   }
 
   public updateExistingItemParam(
-    table: Table,
+    tableId: string,
     {
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
   ): TableItem {
-    this.validateIfExisting(table.id);
-    const updatedMap = this.tables.set(table.id, {
-      table,
-      sitsAvailable: table.sits - sitsToReserve,
+    const tableItem: TableItem = this.validateIfExisting(tableId);
+    const updatedMap = this.tables.set(tableId, {
+      table: tableItem.table,
+      sitsAvailable: tableItem.table.sits - sitsToReserve,
       isAvailable,
     });
-    return updatedMap.get(table.id) as TableItem;
+    return updatedMap.get(tableId) as TableItem;
   }
 
   public findFreeTable(person: number): TableItem | null {

@@ -41,11 +41,11 @@ export class KitchenService {
     ingredient: Ingredient,
     { qty }: { qty: number }
   ): IngredientItem {
-    return this.ingredientsStore.updateExistingItemParam(ingredient, { qty });
+    return this.ingredientsStore.updateExistingItemParam(ingredient.nameId, { qty });
   }
 
-  public removeIngredient(ingredient: Ingredient): boolean {
-    return this.ingredientsStore.removeExistingItem(ingredient);
+  public removeIngredient(ingredientNameId: string): boolean {
+    return this.ingredientsStore.removeExistingItem(ingredientNameId);
   }
 
   public getAllPizzas(): PizzaItem[] {
@@ -61,19 +61,19 @@ export class KitchenService {
   }
 
   public updatePizza(
-    pizza: Pizza,
+    pizzaNameId: string,
     { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
   ): PizzaItem {
-    return this.pizzasStore.updateExistingItemParam(pizza, { recipe, time });
+    return this.pizzasStore.updateExistingItemParam(pizzaNameId, { recipe, time });
   }
 
-  public removePizza(pizza: Pizza): boolean {
-    return this.pizzasStore.removeExistingItem(pizza);
+  public removePizza(pizzaNameId: string): boolean {
+    return this.pizzasStore.removeExistingItem(pizzaNameId);
   }
 
   public cookPizzas(totalIngredientsArr: IngredientItem[]): boolean {
     totalIngredientsArr.forEach((item: IngredientItem) => {
-      this.ingredientsStore.updateExistingItemParam(item.ingredient, {
+      this.ingredientsStore.updateExistingItemParam(item.ingredient.nameId, {
         qty: -item.qty,
       });
     });
