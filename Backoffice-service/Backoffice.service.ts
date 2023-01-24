@@ -100,6 +100,22 @@ export class BackofficeService {
     return true;
   }
 
+  public makeTableFree(orderId: string): boolean {
+    const foundOrder: Order<WorkerItem | null, TableItem | null> =
+      this.orders.findOrderById(
+        orderId,
+        OrdersServiceCollections.ordersFinished
+      );
+    if (foundOrder.table?.table) {
+      this.tables.addOrUpdateItem(foundOrder.table.table, {
+        sitsToReserve: 0,
+        isAvailable: true,
+      });
+      return true;
+    }
+    return false;
+  }
+
   public getWorkerById(id: string): WorkerItem {
     return this.workers.findItemById(id);
   }

@@ -73,11 +73,7 @@ export class CustomerService {
     return this.backoffice.finishOrderByCook(orderId, cookId);
   }
 
-  public makeTableFree(order: Order<WorkerItem | null, TableItem>): boolean {
-    this.tables.addOrUpdateItem(order.table.table, {
-      sitsToReserve: 0,
-      isAvailable: true,
-    });
-    return true;
+  public makeTableFree(orderId: string): boolean {
+    return this.backoffice.makeTableFree(orderId);
   }
 }
