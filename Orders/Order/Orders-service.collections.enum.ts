@@ -1,5 +1,5 @@
 export enum OrdersServiceCollections {
-  ordersPending = 'ordersPending',
-  ordersInProgress = 'ordersInProgress',
-  ordersFinished = 'ordersFinished',
+  ORDERS_PENDING = 'ordersPending',
+  ORDERS_IN_PROGRESS = 'ordersInProgress',
+  ORDERS_FINISHED = 'ordersFinished',
 }

@@ -28,7 +28,7 @@ export class OfferService {
     return this.products.getProductArr();
   }
 
-  public getMenuProduct(nameId: string): ProductItem {
+  public findMenuProduct(nameId: string): ProductItem {
     return this.products.findItemById(nameId);
   }
 
@@ -54,12 +54,13 @@ export class OfferService {
     return this.discounts.getAllDiscounts();
   }
 
-  //TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
-  public addOrUpdateDiscount(discount: Discount | DiscountLimited): boolean {
+  public addOrUpdateDiscount(
+    discount: Discount | DiscountLimited
+  ): Discount | DiscountLimited {
     return this.discounts.addOrUpdateDiscount(discount);
   }
 
-  public removeDiscountByCode(code: string): boolean {
-    return this.discounts.removeDiscountByCode(code);
+  public removeDiscountByCode(discountCode: string): boolean {
+    return this.discounts.removeDiscountByCode(discountCode);
   }
 }

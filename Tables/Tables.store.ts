@@ -32,13 +32,13 @@ export class TablesStore
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
-  ): boolean {
-    this.tables.set(table.id, {
+  ): TableItem {
+    const updatedMap = this.tables.set(table.id, {
       table,
       sitsAvailable: table.sits - sitsToReserve,
       isAvailable,
     });
-    return true;
+    return updatedMap.get(table.id) as TableItem;
   }
 
   public removeExistingItem(tableId: string): boolean {

@@ -25,9 +25,14 @@ export class DiscountStore {
     return this.validateIfExisting(this.unifyCode(code));
   }
 
-  public addOrUpdateDiscount(element: Discount | DiscountLimited): boolean {
-    this.discounts.set(this.unifyCode(element.code), element);
-    return true;
+  public addOrUpdateDiscount(
+    element: Discount | DiscountLimited
+  ): Discount | DiscountLimited {
+    const updatedMap: Map<string, Discount | DiscountLimited> =
+      this.discounts.set(this.unifyCode(element.code), element);
+    return updatedMap.get(this.unifyCode(element.code)) as
+      | Discount
+      | DiscountLimited;
   }
 
   public removeDiscountByCode(code: string): boolean {
@@ -36,17 +41,17 @@ export class DiscountStore {
     return true;
   }
 
-  private validateIfExisting(code: string): Discount | DiscountLimited {
-    const foundDiscount = this.discounts.get(code);
+  private validateIfExisting(discountCode: string): Discount | DiscountLimited {
+    const foundDiscount = this.discounts.get(discountCode);
     if (!foundDiscount)
       throw new DiscountError(
         'Discount with passed code not found in store, could not proceed.',
-        { code }
+        { discountCode }
       );
     return foundDiscount;
   }
 
-  private unifyCode(code: string): string {
-    return code.replace(/\s/g, '').toUpperCase();
+  private unifyCode(discountCode: string): string {
+    return discountCode.replace(/\s/g, '').toUpperCase();
   }
 }

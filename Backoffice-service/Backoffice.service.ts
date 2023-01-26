@@ -41,7 +41,7 @@ export class BackofficeService {
     const foundOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.findOrderById(
         orderId,
-        OrdersServiceCollections.ordersPending
+        OrdersServiceCollections.ORDERS_PENDING
       );
     const { id, orderItems }: { id: string; orderItems: OrderItem[] } =
       foundOrder;
@@ -60,13 +60,13 @@ export class BackofficeService {
     const updatedOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.addOrUpdateOrder(
         { ...foundOrder, cook: updatedWorkerItem },
-        OrdersServiceCollections.ordersPending
+        OrdersServiceCollections.ORDERS_PENDING
       );
     this.orders.addOrUpdateOrder(
       updatedOrder,
-      OrdersServiceCollections.ordersInProgress
+      OrdersServiceCollections.ORDERS_IN_PROGRESS
     );
-    this.orders.deleteOrder(id, OrdersServiceCollections.ordersPending);
+    this.orders.deleteOrder(id, OrdersServiceCollections.ORDERS_PENDING);
 
     return updatedOrder as Order<WorkerItem, TableItem>;
   }
@@ -79,7 +79,7 @@ export class BackofficeService {
     const foundOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.findOrderById(
         orderId,
-        OrdersServiceCollections.ordersInProgress
+        OrdersServiceCollections.ORDERS_IN_PROGRESS
       );
     const updatedWorkerItem: WorkerItem = this.updateWorker(
       foundWorkerItem.worker.id,
@@ -90,15 +90,15 @@ export class BackofficeService {
     const updatedOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.addOrUpdateOrder(
         { ...foundOrder, cook: updatedWorkerItem },
-        OrdersServiceCollections.ordersInProgress
+        OrdersServiceCollections.ORDERS_IN_PROGRESS
       );
     this.orders.addOrUpdateOrder(
       updatedOrder,
-      OrdersServiceCollections.ordersFinished
+      OrdersServiceCollections.ORDERS_FINISHED
     );
     this.orders.deleteOrder(
       updatedOrder.id,
-      OrdersServiceCollections.ordersInProgress
+      OrdersServiceCollections.ORDERS_IN_PROGRESS
     );
     return updatedOrder as Order<WorkerItem, TableItem | null>;
   }
@@ -107,7 +107,7 @@ export class BackofficeService {
     const foundOrder: Order<WorkerItem | null, TableItem | null> =
       this.orders.findOrderById(
         orderId,
-        OrdersServiceCollections.ordersFinished
+        OrdersServiceCollections.ORDERS_FINISHED
       );
     if (foundOrder.table?.table) {
       this.tables.addOrUpdateItem(foundOrder.table.table, {
@@ -141,7 +141,7 @@ export class BackofficeService {
     return this.workers.updateExistingItemParam(workerId, { isAvailable });
   }
 
-  public getTableById(id: string): TableItem {
+  public findTableById(id: string): TableItem {
     return this.tables.findItemById(id);
   }
 
@@ -151,7 +151,7 @@ export class BackofficeService {
       sitsToReserve,
       isAvailable,
     }: { sitsToReserve: number; isAvailable: boolean }
-  ): boolean {
+  ): TableItem {
     return this.tables.addOrUpdateItem(table, { sitsToReserve, isAvailable });
   }
 

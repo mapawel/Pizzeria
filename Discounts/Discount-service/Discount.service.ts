@@ -24,25 +24,30 @@ export class DiscountService {
     return Array.from(this.discounts.getAllDiscounts(), ([_, value]) => value);
   }
 
-  public findDiscountByCode(code: string): Discount | DiscountLimited {
-    return this.discounts.findDiscountByCode(code);
+  public findDiscountByCode(discountCode: string): Discount | DiscountLimited {
+    return this.discounts.findDiscountByCode(discountCode);
   }
 
-  public addOrUpdateDiscount(element: Discount | DiscountLimited): boolean {
+  public addOrUpdateDiscount(
+    element: Discount | DiscountLimited
+  ): Discount | DiscountLimited {
     return this.discounts.addOrUpdateDiscount(element);
   }
 
-  public removeDiscountByCode(code: string): boolean {
-    return this.discounts.removeDiscountByCode(code);
+  public removeDiscountByCode(discountCode: string): boolean {
+    return this.discounts.removeDiscountByCode(discountCode);
   }
 
-  public getValidDiscountPercent(code: string, qtyNeeded?: number): number {
-    const foundDiscountInstance = this.findDiscountByCode(code);
+  public getValidDiscountPercent(
+    discountCode: string,
+    qtyNeeded?: number
+  ): number {
+    const foundDiscountInstance = this.findDiscountByCode(discountCode);
     if (foundDiscountInstance instanceof DiscountLimited) {
       if (!qtyNeeded)
         throw new DiscountError(
           'For limited type of discount you have to pass qty needed param',
-          { code }
+          { discountCode }
         );
       this.validateQtyVsNeeded(foundDiscountInstance, qtyNeeded);
     }
@@ -68,7 +73,7 @@ export class DiscountService {
     if (discountInstance.getLimitQty() < qtyNeeded)
       throw new DiscountError(
         'Quantity for this type of dicsount is lower than quantity needed!',
-        { code: discountInstance.code }
+        { discountCode: discountInstance.code }
       );
   }
 }

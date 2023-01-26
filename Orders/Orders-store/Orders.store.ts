@@ -42,8 +42,8 @@ export class OrdersStore {
     orderType: OrdersServiceCollections
   ): Order<WorkerItem | null, TableItem | null> {
     if (
-      (orderType === OrdersServiceCollections.ordersInProgress ||
-        orderType === OrdersServiceCollections.ordersFinished) &&
+      (orderType === OrdersServiceCollections.ORDERS_IN_PROGRESS ||
+        orderType === OrdersServiceCollections.ORDERS_FINISHED) &&
       !order.cook
     )
       throw new OrdersStoreError(

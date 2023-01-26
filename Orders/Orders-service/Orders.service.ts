@@ -55,7 +55,7 @@ export class OrdersService {
     }[],
     discount?: string
   ): Order<WorkerItem, null> {
-    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
+    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.COOK);
     if (!cook)
       throw new OrdersServiceError(
         'This order cannot be delivered - no cook available.',
@@ -68,16 +68,20 @@ export class OrdersService {
 
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 
-    const newOrder = new Order(orderItems, totalValue, cook, null);
-    cook.isAvailable = false;
-    this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
+    const updatedCook: WorkerItem = this.workers.addOrUpdateItem(cook.worker, {
+      isAvailable: false,
+    });
+    const newOrder = new Order(orderItems, totalValue, updatedCook, null);
     this.kitchen.cookPizzas(ingredients);
     if (discount)
       this.discounts.useLimitedDiscount(
         discount,
         this.getTotalPizzasQty(orderItems)
       );
-    this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersInProgress);
+    this.orders.addOrUpdateOrder(
+      newOrder,
+      OrdersServiceCollections.ORDERS_IN_PROGRESS
+    );
     return newOrder;
   }
 
@@ -95,9 +99,8 @@ export class OrdersService {
         'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
         { preOrdersArr, discount, tablePerson }
       );
-    table.sitsAvailable = table.sitsAvailable - tablePerson;
-    table.isAvailable = false;
-    this.tables.addOrUpdateItem(table.table, {
+
+    const updatedTable: TableItem = this.tables.addOrUpdateItem(table.table, {
       sitsToReserve: tablePerson,
       isAvailable: false,
     });
@@ -107,18 +110,26 @@ export class OrdersService {
       this.kitchen.takeIngredientsForOrder(orderItems);
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 
-    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.cook);
+    const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.COOK);
     let newOrder;
 
     if (cook) {
-      newOrder = new Order(orderItems, totalValue, cook, table);
-      cook.isAvailable = false;
-      this.workers.addOrUpdateItem(cook.worker, { isAvailable: false });
+      const updatedCook: WorkerItem = this.workers.addOrUpdateItem(
+        cook.worker,
+        { isAvailable: false }
+      );
+      newOrder = new Order(orderItems, totalValue, updatedCook, updatedTable);
       this.kitchen.cookPizzas(ingredients);
-      this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersInProgress);
+      this.orders.addOrUpdateOrder(
+        newOrder,
+        OrdersServiceCollections.ORDERS_IN_PROGRESS
+      );
     } else {
-      newOrder = new Order(orderItems, totalValue, null, table);
-      this.orders.addOrUpdateOrder(newOrder, OrdersServiceCollections.ordersPending);
+      newOrder = new Order(orderItems, totalValue, null, updatedTable);
+      this.orders.addOrUpdateOrder(
+        newOrder,
+        OrdersServiceCollections.ORDERS_PENDING
+      );
     }
     if (discount)
       this.discounts.useLimitedDiscount(
@@ -137,7 +148,7 @@ export class OrdersService {
     return preOrdersArr.map(
       ({ productNameId, qty }: { productNameId: string; qty: number }) => {
         const product: ProductItem =
-          this.products.getMenuProduct(productNameId);
+          this.products.findMenuProduct(productNameId);
         return {
           product,
           qty,

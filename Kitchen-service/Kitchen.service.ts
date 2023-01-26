@@ -4,7 +4,6 @@ import { IngredientsStore } from './Ingredients/Ingredients.store';
 import { PizzaStore } from './Pizzas/Pizza.store';
 import { Ingredient } from './Ingredients/Ingredient/Ingredient.class';
 import { PizzaItem } from './Pizzas/Pizza-item.type';
-import { Pizza } from './Pizzas/Pizza/Pizza.class';
 
 export class KitchenService {
   private static instance: KitchenService | null;
@@ -29,7 +28,6 @@ export class KitchenService {
     return this.ingredientsStore.getAllIngredientsArr();
   }
 
-  //TODO tu trzeba podać instancję! Czy to jest dobre wejście dla usera?
   public addIngredient(
     ingredient: Ingredient,
     { qty }: { qty: number }
@@ -38,10 +36,12 @@ export class KitchenService {
   }
 
   public updateIngredient(
-    ingredient: Ingredient,
+    ingredientNameId: string,
     { qty }: { qty: number }
   ): IngredientItem {
-    return this.ingredientsStore.updateExistingItemParam(ingredient.nameId, { qty });
+    return this.ingredientsStore.updateExistingItemParam(ingredientNameId, {
+      qty,
+    });
   }
 
   public removeIngredient(ingredientNameId: string): boolean {
@@ -64,7 +64,10 @@ export class KitchenService {
     pizzaNameId: string,
     { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
   ): PizzaItem {
-    return this.pizzasStore.updateExistingItemParam(pizzaNameId, { recipe, time });
+    return this.pizzasStore.updateExistingItemParam(pizzaNameId, {
+      recipe,
+      time,
+    });
   }
 
   public removePizza(pizzaNameId: string): boolean {

@@ -3,7 +3,7 @@ export interface IDA<Item, Element, Params> {
   addOrUpdateItem(
     element: Element,
     params: Params,
-  ): boolean | Item;
+  ): Item;
   removeExistingItem(id: string): boolean;
   updateExistingItemParam(
     id: string,

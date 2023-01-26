@@ -1,4 +1,4 @@
 export enum Role {
-  cook,
-  waiter,
+  COOK = 'COOK',
+  WAITER = 'WAITER'
 }
