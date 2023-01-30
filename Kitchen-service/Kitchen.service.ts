@@ -1,9 +1,11 @@
 import { OrderItem } from 'Orders/Order/Order-item.type';
-import { IngredientItem } from './Ingredients/Ingredient-item.type';
 import { IngredientsStore } from './Ingredients/Ingredients.store';
 import { PizzaStore } from './Pizzas/Pizza.store';
 import { Ingredient } from './Ingredients/Ingredient/Ingredient.class';
 import { PizzaItem } from './Pizzas/Pizza-item.type';
+import { IngredientReqDTO } from './Ingredients/DTO/IngredientReqDTO';
+import { IngredientResDTO } from './Ingredients/DTO/IngredientResDTO';
+import { IngredientIdReqDTO } from './Ingredients/DTO/IngredientIdReqDTO';
 
 export class KitchenService {
   private static instance: KitchenService | null;
@@ -24,24 +26,19 @@ export class KitchenService {
     KitchenService.instance = null;
   }
 
-  public getAllIngredients(): IngredientItem[] {
+  public getAllIngredients(): IngredientResDTO[] {
     return this.ingredientsStore.getAllIngredientsArr();
   }
 
-  public addIngredient(
-    ingredient: Ingredient,
-    { qty }: { qty: number }
-  ): IngredientItem {
-    return this.ingredientsStore.addOrUpdateItem(ingredient, { qty });
+  public addIngredient({ name, qty }: IngredientReqDTO): IngredientResDTO {
+    return this.ingredientsStore.addOrUpdateItem({ name, qty });
   }
 
-  public updateIngredient(
-    ingredientNameId: string,
-    { qty }: { qty: number }
-  ): IngredientItem {
-    return this.ingredientsStore.updateExistingItemParam(ingredientNameId, {
-      qty,
-    });
+  public updateIngredient({
+    nameId,
+    qty,
+  }: IngredientIdReqDTO): IngredientResDTO {
+    return this.ingredientsStore.updateExistingItemParam({ nameId, qty });
   }
 
   public removeIngredient(ingredientNameId: string): boolean {
@@ -62,7 +59,7 @@ export class KitchenService {
 
   public updatePizza(
     pizzaNameId: string,
-    { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
+    { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
   ): PizzaItem {
     return this.pizzasStore.updateExistingItemParam(pizzaNameId, {
       recipe,
@@ -74,78 +71,83 @@ export class KitchenService {
     return this.pizzasStore.removeExistingItem(pizzaNameId);
   }
 
-  public cookPizzas(totalIngredientsArr: IngredientItem[]): boolean {
-    totalIngredientsArr.forEach((item: IngredientItem) => {
-      this.ingredientsStore.updateExistingItemParam(item.ingredient.nameId, {
-        qty: -item.qty,
+  public cookPizzas(totalIngredientsArr: Ingredient[]): boolean {
+    totalIngredientsArr.forEach((ingredient: Ingredient) => {
+      this.ingredientsStore.updateExistingItemParam({
+        nameId: ingredient.nameId,
+        qty: -ingredient.qty,
       });
     });
     return true;
   }
 
-  public takeIngredientsForOrder(orderItems: OrderItem[]): IngredientItem[] {
-    const allIngredientsDuplicated: IngredientItem[][] = orderItems.map(
+  public takeIngredientsForOrder(orderItems: OrderItem[]): IngredientResDTO[] {
+
+    console.log(' orderItems----> ', orderItems);
+
+    const allIngredientsDuplicated: Ingredient[][] = orderItems.map(
       (orderItem: OrderItem) => this.recalculateIngredientsQty(orderItem)
     );
+
+    console.log('allIngredientsDuplicated ----> ', allIngredientsDuplicated);
+
     const ingredientNameIds: string[] = this.getUniqueNameIds(
       allIngredientsDuplicated
     );
+
+
+      console.log('ingredientNameIds ----> ', ingredientNameIds);
 
     const allIngredients = this.getTotalIngredients(
       ingredientNameIds,
       allIngredientsDuplicated
     );
-    allIngredients.forEach((item: IngredientItem) => {
-      this.ingredientsStore.checkIfEnough(item.ingredient.nameId, item.qty);
+
+      console.log('!!!!!!!!!!!!!!allIngredients ----> ', allIngredients);
+
+    allIngredients.forEach((ingredient: Ingredient) => {
+      this.ingredientsStore.checkIfEnough(ingredient.nameId, ingredient.qty);
     });
     return allIngredients;
   }
 
-  private recalculateIngredientsQty(orderItem: OrderItem): IngredientItem[] {
+  private recalculateIngredientsQty(orderItem: OrderItem): Ingredient[] {
     const pizzaToCook = this.pizzasStore.findItemById(
       orderItem.product.pizzaItem.pizza.nameId
     );
     const ingredientsArr = Array.from(pizzaToCook.recipe).map(
       ([_, value]) => value
     );
-    return ingredientsArr.map((item: IngredientItem) => ({
-      ...item,
-      qty: item.qty * orderItem.qty,
+    return ingredientsArr.map((ingredient: Ingredient) => ({
+      ...ingredient,
+      qty: ingredient.qty * orderItem.qty,
     }));
   }
 
-  private getUniqueNameIds(
-    allIngredientsDuplicated: IngredientItem[][]
-  ): string[] {
+  private getUniqueNameIds(allIngredientsDuplicated: Ingredient[][]): string[] {
     return [
       ...new Set(
         allIngredientsDuplicated
           .flat(1)
-          .map(
-            (ingredientItem: IngredientItem) => ingredientItem.ingredient.nameId
-          )
+          .map((ingredient: Ingredient) => ingredient.nameId)
       ),
     ];
   }
 
   private getTotalIngredients(
     ingredientNameIds: string[],
-    allIngredientsDuplicated: IngredientItem[][]
-  ): IngredientItem[] {
+    allIngredientsDuplicated: Ingredient[][]
+  ): Ingredient[] {
     return ingredientNameIds.map((ingrNameId: string) => {
-      const oneTypeIngredientArr: IngredientItem[] = allIngredientsDuplicated
+      const oneTypeIngredientArr: Ingredient[] = allIngredientsDuplicated
         .flat(1)
-        .filter(
-          (ingredientItem: IngredientItem) =>
-            ingredientItem.ingredient.nameId === ingrNameId
-        );
+        .filter((ingredient: Ingredient) => ingredient.nameId === ingrNameId);
 
-      return oneTypeIngredientArr.reduce(
-        (acc: IngredientItem, x: IngredientItem) => ({
-          ingredient: acc.ingredient,
-          qty: acc.qty + x.qty,
-        })
-      );
+      return oneTypeIngredientArr.reduce((acc: Ingredient, x: Ingredient) => ({
+        nameId: acc.nameId,
+        name: acc.name,
+        qty: acc.qty + x.qty,
+      }));
     });
   }
 }

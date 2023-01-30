@@ -5,11 +5,11 @@ import { WorkerItem } from '../Workers/Worker-item.type';
 import { TableItem } from '../Tables/Table-item.type';
 import { Table } from '../Tables/Table/Table.class';
 import { Order } from '../Orders/Order/Order.class';
-import { IngredientItem } from '../Kitchen-service/Ingredients/Ingredient-item.type';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen-service/Kitchen.service';
 import { OrdersStore } from '../Orders/Orders-store/Orders.store';
 import { OrderItem } from 'Orders/Order/Order-item.type';
+import { Ingredient } from 'Kitchen-service/Ingredients/Ingredient/Ingredient.class';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;
@@ -46,7 +46,7 @@ export class BackofficeService {
     const { id, orderItems }: { id: string; orderItems: OrderItem[] } =
       foundOrder;
 
-    const ingredients: IngredientItem[] =
+    const ingredients: Ingredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
 
     const workerItem: WorkerItem = this.workers.findAvailableCookById(cookId);

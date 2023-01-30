@@ -1,4 +1,3 @@
-import { IngredientItem } from 'Kitchen-service/Ingredients/Ingredient-item.type';
 import { IDA } from '../../Data-access/DA.interface';
 import { Pizza } from './Pizza/Pizza.class';
 import { PizzaItem } from './Pizza-item.type';
@@ -10,7 +9,7 @@ export class PizzaStore
     IDA<
       PizzaItem,
       Pizza,
-      { recipe: Map<string, IngredientItem>; time: number }
+      { recipe: Map<string, Ingredient>; time: number }
     >
 {
   private static instance: PizzaStore | null;
@@ -54,7 +53,7 @@ export class PizzaStore
 
   public addOrUpdateItem(
     pizza: Pizza,
-    { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
+    { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
   ): PizzaItem {
     // qty VALIDATOR to ADD here
     const pizzaItem: PizzaItem = {
@@ -74,7 +73,7 @@ export class PizzaStore
 
   public updateExistingItemParam(
     pizzaNameId: string,
-    { recipe, time }: { recipe: Map<string, IngredientItem>; time: number }
+    { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
   ): PizzaItem {
     const foundPizza = this.validateIfExisting(pizzaNameId);
     const updatedMap = this.pizzas.set(pizzaNameId, {

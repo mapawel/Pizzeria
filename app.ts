@@ -1,4 +1,3 @@
-import { Ingredient } from './Kitchen-service/Ingredients/Ingredient/Ingredient.class';
 import { Worker } from './Workers/Worker/Worker.class';
 import { Role } from './Workers/Worker/Roles.enum';
 import { Table } from './Tables/Table/Table.class';
@@ -17,20 +16,15 @@ const offer = OfferService.getInstance();
 const service = CustomerService.getInstance();
 const discounts = DiscountStore.getInstance();
 
-const cake = new Ingredient('cake');
-const sose = new Ingredient('sose');
-const cheese = new Ingredient('cheese');
-const salami = new Ingredient('salami');
-
 const d1 = new Discount('qwe', 0.2);
 const d2 = new DiscountLimited('asd', 0.1, 2);
 discounts.addOrUpdateDiscount(d1);
 discounts.addOrUpdateDiscount(d2);
 
-kitchen.addIngredient(cake, { qty: 1000 });
-kitchen.addIngredient(sose, { qty: 1000 });
-kitchen.addIngredient(cheese, { qty: 1000 });
-kitchen.addIngredient(salami, { qty: 1000 });
+const cake = kitchen.addIngredient({ name: 'cake', qty: 1000 });
+const sose = kitchen.addIngredient({ name: 'sose', qty: 1000 });
+const cheese = kitchen.addIngredient({ name: 'cheese', qty: 1000 });
+const salami = kitchen.addIngredient({ name: 'salami', qty: 1000 });
 
 const margeritta = kitchen.createAndAddNewPizza(
   'margeritta',
@@ -118,4 +112,3 @@ console.log(
   'AFTER FINISH:',
   service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
 );
-

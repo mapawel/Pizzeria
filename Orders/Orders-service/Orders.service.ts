@@ -9,12 +9,12 @@ import { WorkerItem } from '../../Workers/Worker-item.type';
 import { TableItem } from '../../Tables/Table-item.type';
 import { ProductItem } from '../../Products/Product-item.type';
 import { Discount } from '../../Discounts/Discount/Discount.class';
-import { IngredientItem } from '../../Kitchen-service/Ingredients/Ingredient-item.type';
 import { OrdersServiceError } from './Orders.service.exception';
 import { OrderItem } from '../../Orders/Order/Order-item.type';
 import { Role } from '../../Workers/Worker/Roles.enum';
 import { DiscountService } from '../../Discounts/Discount-service/Discount.service';
 import { OfferService } from '../../Offer-service/Offer.service';
+import { Ingredient } from 'Kitchen-service/Ingredients/Ingredient/Ingredient.class';
 export class OrdersService {
   private static instance: OrdersService | null;
   private readonly kitchen: KitchenService;
@@ -63,7 +63,7 @@ export class OrdersService {
       );
 
     const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
-    const ingredients: IngredientItem[] =
+    const ingredients: Ingredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
 
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
@@ -106,7 +106,8 @@ export class OrdersService {
     });
 
     const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
-    const ingredients: IngredientItem[] =
+
+    const ingredients: Ingredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 

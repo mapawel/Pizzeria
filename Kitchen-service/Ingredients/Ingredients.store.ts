@@ -1,13 +1,14 @@
 import { Ingredient } from './Ingredient/Ingredient.class';
-import { IngredientItem } from './Ingredient-item.type';
 import { IDA } from '../../Data-access/DA.interface';
 import { IngretientStoreError } from './Ingredient.store.exception';
+import { IngredientReqDTO } from './DTO/IngredientReqDTO';
+import { IngredientResDTO } from './DTO/IngredientResDTO';
+import { IngredientIdReqDTO } from './DTO/IngredientIdReqDTO';
 
-export class IngredientsStore
-  implements IDA<IngredientItem, Ingredient, { qty: number }>
-{
+export class IngredientsStore {
+  // implements IDA<IngredientItem, Ingredient, { qty: number }>
   private static instance: IngredientsStore | null;
-  private readonly ingredients: Map<string, IngredientItem> = new Map();
+  private readonly ingredients: Map<string, Ingredient> = new Map();
 
   private constructor() {}
 
@@ -20,24 +21,23 @@ export class IngredientsStore
     IngredientsStore.instance = null;
   }
 
-  public getAllIngredientsArr(): IngredientItem[] {
+  public getAllIngredientsArr(): IngredientResDTO[] {
     return Array.from(this.ingredients, ([_, value]) => value);
   }
 
-  public findItemById(nameId: string): IngredientItem {
+  public findItemById(nameId: string): IngredientResDTO {
     return this.validateIfExisting(nameId);
   }
 
-  public addOrUpdateItem(
-    ingredient: Ingredient,
-    { qty }: { qty: number }
-  ): IngredientItem {
+  public addOrUpdateItem({ name, qty }: IngredientReqDTO): IngredientResDTO {
     // qty VALIDATOR to ADD here
-    const updatedMap = this.ingredients.set(ingredient.nameId, {
-      ingredient,
-      qty,
-    });
-    return updatedMap.get(ingredient.nameId) as IngredientItem;
+    const newIngredient = new Ingredient(name, qty);
+    const updatedMap = this.ingredients.set(
+      newIngredient.nameId,
+      newIngredient
+    );
+    return updatedMap.get(newIngredient.nameId) as IngredientResDTO;
+    // czy zwracanie tu ResDTO czy Ingredient? Właściwie to jest to samo?
   }
 
   public removeExistingItem(ingredientNameId: string): boolean {
@@ -46,23 +46,25 @@ export class IngredientsStore
     return true;
   }
 
-  public updateExistingItemParam(
-    ingredientNameId: string,
-    { qty }: { qty: number }
-  ): IngredientItem {
+  public updateExistingItemParam({
+    nameId,
+    qty,
+  }: IngredientIdReqDTO): IngredientResDTO {
     // qty VALIDATOR to ADD here
     const foundIngredient =
       qty < 0
-        ? this.checkIfEnough(ingredientNameId, -qty)
-        : this.validateIfExisting(ingredientNameId);
-    const updatedMap = this.ingredients.set(ingredientNameId, {
-      ingredient: foundIngredient.ingredient,
+        ? this.checkIfEnough(nameId, -qty)
+        : this.validateIfExisting(nameId);
+    const updatedMap = this.ingredients.set(nameId, {
+      nameId: foundIngredient.nameId,
+      name: foundIngredient.name,
       qty: foundIngredient.qty + qty,
     });
-    return updatedMap.get(ingredientNameId) as IngredientItem;
+    return updatedMap.get(nameId) as IngredientResDTO;
   }
 
-  public checkIfEnough(nameId: string, qty: number) {
+  public checkIfEnough(nameId: string, qty: number): Ingredient {
+    // tu wyrzucam Ingredient bo wykorzystuję to wewnętrznie w tym scope ale to metoda publiczna i można się do niej dostać z zewnątrz - czy powinno wyć wyrzucane DTO? A co jeśli DTO jest tożsame z Ingedient?
     const foundIngredient = this.validateIfExisting(nameId);
     if (foundIngredient.qty < qty) {
       throw new Error(`Not enought ${nameId} on stock.`);
@@ -70,7 +72,7 @@ export class IngredientsStore
     return foundIngredient;
   }
 
-  private validateIfExisting(nameId: string): IngredientItem {
+  private validateIfExisting(nameId: string): Ingredient {
     const foundIngredient = this.ingredients.get(nameId);
     if (!foundIngredient)
       throw new IngretientStoreError(
