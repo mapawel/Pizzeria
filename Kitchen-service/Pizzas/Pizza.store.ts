@@ -1,19 +1,19 @@
 import { IDA } from '../../Data-access/DA.interface';
 import { Pizza } from './Pizza/Pizza.class';
-import { PizzaItem } from './Pizza-item.type';
 import { PizzaStoreError } from './Pizza.store.exception';
 import { Ingredient } from '../Ingredients/Ingredient/Ingredient.class';
+import { PizzaReqDTO } from './DTO/PizzaReqDTO';
+import { PizzaResDTO } from './DTO/PizzaResDTO';
 
-export class PizzaStore
-  implements
-    IDA<
-      PizzaItem,
-      Pizza,
-      { recipe: Map<string, Ingredient>; time: number }
-    >
-{
+export class PizzaStore {
+  // implements
+  //   IDA<
+  //     PizzaItem,
+  //     Pizza,
+  //     { recipe: Map<string, Ingredient>; time: number }
+  //   >
   private static instance: PizzaStore | null;
-  private readonly pizzas: Map<string, PizzaItem> = new Map();
+  private readonly pizzas: Map<string, Pizza> = new Map();
 
   private constructor() {}
 
@@ -26,52 +26,32 @@ export class PizzaStore
     PizzaStore.instance = null;
   }
 
-  public getAllPizzasArr(): PizzaItem[] {
+  public getAllPizzasArr(): PizzaResDTO[] {
     return Array.from(this.pizzas, ([_, value]) => value);
   }
 
-  public findItemById(nameId: string): PizzaItem {
+  public findItemById(nameId: string): PizzaResDTO {
     return this.validateIfExisting(nameId);
   }
 
-  public createAndAddNewPizza(
-    name: string,
-    ingredientsWhQty: { ingredient: Ingredient; qty: number }[],
-    time: number
-  ): PizzaItem {
+  public addItem({ name, ingredients }: PizzaReqDTO): PizzaResDTO {
     // qty VALIDATOR to ADD here
-    const newPizza = new Pizza(name);
-    const ingredientsMap = new Map();
-    ingredientsWhQty.forEach(({ ingredient, qty }) =>
-      ingredientsMap.set(ingredient.nameId, {
-        ingredient,
-        qty,
-      })
+    
+    const newPizza = new Pizza(name, ingredientsMap);
+    const updatedMap: Map<string, Pizza> = this.pizzas.set(
+      newPizza.nameId,
+      newPizza
     );
-    return this.addOrUpdateItem(newPizza, { recipe: ingredientsMap, time });
+    return updatedMap.get(newPizza.nameId) as PizzaResDTO;
   }
 
-  public addOrUpdateItem(
-    pizza: Pizza,
-    { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
-  ): PizzaItem {
-    // qty VALIDATOR to ADD here
-    const pizzaItem: PizzaItem = {
-      pizza,
-      recipe,
-      time,
-    };
-    this.pizzas.set(pizza.nameId, pizzaItem);
-    return pizzaItem;
-  }
-
-  public removeExistingItem(pizzaNameId: string): boolean {
+  public removeItem(pizzaNameId: string): boolean {
     this.validateIfExisting(pizzaNameId);
     this.pizzas.delete(pizzaNameId);
     return true;
   }
 
-  public updateExistingItemParam(
+  public updateItem(
     pizzaNameId: string,
     { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
   ): PizzaItem {
