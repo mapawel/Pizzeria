@@ -1,6 +1,6 @@
-import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
+import { Pizza } from 'Kitchen-service/Pizzas/Pizza/Pizza.class';
 
 export type ProductItem = {
-  pizzaItem: PizzaItem;
+  pizza: Pizza;
   price: number;
 };

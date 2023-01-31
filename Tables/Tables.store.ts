@@ -1,13 +1,9 @@
-import { IDA } from 'Data-access/DA.interface';
 import { WorkerItem } from 'Workers/Worker-item.type';
 import { Table } from './Table/Table.class';
 import { TableItem } from './Table-item.type';
 import { TablesStoreError } from './Tables.store.exception';
 
-export class TablesStore
-  implements
-    IDA<TableItem, Table, { sitsToReserve: number; isAvailable: boolean }>
-{
+export class TablesStore {
   private static instance: TablesStore | null;
   private readonly tables: Map<string, TableItem> = new Map();
 

@@ -1,12 +1,9 @@
-import { IDA } from 'Data-access/DA.interface';
 import { WorkerItem } from './Worker-item.type';
 import { Worker } from './Worker/Worker.class';
 import { WorkersStoreError } from './Workers.store.exception';
 import { Role } from './Worker/Roles.enum';
 
-export class WorkersStore
-  implements IDA<WorkerItem, Worker, { isAvailable: boolean }>
-{
+export class WorkersStore {
   private static instance: WorkersStore | null;
   private readonly workers: Map<string, WorkerItem> = new Map();
 

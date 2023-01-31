@@ -1,11 +1,8 @@
-import { IDA } from 'Data-access/DA.interface';
-import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
+import { Pizza } from 'Kitchen-service/Pizzas/Pizza/Pizza.class';
 import { ProductItem } from './Product-item.type';
 import { ProductsStoreError } from './Products.store.exception';
 
-export class ProductsStore
-  implements IDA<ProductItem, PizzaItem, { price: number }>
-{
+export class ProductsStore {
   private static instance: ProductsStore | null;
   private readonly products: Map<string, ProductItem> = new Map();
 
@@ -29,14 +26,14 @@ export class ProductsStore
   }
 
   public addOrUpdateItem(
-    pizzaItem: PizzaItem,
+    pizza: Pizza,
     { price }: { price: number }
   ): ProductItem {
     const productItem: ProductItem = {
-      pizzaItem,
+      pizza,
       price,
     };
-    this.products.set(pizzaItem.pizza.nameId, productItem);
+    this.products.set(pizza.nameId, productItem);
     return productItem;
   }
 
@@ -52,7 +49,7 @@ export class ProductsStore
   ): ProductItem {
     const productItem: ProductItem = this.validateIfExisting(pizzaNameId);
     const updatedMap = this.products.set(pizzaNameId, {
-      pizzaItem: productItem.pizzaItem,
+      pizza: productItem.pizza,
       price,
     });
     return updatedMap.get(pizzaNameId) as ProductItem;

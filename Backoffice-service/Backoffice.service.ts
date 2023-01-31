@@ -9,7 +9,7 @@ import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collect
 import { KitchenService } from '../Kitchen-service/Kitchen.service';
 import { OrdersStore } from '../Orders/Orders-store/Orders.store';
 import { OrderItem } from 'Orders/Order/Order-item.type';
-import { Ingredient } from 'Kitchen-service/Ingredients/Ingredient/Ingredient.class';
+import { PizzaIngredient } from 'Kitchen-service/Pizzas/Pizza-ingredient/Pizza-ingredient.class';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;
@@ -46,7 +46,7 @@ export class BackofficeService {
     const { id, orderItems }: { id: string; orderItems: OrderItem[] } =
       foundOrder;
 
-    const ingredients: Ingredient[] =
+    const ingredients: PizzaIngredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
 
     const workerItem: WorkerItem = this.workers.findAvailableCookById(cookId);

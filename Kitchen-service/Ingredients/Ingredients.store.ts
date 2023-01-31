@@ -1,14 +1,11 @@
-import { Ingredient } from './Ingredient/Ingredient.class';
-import { IDA } from '../../Data-access/DA.interface';
+import { StockIngredient } from './Stock-ingredient/Stock-ingredient.class';
 import { IngretientStoreError } from './Ingredient.store.exception';
-import { IngredientReqDTO } from './DTO/IngredientReqDTO';
-import { IngredientResDTO } from './DTO/IngredientResDTO';
-import { IngredientIdReqDTO } from './DTO/IngredientIdReqDTO';
+import { IngredientResDTO } from './DTO/Ingredient-res.DTO';
+import { isPlus } from '../../general-validators/plus.validator';
 
 export class IngredientsStore {
-  // implements IDA<IngredientItem, Ingredient, { qty: number }>
   private static instance: IngredientsStore | null;
-  private readonly ingredients: Map<string, Ingredient> = new Map();
+  private readonly ingredients: Map<string, StockIngredient> = new Map();
 
   private constructor() {}
 
@@ -21,55 +18,78 @@ export class IngredientsStore {
     IngredientsStore.instance = null;
   }
 
-  public getAllIngredientsArr(): IngredientResDTO[] {
-    return Array.from(this.ingredients, ([_, value]) => value);
+  public findIngredientById(nameId: string): IngredientResDTO {
+    const foundIngredient: StockIngredient = this.getIfExistingById(nameId);
+    return {
+      nameId: foundIngredient.nameId,
+      name: foundIngredient.name,
+      qty: foundIngredient.qty,
+    };
   }
 
-  public findItemById(nameId: string): IngredientResDTO {
-    return this.validateIfExistingById(nameId);
-  }
+  public addIngredient(name: string, qty: number): IngredientResDTO {
+    isPlus(qty, 'Quantity');
 
-  public addItem({ name, qty }: IngredientReqDTO): IngredientResDTO {
-    // qty VALIDATOR to ADD here
-    const ingredient: Ingredient = new Ingredient(name, qty);
-    const updatedMap: Map<string, Ingredient> = this.ingredients.set(
+    const ingredient: StockIngredient = new StockIngredient(name, qty);
+
+    const updatedMap: Map<string, StockIngredient> = this.ingredients.set(
       ingredient.nameId,
       ingredient
     );
-    return updatedMap.get(ingredient.nameId) as IngredientResDTO;
-    // czy zwracanie tu ResDTO czy Ingredient? Właściwie to jest to samo?
+
+    const addedIngredient: StockIngredient = updatedMap.get(
+      ingredient.nameId
+    ) as StockIngredient;
+
+    return {
+      nameId: addedIngredient.nameId,
+      name: addedIngredient.name,
+      qty: addedIngredient.qty,
+    };
   }
 
-  public removeItem(ingredientNameId: string): boolean {
-    this.validateIfExistingById(ingredientNameId);
-    this.ingredients.delete(ingredientNameId);
+  public removeIngredient(nameId: string): boolean {
+    this.getIfExistingById(nameId);
+    this.ingredients.delete(nameId);
     return true;
   }
 
-  public updateItem({ nameId, qty }: IngredientIdReqDTO): IngredientResDTO {
-    // qty VALIDATOR to ADD here
-    const foundIngredient =
+  public updateIngredient(nameId: string, qty: number): IngredientResDTO {
+    const foundIngredient: StockIngredient =
       qty < 0
         ? this.checkIfEnough(nameId, -qty)
-        : this.validateIfExistingById(nameId);
-    const updatedMap = this.ingredients.set(nameId, {
-      nameId: foundIngredient.nameId,
-      name: foundIngredient.name,
-      qty: foundIngredient.qty + qty,
-    });
-    return updatedMap.get(nameId) as IngredientResDTO;
+        : this.getIfExistingById(nameId);
+
+    const updatedMap: Map<string, StockIngredient> = this.ingredients.set(
+      nameId,
+      {
+        ...foundIngredient,
+        qty: foundIngredient.qty + qty,
+      }
+    );
+
+    const updatedItem: StockIngredient = updatedMap.get(
+      foundIngredient.nameId
+    ) as StockIngredient;
+
+    return {
+      nameId: updatedItem.nameId,
+      name: updatedItem.name,
+      qty: updatedItem.qty,
+    };
   }
 
-  public checkIfEnough(nameId: string, qty: number): Ingredient {
+  public checkIfEnough(nameId: string, qty: number): StockIngredient {
     // tu wyrzucam Ingredient bo wykorzystuję to wewnętrznie w tym scope ale to metoda publiczna i można się do niej dostać z zewnątrz - czy powinno wyć wyrzucane DTO? A co jeśli DTO jest tożsame z Ingedient?
-    const foundIngredient = this.validateIfExistingById(nameId);
+    // TODO to fix!
+    const foundIngredient = this.getIfExistingById(nameId);
     if (foundIngredient.qty < qty) {
       throw new Error(`Not enought ${nameId} on stock.`);
     }
     return foundIngredient;
   }
 
-  private validateIfExistingById(nameId: string): Ingredient {
+  private getIfExistingById(nameId: string): StockIngredient {
     const foundIngredient = this.ingredients.get(nameId);
     if (!foundIngredient)
       throw new IngretientStoreError(

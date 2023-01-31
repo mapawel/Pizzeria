@@ -1,6 +1,6 @@
 import { ProductsStore } from '../Products/Products.store';
 import { ProductItem } from '../Products/Product-item.type';
-import { PizzaItem } from '../Kitchen-service/Pizzas/Pizza-item.type';
+import { Pizza } from 'Kitchen-service/Pizzas/Pizza/Pizza.class';
 import { Discount } from '../Discounts/Discount/Discount.class';
 import { DiscountService } from '../Discounts/Discount-service/Discount.service';
 import { DiscountLimited } from '../Discounts/Discount/Discount-limited.class';
@@ -33,10 +33,10 @@ export class OfferService {
   }
 
   public addMenuProduct(
-    pizzaItem: PizzaItem,
+    pizza: Pizza,
     { price }: { price: number }
   ): ProductItem {
-    return this.products.addOrUpdateItem(pizzaItem, { price });
+    return this.products.addOrUpdateItem(pizza, { price });
   }
 
   public updateMenuProduct(

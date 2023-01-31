@@ -1,4 +1,6 @@
-export class Ingredient {
+import { Ingredient } from "Kitchen-service/Ingredient-interface/Ingredient";
+
+export class StockIngredient implements Ingredient {
   readonly nameId: string;
   readonly name: string;
   readonly qty: number;

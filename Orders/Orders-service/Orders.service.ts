@@ -14,7 +14,8 @@ import { OrderItem } from '../../Orders/Order/Order-item.type';
 import { Role } from '../../Workers/Worker/Roles.enum';
 import { DiscountService } from '../../Discounts/Discount-service/Discount.service';
 import { OfferService } from '../../Offer-service/Offer.service';
-import { Ingredient } from 'Kitchen-service/Ingredients/Ingredient/Ingredient.class';
+import { PizzaIngredient } from 'Kitchen-service/Pizzas/Pizza-ingredient/Pizza-ingredient.class';
+
 export class OrdersService {
   private static instance: OrdersService | null;
   private readonly kitchen: KitchenService;
@@ -63,7 +64,7 @@ export class OrdersService {
       );
 
     const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
-    const ingredients: Ingredient[] =
+    const ingredients: PizzaIngredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
 
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
@@ -107,7 +108,7 @@ export class OrdersService {
 
     const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
 
-    const ingredients: Ingredient[] =
+    const ingredients: PizzaIngredient[] =
       this.kitchen.takeIngredientsForOrder(orderItems);
     const totalValue: number = this.getTotalOrderValue(orderItems, discount);
 

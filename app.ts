@@ -21,31 +21,23 @@ const d2 = new DiscountLimited('asd', 0.1, 2);
 discounts.addOrUpdateDiscount(d1);
 discounts.addOrUpdateDiscount(d2);
 
-const cake = kitchen.addIngredient({ name: 'cake', qty: 1000 });
-const sose = kitchen.addIngredient({ name: 'sose', qty: 1000 });
-const cheese = kitchen.addIngredient({ name: 'cheese', qty: 1000 });
-const salami = kitchen.addIngredient({ name: 'salami', qty: 1000 });
+const cake = kitchen.addIngredient('cake', 1000);
+const sose = kitchen.addIngredient('sose', 1000);
+const cheese = kitchen.addIngredient('cheese', 1000);
+const salami = kitchen.addIngredient('salami', 1000);
 
-const margeritta = kitchen.createAndAddNewPizza(
-  'margeritta',
-  [
-    { ingredient: cake, qty: 200 },
-    { ingredient: cheese, qty: 100 },
-    { ingredient: sose, qty: 50 },
-  ],
-  10
-);
+const margeritta = kitchen.addPizza('margeritta', [
+  { stockIngredientNameId: 'CAKE', qtyNeeded: 200 },
+  { stockIngredientNameId: 'CHEESE', qtyNeeded: 200 },
+  { stockIngredientNameId: 'SOSE', qtyNeeded: 50 },
+]);
 
-const salame = kitchen.createAndAddNewPizza(
-  'salame',
-  [
-    { ingredient: cake, qty: 200 },
-    { ingredient: cheese, qty: 100 },
-    { ingredient: sose, qty: 50 },
-    { ingredient: salami, qty: 75 },
-  ],
-  10
-);
+const salame = kitchen.addPizza('salame', [
+  { stockIngredientNameId: 'CAKE', qtyNeeded: 220 },
+  { stockIngredientNameId: 'CHEESE', qtyNeeded: 220 },
+  { stockIngredientNameId: 'SOSE', qtyNeeded: 55 },
+  { stockIngredientNameId: 'SALAMI', qtyNeeded: 100 },
+]);
 
 offer.addMenuProduct(margeritta, { price: 30 });
 offer.addMenuProduct(salame, { price: 36 });

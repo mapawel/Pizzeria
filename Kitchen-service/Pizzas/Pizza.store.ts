@@ -1,17 +1,11 @@
-import { IDA } from '../../Data-access/DA.interface';
 import { Pizza } from './Pizza/Pizza.class';
 import { PizzaStoreError } from './Pizza.store.exception';
-import { Ingredient } from '../Ingredients/Ingredient/Ingredient.class';
-import { PizzaReqDTO } from './DTO/PizzaReqDTO';
-import { PizzaResDTO } from './DTO/PizzaResDTO';
+import { PizzaIngredient } from './Pizza-ingredient/Pizza-ingredient.class';
+import { PizzaResDTO } from './DTO/Pizza-res.DTO';
+import { isPlus } from '../../general-validators/plus.validator';
+import { PizzaIngredientType } from './Pizza/Pizza-ingredients.type';
 
 export class PizzaStore {
-  // implements
-  //   IDA<
-  //     PizzaItem,
-  //     Pizza,
-  //     { recipe: Map<string, Ingredient>; time: number }
-  //   >
   private static instance: PizzaStore | null;
   private readonly pizzas: Map<string, Pizza> = new Map();
 
@@ -26,45 +20,65 @@ export class PizzaStore {
     PizzaStore.instance = null;
   }
 
-  public getAllPizzasArr(): PizzaResDTO[] {
-    return Array.from(this.pizzas, ([_, value]) => value);
+  public findPizzaById(nameId: string): PizzaResDTO {
+    const foundPizza: Pizza = this.gatIfExisting(nameId);
+    return {
+      nameId: foundPizza.nameId,
+      name: foundPizza.name,
+      recipe: foundPizza.recipe,
+    };
   }
 
-  public findItemById(nameId: string): PizzaResDTO {
-    return this.validateIfExisting(nameId);
-  }
+  public addPizza(
+    name: string,
+    ingredients: PizzaIngredientType[]
+  ): PizzaResDTO {
+    const ingredientsMap: Map<string, PizzaIngredient> =
+      this.translateIngredientsArrToMap(ingredients);
 
-  public addItem({ name, ingredients }: PizzaReqDTO): PizzaResDTO {
-    // qty VALIDATOR to ADD here
-    
-    const newPizza = new Pizza(name, ingredientsMap);
+    const newPizza: Pizza = new Pizza(name, ingredientsMap);
     const updatedMap: Map<string, Pizza> = this.pizzas.set(
       newPizza.nameId,
       newPizza
     );
-    return updatedMap.get(newPizza.nameId) as PizzaResDTO;
+    const addedPizza = updatedMap.get(newPizza.nameId) as PizzaResDTO;
+
+    return {
+      nameId: addedPizza.nameId,
+      name: addedPizza.name,
+      recipe: addedPizza.recipe,
+    };
   }
 
-  public removeItem(pizzaNameId: string): boolean {
-    this.validateIfExisting(pizzaNameId);
-    this.pizzas.delete(pizzaNameId);
+  public removePizza(nameId: string): boolean {
+    this.gatIfExisting(nameId);
+    this.pizzas.delete(nameId);
     return true;
   }
 
-  public updateItem(
-    pizzaNameId: string,
-    { recipe, time }: { recipe: Map<string, Ingredient>; time: number }
-  ): PizzaItem {
-    const foundPizza = this.validateIfExisting(pizzaNameId);
-    const updatedMap = this.pizzas.set(pizzaNameId, {
-      pizza: foundPizza.pizza,
-      recipe,
-      time,
+  public updatePizza(
+    nameId: string,
+    ingredients: PizzaIngredientType[]
+  ): PizzaResDTO {
+    const foundPizza: Pizza = this.gatIfExisting(nameId);
+    const updatedIngredients: Map<string, PizzaIngredient> =
+      this.translateIngredientsArrToMap(ingredients);
+
+    const updatedMap: Map<string, Pizza> = this.pizzas.set(foundPizza.nameId, {
+      ...foundPizza,
+      recipe: updatedIngredients,
     });
-    return updatedMap.get(pizzaNameId) as PizzaItem;
+
+    const updatedPizza: Pizza = updatedMap.get(foundPizza.nameId) as Pizza;
+
+    return {
+      nameId: updatedPizza.nameId,
+      name: updatedPizza.name,
+      recipe: updatedPizza.recipe,
+    };
   }
 
-  private validateIfExisting(nameId: string): PizzaItem {
+  private gatIfExisting(nameId: string): Pizza {
     const foundPizza = this.pizzas.get(nameId);
     if (!foundPizza)
       throw new PizzaStoreError(
@@ -72,5 +86,28 @@ export class PizzaStore {
         { nameId }
       );
     return foundPizza;
+  }
+
+  private translateIngredientsArrToMap(
+    ingredients: PizzaIngredientType[]
+  ): Map<string, PizzaIngredient> {
+    ingredients.forEach(({ qtyNeeded }: PizzaIngredientType) =>
+      isPlus(qtyNeeded, 'Ingredient quantity')
+    );
+
+    return new Map(
+      ingredients.map(
+        ({
+          stockIngredientNameId,
+          qtyNeeded,
+        }: {
+          stockIngredientNameId: string;
+          qtyNeeded: number;
+        }) => [
+          stockIngredientNameId,
+          { nameId: stockIngredientNameId, qty: qtyNeeded },
+        ]
+      )
+    );
   }
 }
