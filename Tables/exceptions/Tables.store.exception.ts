@@ -1,9 +1,7 @@
-import { Table } from "./Table/Table.class";
-
 export class TablesStoreError extends Error {
   constructor(
     readonly message: string,
-    readonly payload?: { id?: string; table?: Table }
+    readonly payload?: { nameId?: string }
   ) {
     super(message);
   }

@@ -1,11 +1,10 @@
-import { WorkerItem } from 'Workers/Worker-item.type';
-import { Table } from './Table/Table.class';
-import { TableItem } from './Table-item.type';
-import { TablesStoreError } from './Tables.store.exception';
+import { Table } from './Table/Table';
+import { TablesStoreError } from './exceptions/Tables.store.exception';
+import { TableDTO } from './DTO/Table.dto';
 
 export class TablesStore {
   private static instance: TablesStore | null;
-  private readonly tables: Map<string, TableItem> = new Map();
+  private readonly tables: Map<string, Table> = new Map();
 
   private constructor() {}
 
@@ -18,72 +17,92 @@ export class TablesStore {
     TablesStore.instance = null;
   }
 
-  public findItemById(id: string): TableItem {
-    return this.validateIfExisting(id);
+  public findItemById(id: string): TableDTO {
+    const foundTable: Table = this.validateIfExisting(id);
+    
+    return {
+      nameId: foundTable.nameId,
+      sits: foundTable.sits,
+      sitsAvailable: foundTable.sitsAvailable,
+      isAvailable: foundTable.isAvailable,
+    };
   }
 
-  public addOrUpdateItem(
-    table: Table,
-    {
-      sitsToReserve,
-      isAvailable,
-    }: { sitsToReserve: number; isAvailable: boolean }
-  ): TableItem {
-    const updatedMap = this.tables.set(table.id, {
-      table,
-      sitsAvailable: table.sits - sitsToReserve,
-      isAvailable,
-    });
-    return updatedMap.get(table.id) as TableItem;
+  public addTable({
+    nameId,
+    sits,
+    sitsAvailable,
+    isAvailable,
+  }: TableDTO): TableDTO {
+    const table: Table = new Table(nameId, sits, sitsAvailable, isAvailable);
+    const updatedMap: Map<string, Table> = this.tables.set(nameId, table);
+    const addedTable: Table = updatedMap.get(nameId) as Table;
+
+    return {
+      nameId: addedTable.nameId,
+      sits: addedTable.sits,
+      sitsAvailable: addedTable.sitsAvailable,
+      isAvailable: addedTable.isAvailable,
+    };
   }
 
-  public removeExistingItem(tableId: string): boolean {
-    this.validateIfExisting(tableId);
-    this.tables.delete(tableId);
+  public removeTable(nameId: string): boolean {
+    this.validateIfExisting(nameId);
+    this.tables.delete(nameId);
     return true;
   }
 
-  public updateExistingItemParam(
-    tableId: string,
-    {
-      sitsToReserve,
-      isAvailable,
-    }: { sitsToReserve: number; isAvailable: boolean }
-  ): TableItem {
-    const tableItem: TableItem = this.validateIfExisting(tableId);
-    const updatedMap = this.tables.set(tableId, {
-      table: tableItem.table,
-      sitsAvailable: tableItem.table.sits - sitsToReserve,
+  public updateTable({
+    nameId,
+    sits,
+    sitsAvailable,
+    isAvailable,
+  }: TableDTO): TableDTO {
+    const table: Table = this.validateIfExisting(nameId);
+    const updatedMap = this.tables.set(table.nameId, {
+      ...table,
+      nameId,
+      sits,
+      sitsAvailable,
       isAvailable,
     });
-    return updatedMap.get(tableId) as TableItem;
+    const updatedTable: Table = updatedMap.get(table.nameId) as Table;
+
+    return {
+      nameId: updatedTable.nameId,
+      sits: updatedTable.sits,
+      sitsAvailable: updatedTable.sitsAvailable,
+      isAvailable: updatedTable.isAvailable,
+    };
   }
 
-  public findFreeTable(person: number): TableItem | null {
-    let tableAvailable: TableItem | null = null;
-    this.tables.forEach((tableItem: TableItem, id: string) => {
-      if (
-        tableItem.sitsAvailable >= person &&
-        tableItem.isAvailable &&
-        !tableAvailable
-      )
-        tableAvailable = tableItem;
+  public findFreeTable(person: number): TableDTO | null {
+    let tableAvailable: Table | null = null;
+    this.tables.forEach((table: Table) => {
+      if (table.sitsAvailable >= person && table.isAvailable && !tableAvailable)
+        tableAvailable = table;
     });
     if (!tableAvailable) return null;
-    return tableAvailable;
+
+    return {
+      nameId: tableAvailable['nameId'],
+      sits: tableAvailable['sits'],
+      sitsAvailable: tableAvailable['sitsAvailable'],
+      isAvailable: tableAvailable['isAvailable'],
+    };
   }
 
-  public checkIfAvailable(id: string): boolean {
-    const currentTable = this.validateIfExisting(id);
+  public checkIfAvailable(nameId: string): boolean {
+    const currentTable = this.validateIfExisting(nameId);
     return currentTable.isAvailable;
   }
 
-  private validateIfExisting(id: string): TableItem {
-    const foundWorker = this.tables.get(id);
+  private validateIfExisting(nameId: string): Table {
+    const foundWorker = this.tables.get(nameId);
     if (!foundWorker)
       throw new TablesStoreError(
         'Table with passed id not found in store, could not proceed.',
-        { id }
+        { nameId }
       );
     return foundWorker;
   }

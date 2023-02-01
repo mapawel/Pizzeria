@@ -1,9 +1,9 @@
 import { WorkersStore } from '../Workers/Workers.store';
 import { TablesStore } from '../Tables/Tables.store';
-import { Worker } from '../Workers/Worker/Worker.class';
+import { Worker } from '../Workers/Worker/Worker';
 import { WorkerItem } from '../Workers/Worker-item.type';
 import { TableItem } from '../Tables/Table-item.type';
-import { Table } from '../Tables/Table/Table.class';
+import { Table } from '../Tables/Table/Table';
 import { Order } from '../Orders/Order/Order.class';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';

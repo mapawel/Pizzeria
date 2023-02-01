@@ -1,11 +1,11 @@
-import { WorkerItem } from './Worker-item.type';
-import { Worker } from './Worker/Worker.class';
-import { WorkersStoreError } from './Workers.store.exception';
+import { Worker } from './Worker/Worker';
+import { WorkersStoreError } from './exceptions/Workers.store.exception';
 import { Role } from './Worker/Roles.enum';
+import { WorkerDTO } from './DTO/WorkerDTO';
 
 export class WorkersStore {
   private static instance: WorkersStore | null;
-  private readonly workers: Map<string, WorkerItem> = new Map();
+  private readonly workers: Map<string, Worker> = new Map();
 
   private constructor() {}
 
@@ -18,61 +18,80 @@ export class WorkersStore {
     WorkersStore.instance = null;
   }
 
-  public findAvailableCookById(id: string): WorkerItem {
-    const foundWorker: WorkerItem = this.validateIfExisting(id);
+  public findAvailableCookById(id: string): Worker {
+    const foundWorker: Worker = this.validateIfExisting(id);
     if (!foundWorker.isAvailable)
       throw new WorkersStoreError('This worker is not available', { id });
     return foundWorker;
   }
 
-  public findItemById(id: string): WorkerItem {
-    return this.validateIfExisting(id);
+  public findWorker(id: string): WorkerDTO {
+    const foundWorker: Worker = this.validateIfExisting(id);
+
+    return {
+      id: foundWorker.id,
+      name: foundWorker.name,
+      role: foundWorker.role,
+      isAvailable: foundWorker.isAvailable,
+    };
   }
 
-  public addOrUpdateItem(
-    worker: Worker,
-    { isAvailable }: { isAvailable: boolean }
-  ): WorkerItem {
-    const updatedMap = this.workers.set(worker.id, {
-      worker,
-      isAvailable,
-    });
-    return updatedMap.get(worker.id) as WorkerItem;
+  public addWorker({ name, role, isAvailable }: WorkerDTO): WorkerDTO {
+    const newWorker: Worker = new Worker(name, role, isAvailable);
+    const updatedMap = this.workers.set(newWorker.id, newWorker);
+    const addedWorker: Worker = updatedMap.get(newWorker.id) as Worker;
+
+    return {
+      name: addedWorker.name,
+      role: addedWorker.role,
+      isAvailable: addedWorker.isAvailable,
+    };
   }
 
-  public removeExistingItem(workerId: string): boolean {
-    this.validateIfExisting(workerId);
-    this.workers.delete(workerId);
+  public removeWorker(id: string): boolean {
+    this.validateIfExisting(id);
+    this.workers.delete(id);
     return true;
   }
 
-  public updateExistingItemParam(
-    workerId: string,
-    { isAvailable }: { isAvailable: boolean }
-  ): WorkerItem {
-    const workerItem: WorkerItem = this.validateIfExisting(workerId);
-    const updatedMap = this.workers.set(workerId, {
-      worker: workerItem.worker,
+  public updateWorker({ id, name, role, isAvailable }: WorkerDTO): WorkerDTO {
+    if (!id)
+      throw new WorkersStoreError('To update worker, worker id is required', {
+        name,
+      });
+    const worker: Worker = this.validateIfExisting(id);
+    const updatedMap = this.workers.set(worker.id, {
+      ...worker,
+      name,
+      role,
       isAvailable,
     });
-    return updatedMap.get(workerId) as WorkerItem;
+    const updatedWorker: Worker = updatedMap.get(worker.id) as Worker;
+
+    return {
+      name: updatedWorker.name,
+      role: updatedWorker.role,
+      isAvailable: updatedWorker.isAvailable,
+    };
   }
 
-  public findAvailableWorker(role: Role): WorkerItem | null {
-    let workerAvailable: WorkerItem | null = null;
-    this.workers.forEach((workerItem: WorkerItem, id: string) => {
-      if (
-        workerItem.worker.role === role &&
-        workerItem.isAvailable &&
-        !workerAvailable
-      )
-        workerAvailable = workerItem;
+  public findAvailableWorker(role: Role): WorkerDTO | null {
+    let workerAvailable: Worker | null = null;
+    this.workers.forEach((worker: Worker) => {
+      if (worker.role === role && worker.isAvailable && !workerAvailable)
+        workerAvailable = worker;
     });
     if (!workerAvailable) return null;
-    return workerAvailable;
+
+    return {
+      id: workerAvailable['id'],
+      name: workerAvailable['name'],
+      role: workerAvailable['role'],
+      isAvailable: workerAvailable['isAvailable'],
+    };
   }
 
-  private validateIfExisting(id: string): WorkerItem {
+  private validateIfExisting(id: string): Worker {
     const foundWorker = this.workers.get(id);
     if (!foundWorker)
       throw new WorkersStoreError(
