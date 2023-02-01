@@ -1,4 +1,4 @@
-import { Ingredient } from 'Kitchen-service/Ingredient-interface/Ingredient';
+import { Ingredient } from 'Kitchen/interfaces/Ingredient.interface';
 
 export class PizzaIngredient implements Ingredient {
   readonly nameId: string;

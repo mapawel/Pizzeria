@@ -6,10 +6,10 @@ import { TableItem } from '../Tables/Table-item.type';
 import { Table } from '../Tables/Table/Table.class';
 import { Order } from '../Orders/Order/Order.class';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
-import { KitchenService } from '../Kitchen-service/Kitchen.service';
+import { KitchenService } from '../Kitchen/Kitchen.service';
 import { OrdersStore } from '../Orders/Orders-store/Orders.store';
 import { OrderItem } from 'Orders/Order/Order-item.type';
-import { PizzaIngredient } from 'Kitchen-service/Pizzas/Pizza-ingredient/Pizza-ingredient.class';
+import { PizzaIngredient } from 'Kitchen/Pizzas/Pizza-ingredient/PizzaIngredient';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;

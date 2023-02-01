@@ -1,6 +1,6 @@
 import { ProductsStore } from '../Products/Products.store';
 import { ProductItem } from '../Products/Product-item.type';
-import { Pizza } from 'Kitchen-service/Pizzas/Pizza/Pizza.class';
+import { Pizza } from 'Kitchen/Pizzas/Pizza/Pizza';
 import { Discount } from '../Discounts/Discount/Discount.class';
 import { DiscountService } from '../Discounts/Discount-service/Discount.service';
 import { DiscountLimited } from '../Discounts/Discount/Discount-limited.class';

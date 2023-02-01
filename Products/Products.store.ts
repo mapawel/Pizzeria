@@ -1,4 +1,4 @@
-import { Pizza } from 'Kitchen-service/Pizzas/Pizza/Pizza.class';
+import { Pizza } from 'Kitchen/Pizzas/Pizza/Pizza';
 import { ProductItem } from './Product-item.type';
 import { ProductsStoreError } from './Products.store.exception';
 

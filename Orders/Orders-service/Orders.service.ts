@@ -1,5 +1,5 @@
 import { OrdersStore } from '../../Orders/Orders-store/Orders.store';
-import { KitchenService } from '../../Kitchen-service/Kitchen.service';
+import { KitchenService } from '../../Kitchen/Kitchen.service';
 import { TablesStore } from '../../Tables/Tables.store';
 import { WorkersStore } from '../../Workers/Workers.store';
 import { DiscountStore } from '../../Discounts/Discount-store/Discount.store';
@@ -14,7 +14,7 @@ import { OrderItem } from '../../Orders/Order/Order-item.type';
 import { Role } from '../../Workers/Worker/Roles.enum';
 import { DiscountService } from '../../Discounts/Discount-service/Discount.service';
 import { OfferService } from '../../Offer-service/Offer.service';
-import { PizzaIngredient } from 'Kitchen-service/Pizzas/Pizza-ingredient/Pizza-ingredient.class';
+import { PizzaIngredient } from 'Kitchen/Pizzas/Pizza-ingredient/PizzaIngredient';
 
 export class OrdersService {
   private static instance: OrdersService | null;

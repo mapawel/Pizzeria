@@ -1,9 +1,9 @@
-import { Pizza } from './Pizza/Pizza.class';
-import { PizzaStoreError } from './Pizza.store.exception';
-import { PizzaIngredient } from './Pizza-ingredient/Pizza-ingredient.class';
-import { PizzaResDTO } from './DTO/Pizza-res.DTO';
+import { Pizza } from './Pizza/Pizza';
+import { PizzaStoreError } from './exceptions/Pizza.store.exception';
+import { PizzaIngredient } from './Pizza-ingredient/PizzaIngredient';
+import { PizzaResDTO } from './DTO/PizzaRes.dto';
 import { isPlus } from '../../general-validators/plus.validator';
-import { PizzaIngredientType } from './Pizza/Pizza-ingredients.type';
+import { PizzaIngredientType } from './Pizza/PizzaIngredients.type';
 
 export class PizzaStore {
   private static instance: PizzaStore | null;

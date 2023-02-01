@@ -2,7 +2,7 @@ import { Worker } from './Workers/Worker/Worker.class';
 import { Role } from './Workers/Worker/Roles.enum';
 import { Table } from './Tables/Table/Table.class';
 import { BackofficeService } from './Backoffice-service/Backoffice.service';
-import { KitchenService } from './Kitchen-service/Kitchen.service';
+import { KitchenService } from './Kitchen/Kitchen.service';
 import { OfferService } from './Offer-service/Offer.service';
 import { CustomerService } from './Customer-service/Customer.service';
 import { DiscountStore } from './Discounts/Discount-store/Discount.store';
