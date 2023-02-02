@@ -1,23 +1,16 @@
-import { WorkerItem } from '../../Workers/Worker-item.type';
-import { Order } from '../Order/Order.class';
-import { TableItem } from '../../Tables/Table-item.type';
+import { OrderToGo } from '../Order/OrderToGo';
+import { OrderIn } from '../Order/OrderIn';
 import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
-import { OrdersStoreError } from './Orders.store.exception';
+import { OrdersStoreError } from '../exceptions/Orders.store.exception';
+import { OrderReqDTO } from '../DTO/OrderReq.dto';
+import { OrderItem } from 'Orders/Order/OrderItem.type';
 
 export class OrdersStore {
   private static instance: OrdersStore | null;
-  private readonly ordersPending: Map<
-    string,
-    Order<WorkerItem | null, TableItem | null>
-  > = new Map();
-  private readonly ordersInProgress: Map<
-    string,
-    Order<WorkerItem | null, TableItem | null>
-  > = new Map();
-  private readonly ordersFinished: Map<
-    string,
-    Order<WorkerItem | null, TableItem | null>
-  > = new Map();
+  private readonly ordersPending: Map<string, OrderIn | OrderToGo> = new Map();
+  private readonly ordersInProgress: Map<string, OrderIn | OrderToGo> =
+    new Map();
+  private readonly ordersFinished: Map<string, OrderIn | OrderToGo> = new Map();
 
   private constructor() {}
 
@@ -31,13 +24,27 @@ export class OrdersStore {
   }
 
   public findOrderById(
-    orderId: string,
+    id: string,
     orderType: OrdersServiceCollections
-  ): Order<WorkerItem | null, TableItem | null> {
-    return this.validateIfExisting(orderId, orderType);
+  ): OrderReqDTO {
+    const foundOrder: OrderIn | OrderToGo = this.validateIfExisting(
+      id,
+      orderType
+    );
+
+    return {
+      orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+        unitPrice: order.unitPrice,
+      })),
+      totalValue: foundOrder.totalValue,
+      cookId: foundOrder.cookId,
+      tableId: foundOrder instanceof OrderIn ? foundOrder.tableId : null,
+    };
   }
 
-  public addOrUpdateOrder(
+  public addOrder(
     order: Order<WorkerItem | null, TableItem | null>,
     orderType: OrdersServiceCollections
   ): Order<WorkerItem | null, TableItem | null> {

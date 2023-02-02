@@ -1,4 +1,4 @@
-import { OrderItem } from 'Orders/Order/Order-item.type';
+import { OrderItem } from 'Orders/Order/OrderItem.type';
 import { IngredientsStore } from './Ingredients/Ingredients.store';
 import { PizzaStore } from './Pizzas/Pizza.store';
 import { IngredientResDTO } from './Ingredients/DTO/IngredientRes.dto';

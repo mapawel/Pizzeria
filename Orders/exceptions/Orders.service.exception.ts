@@ -1,4 +1,4 @@
-import { OrderItem } from '../../Orders/Order/Order-item.type';
+import { OrderItem } from '../Order/OrderItem.type';
 import { ProductItem } from '../../Products/Product-item.type';
 
 export class OrdersServiceError extends Error {

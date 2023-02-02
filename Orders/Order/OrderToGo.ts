@@ -1,14 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import { OrderItem } from './Order-item.type';
+import { OrderItem } from './OrderItem.type';
 
-export class Order<CookType, TableType> {
+export class OrderToGo {
   readonly id: string;
 
   public constructor(
     readonly orderItems: OrderItem[],
     readonly totalValue: number,
-    public cook: CookType,
-    readonly table: TableType
+    public cookId: string
   ) {
     this.id = uuidv4();
   }

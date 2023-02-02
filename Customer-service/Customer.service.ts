@@ -1,11 +1,11 @@
 import { WorkerItem } from '../Workers/Worker-item.type';
 import { TablesStore } from '../Tables/Tables.store';
-import { Order } from '../Orders/Order/Order.class';
+import { Order } from '../Orders/Order/OrderToGo';
 import { TableItem } from '../Tables/Table-item.type';
 import { ProductItem } from '../Products/Product-item.type';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { ProductsStore } from '../Products/Products.store';
-import { OrdersService } from '../Orders/Orders-service/Orders.service';
+import { OrdersService } from '../Orders/Orders.service';
 import { BackofficeService } from '../Backoffice-service/Backoffice.service';
 
 export class CustomerService {

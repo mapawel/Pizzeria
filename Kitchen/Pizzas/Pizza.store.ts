@@ -26,17 +26,19 @@ export class PizzaStore {
       nameId: foundPizza.nameId,
       name: foundPizza.name,
       recipe: foundPizza.recipe,
+      price: foundPizza.price,
     };
   }
 
   public addPizza(
     name: string,
-    ingredients: PizzaIngredientType[]
+    ingredients: PizzaIngredientType[],
+    price: number
   ): PizzaResDTO {
     const ingredientsMap: Map<string, PizzaIngredient> =
       this.translateIngredientsArrToMap(ingredients);
 
-    const newPizza: Pizza = new Pizza(name, ingredientsMap);
+    const newPizza: Pizza = new Pizza(name, ingredientsMap, price);
     const updatedMap: Map<string, Pizza> = this.pizzas.set(
       newPizza.nameId,
       newPizza
@@ -47,6 +49,7 @@ export class PizzaStore {
       nameId: addedPizza.nameId,
       name: addedPizza.name,
       recipe: addedPizza.recipe,
+      price: addedPizza.price,
     };
   }
 
@@ -58,7 +61,8 @@ export class PizzaStore {
 
   public updatePizza(
     nameId: string,
-    ingredients: PizzaIngredientType[]
+    ingredients: PizzaIngredientType[],
+    price: number
   ): PizzaResDTO {
     const foundPizza: Pizza = this.gatIfExisting(nameId);
     const updatedIngredients: Map<string, PizzaIngredient> =
@@ -67,6 +71,7 @@ export class PizzaStore {
     const updatedMap: Map<string, Pizza> = this.pizzas.set(foundPizza.nameId, {
       ...foundPizza,
       recipe: updatedIngredients,
+      price,
     });
 
     const updatedPizza: Pizza = updatedMap.get(foundPizza.nameId) as Pizza;
@@ -75,6 +80,7 @@ export class PizzaStore {
       nameId: updatedPizza.nameId,
       name: updatedPizza.name,
       recipe: updatedPizza.recipe,
+      price: updatedPizza.price,
     };
   }
 

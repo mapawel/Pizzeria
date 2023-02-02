@@ -1,6 +1,8 @@
-import { DiscountError } from '../Discount.exception';
-import { Discount } from '../Discount/Discount.class';
-import { DiscountLimited } from '../Discount/Discount-limited.class';
+import { DiscountError } from '../exceptions/Discount.exception';
+import { Discount } from '../Discount/Discount';
+import { DiscountLimited } from '../Discount/DiscountLimited';
+import { DiscountResDTO } from 'Discounts/DTO/DiscountRes.dto';
+
 export class DiscountStore {
   private static instance: DiscountStore | null;
   private readonly discounts: Map<string, Discount | DiscountLimited> =
@@ -17,28 +19,98 @@ export class DiscountStore {
     DiscountStore.instance = null;
   }
 
-  public getAllDiscounts(): Map<string, Discount | DiscountLimited> {
-    return new Map(this.discounts);
+  public useLimitedDiscount(code: string, qtyNeeded: number): boolean {
+    const foundDiscount: Discount | DiscountLimited = this.validateIfExisting(
+      this.unifyCode(code)
+    );
+    if (foundDiscount instanceof DiscountLimited) {
+      foundDiscount.setNewLimitQty(foundDiscount.getLimitQty() - qtyNeeded);
+      return true;
+    }
+    return false;
   }
 
-  public findDiscountByCode(code: string): Discount | DiscountLimited {
-    return this.validateIfExisting(this.unifyCode(code));
+  public findDiscountByCode(code: string): DiscountResDTO {
+    const foundDiscount: Discount | DiscountLimited = this.validateIfExisting(
+      this.unifyCode(code)
+    );
+    return {
+      code: foundDiscount.code,
+      discountPercent: foundDiscount.discountPercent,
+      limitQty:
+        foundDiscount instanceof DiscountLimited
+          ? foundDiscount.getLimitQty
+          : null,
+    };
   }
 
-  public addOrUpdateDiscount(
-    element: Discount | DiscountLimited
-  ): Discount | DiscountLimited {
+  public addDiscount(
+    code: string,
+    discountPercent: number,
+    limitQty?: number
+  ): DiscountResDTO {
+    const newDiscount: Discount | DiscountLimited = limitQty
+      ? new DiscountLimited(code, discountPercent, limitQty)
+      : new Discount(code, discountPercent);
+
     const updatedMap: Map<string, Discount | DiscountLimited> =
-      this.discounts.set(this.unifyCode(element.code), element);
-    return updatedMap.get(this.unifyCode(element.code)) as
-      | Discount
-      | DiscountLimited;
+      this.discounts.set(this.unifyCode(code), newDiscount);
+
+    const addedDiscount: Discount | DiscountLimited = updatedMap.get(
+      this.unifyCode(newDiscount.code)
+    ) as Discount | DiscountLimited;
+
+    return {
+      code: addedDiscount.code,
+      discountPercent: addedDiscount.discountPercent,
+      limitQty:
+        addedDiscount instanceof DiscountLimited
+          ? addedDiscount.getLimitQty
+          : null,
+    };
   }
 
-  public removeDiscountByCode(code: string): boolean {
+  public removeDiscount(code: string): boolean {
     this.validateIfExisting(this.unifyCode(code));
     this.discounts.delete(this.unifyCode(code));
     return true;
+  }
+
+  public updateDiscount(
+    code: string,
+    discountPercent: number,
+    limitQty?: number
+  ): DiscountResDTO {
+    const fountDiscount: Discount | DiscountLimited =
+      this.validateIfExisting(code);
+
+    const updatedMap: Map<string, Discount | DiscountLimited> =
+      this.discounts.set(
+        this.unifyCode(code),
+        fountDiscount instanceof DiscountLimited
+          ? {
+              ...fountDiscount,
+              discountPercent,
+              limitQty,
+            }
+          : {
+              ...fountDiscount,
+              discountPercent,
+            }
+      );
+
+    const updatedDiscount: Discount | DiscountLimited = updatedMap.get(
+      this.unifyCode(fountDiscount.code)
+    ) as Discount | DiscountLimited;
+
+    return {
+      code: updatedDiscount.code,
+      discountPercent: updatedDiscount.discountPercent,
+      limitQty:
+        updatedDiscount instanceof DiscountLimited
+          ? updatedDiscount.getLimitQty
+          : null,
+    };
   }
 
   private validateIfExisting(discountCode: string): Discount | DiscountLimited {

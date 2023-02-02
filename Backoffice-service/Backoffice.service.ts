@@ -4,11 +4,11 @@ import { Worker } from '../Workers/Worker/Worker';
 import { WorkerItem } from '../Workers/Worker-item.type';
 import { TableItem } from '../Tables/Table-item.type';
 import { Table } from '../Tables/Table/Table';
-import { Order } from '../Orders/Order/Order.class';
+import { Order } from '../Orders/Order/OrderToGo';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { OrdersStore } from '../Orders/Orders-store/Orders.store';
-import { OrderItem } from 'Orders/Order/Order-item.type';
+import { OrderItem } from 'Orders/Order/OrderItem.type';
 import { PizzaIngredient } from 'Kitchen/Pizzas/Pizza-ingredient/PizzaIngredient';
 
 export class BackofficeService {

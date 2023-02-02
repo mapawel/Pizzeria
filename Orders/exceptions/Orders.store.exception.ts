@@ -1,4 +1,4 @@
-import { Order } from '../Order/Order.class';
+import { Order } from '../Order/OrderToGo';
 import { WorkerItem } from 'Workers/Worker-item.type';
 import { TableItem } from 'Tables/Table-item.type';
 import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
