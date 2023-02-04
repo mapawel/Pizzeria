@@ -1,6 +1,5 @@
-import { WorkerItem } from '../Workers/Worker-item.type';
 import { TablesStore } from '../Tables/Tables.store';
-import { Order } from '../Orders/Order/OrderToGo';
+import { OrderToGo } from '../Orders/Order/OrderToGo';
 import { TableItem } from '../Tables/Table-item.type';
 import { ProductItem } from '../Products/Product-item.type';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';

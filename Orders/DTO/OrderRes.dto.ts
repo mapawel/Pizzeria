@@ -1,4 +1,4 @@
-export interface OrderReqDTO {
+export interface OrderResDTO {
   orderItems: {
     pizzaNameId: string;
     qty: number;

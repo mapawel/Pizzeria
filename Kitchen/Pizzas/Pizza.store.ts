@@ -111,7 +111,7 @@ export class PizzaStore {
           qtyNeeded: number;
         }) => [
           stockIngredientNameId,
-          { nameId: stockIngredientNameId, qty: qtyNeeded },
+          new PizzaIngredient(stockIngredientNameId, qtyNeeded),
         ]
       )
     );

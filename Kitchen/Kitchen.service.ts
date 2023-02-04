@@ -5,6 +5,7 @@ import { IngredientResDTO } from './Ingredients/DTO/IngredientRes.dto';
 import { PizzaResDTO } from './Pizzas/DTO/PizzaRes.dto';
 import { PizzaIngredientType } from './Pizzas/Pizza/PizzaIngredients.type';
 import { PizzaIngredient } from './Pizzas/Pizza-ingredient/PizzaIngredient';
+import { PizzaIngredientDTO } from './Pizzas/DTO/PizzaIngredient.dto';
 
 export class KitchenService {
   private static instance: KitchenService | null;
@@ -41,11 +42,16 @@ export class KitchenService {
     return this.ingredientsStore.updateIngredient(nameId, qty);
   }
 
+  public findPizzaById(id: string): PizzaResDTO {
+    return this.pizzasStore.findPizzaById(id);
+  }
+
   public addPizza(
     name: string,
-    ingredients: PizzaIngredientType[]
+    ingredients: PizzaIngredientType[],
+    price: number
   ): PizzaResDTO {
-    return this.pizzasStore.addPizza(name, ingredients);
+    return this.pizzasStore.addPizza(name, ingredients, price);
   }
 
   public removePizza(nameId: string): boolean {
@@ -54,13 +60,14 @@ export class KitchenService {
 
   public updatePizza(
     nameId: string,
-    ingredients: PizzaIngredientType[]
+    ingredients: PizzaIngredientType[],
+    price: number
   ): PizzaResDTO {
-    return this.pizzasStore.updatePizza(nameId, ingredients);
+    return this.pizzasStore.updatePizza(nameId, ingredients, price);
   }
 
-  public cookPizzas(totalIngredientsArr: PizzaIngredient[]): boolean {
-    totalIngredientsArr.forEach((ingredient: PizzaIngredient) => {
+  public cookPizzas(totalIngredientsArr: PizzaIngredientDTO[]): boolean {
+    totalIngredientsArr.forEach((ingredient: PizzaIngredientDTO) => {
       this.ingredientsStore.updateIngredient(
         ingredient.nameId,
         -ingredient.qty
@@ -69,31 +76,35 @@ export class KitchenService {
     return true;
   }
 
-  public takeIngredientsForOrder(orderItems: OrderItem[]): PizzaIngredient[] {
+  public takeIngredientsForOrder(
+    orderItems: OrderItem[]
+  ): PizzaIngredientDTO[] {
     const allIngredientsDuplicated: PizzaIngredient[][] = orderItems.map(
       (orderItem: OrderItem) => this.recalculateIngredientsQty(orderItem)
     );
     const ingredientNameIds: string[] = this.getUniqueNameIds(
       allIngredientsDuplicated
     );
-    const allIngredients = this.getTotalIngredients(
+    const allIngredients: PizzaIngredient[] = this.getTotalIngredients(
       ingredientNameIds,
       allIngredientsDuplicated
     );
-    allIngredients.forEach((ingredient: PizzaIngredient) => {
-      this.ingredientsStore.checkIfEnough(ingredient.nameId, ingredient.qty);
+    return allIngredients.map(({ nameId, qty }: PizzaIngredient) => {
+      this.ingredientsStore.checkIfEnough(nameId, qty);
+      return {
+        nameId,
+        qty,
+      };
     });
-    return allIngredients;
   }
 
   private recalculateIngredientsQty(orderItem: OrderItem): PizzaIngredient[] {
-    const pizzaToCook = this.pizzasStore.findPizzaById(
-      orderItem.product.pizza.nameId
+    const pizzaToCook: PizzaResDTO = this.pizzasStore.findPizzaById(
+      orderItem.pizzaNameId
     );
-    //TODO to change above! Need ID only
-    const ingredientsArr = Array.from(pizzaToCook.recipe).map(
-      ([_, value]) => value
-    );
+    const ingredientsArr: PizzaIngredient[] = Array.from(
+      pizzaToCook.recipe
+    ).map(([_, value]) => value);
     return ingredientsArr.map((ingredient: PizzaIngredient) => ({
       ...ingredient,
       qty: ingredient.qty * orderItem.qty,
@@ -125,6 +136,7 @@ export class KitchenService {
 
       return oneTypeIngredientArr.reduce(
         (acc: PizzaIngredient, x: PizzaIngredient) => ({
+          id: acc.id,
           nameId: acc.nameId,
           qty: acc.qty + x.qty,
         })

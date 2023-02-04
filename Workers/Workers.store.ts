@@ -18,11 +18,27 @@ export class WorkersStore {
     WorkersStore.instance = null;
   }
 
-  public findAvailableCookById(id: string): Worker {
-    const foundWorker: Worker = this.validateIfExisting(id);
-    if (!foundWorker.isAvailable)
-      throw new WorkersStoreError('This worker is not available', { id });
-    return foundWorker;
+  // public findAvailableCookById(id: string): WorkerDTO {
+  //   const foundWorker: Worker = this.validateIfExisting(id);
+  //   if (!foundWorker.isAvailable)
+  //     throw new WorkersStoreError('This worker is not available', { id });
+  //   return foundWorker;
+  // }
+
+  public findAvailableWorker(role: Role): WorkerDTO | null {
+    let workerAvailable: Worker | null = null;
+    this.workers.forEach((worker: Worker) => {
+      if (worker.role === role && worker.isAvailable && !workerAvailable)
+        workerAvailable = worker;
+    });
+    if (!workerAvailable) return null;
+
+    return {
+      id: workerAvailable['id'],
+      name: workerAvailable['name'],
+      role: workerAvailable['role'],
+      isAvailable: workerAvailable['isAvailable'],
+    };
   }
 
   public findWorker(id: string): WorkerDTO {
@@ -72,22 +88,6 @@ export class WorkersStore {
       name: updatedWorker.name,
       role: updatedWorker.role,
       isAvailable: updatedWorker.isAvailable,
-    };
-  }
-
-  public findAvailableWorker(role: Role): WorkerDTO | null {
-    let workerAvailable: Worker | null = null;
-    this.workers.forEach((worker: Worker) => {
-      if (worker.role === role && worker.isAvailable && !workerAvailable)
-        workerAvailable = worker;
-    });
-    if (!workerAvailable) return null;
-
-    return {
-      id: workerAvailable['id'],
-      name: workerAvailable['name'],
-      role: workerAvailable['role'],
-      isAvailable: workerAvailable['isAvailable'],
     };
   }
 

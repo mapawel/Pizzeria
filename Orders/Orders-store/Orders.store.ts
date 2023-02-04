@@ -2,7 +2,7 @@ import { OrderToGo } from '../Order/OrderToGo';
 import { OrderIn } from '../Order/OrderIn';
 import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
 import { OrdersStoreError } from '../exceptions/Orders.store.exception';
-import { OrderReqDTO } from '../DTO/OrderReq.dto';
+import { OrderResDTO } from '../DTO/OrderRes.dto';
 import { OrderItem } from 'Orders/Order/OrderItem.type';
 
 export class OrdersStore {
@@ -26,7 +26,7 @@ export class OrdersStore {
   public findOrderById(
     id: string,
     orderType: OrdersServiceCollections
-  ): OrderReqDTO {
+  ): OrderResDTO {
     const foundOrder: OrderIn | OrderToGo = this.validateIfExisting(
       id,
       orderType
@@ -44,25 +44,26 @@ export class OrdersStore {
     };
   }
 
-  public addOrder(
-    order: Order<WorkerItem | null, TableItem | null>,
+  public addOrUpdateOrder(
+    order: OrderIn | OrderToGo,
     orderType: OrdersServiceCollections
-  ): Order<WorkerItem | null, TableItem | null> {
-    if (
-      (orderType === OrdersServiceCollections.ORDERS_IN_PROGRESS ||
-        orderType === OrdersServiceCollections.ORDERS_FINISHED) &&
-      !order.cook
-    )
-      throw new OrdersStoreError(
-        'Cook has to be passed while adding these types of orders',
-        { order, orderType }
-      );
+  ): OrderResDTO {
     const updatedMap = this[orderType].set(order.id, order);
 
-    return updatedMap.get(order.id) as Order<
-      WorkerItem | null,
-      TableItem | null
-    >;
+    const uptadetOrder: OrderIn | OrderToGo = updatedMap.get(order.id) as
+      | OrderIn
+      | OrderToGo;
+
+    return {
+      orderItems: uptadetOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+        unitPrice: order.unitPrice,
+      })),
+      totalValue: uptadetOrder.totalValue,
+      cookId: uptadetOrder.cookId,
+      tableId: uptadetOrder instanceof OrderIn ? uptadetOrder.tableId : null,
+    };
   }
 
   public deleteOrder(
@@ -75,14 +76,14 @@ export class OrdersStore {
   }
 
   private validateIfExisting(
-    nameId: string,
+    id: string,
     orderType: OrdersServiceCollections
-  ): Order<WorkerItem | null, TableItem | null> {
-    const foundOrder = this[orderType].get(nameId);
+  ): OrderIn | OrderToGo {
+    const foundOrder = this[orderType].get(id);
     if (!foundOrder)
       throw new OrdersStoreError(
-        'Pizza with passed nameId not found in store, could not proceed.',
-        { nameId }
+        'Order with passed id not found in store, could not proceed.',
+        { id }
       );
     return foundOrder;
   }
