@@ -17,9 +17,9 @@ export class TablesStore {
     TablesStore.instance = null;
   }
 
-  public findItemById(id: string): TableDTO {
-    const foundTable: Table = this.validateIfExisting(id);
-    
+  public findTableByNameId(nameId: string): TableDTO {
+    const foundTable: Table = this.validateIfExisting(nameId);
+
     return {
       nameId: foundTable.nameId,
       sits: foundTable.sits,

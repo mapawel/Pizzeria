@@ -1,28 +1,26 @@
 import { WorkersStore } from '../Workers/Workers.store';
 import { TablesStore } from '../Tables/Tables.store';
-import { Worker } from '../Workers/Worker/Worker';
-import { WorkerItem } from '../Workers/Worker-item.type';
-import { TableItem } from '../Tables/Table-item.type';
-import { Table } from '../Tables/Table/Table';
-import { Order } from '../Orders/Order/OrderToGo';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';
-import { OrdersStore } from '../Orders/Orders-store/Orders.store';
-import { OrderItem } from 'Orders/Order/OrderItem.type';
-import { PizzaIngredient } from 'Kitchen/Pizzas/Pizza-ingredient/PizzaIngredient';
+import { OrdersService } from '../Orders/Orders.service';
+import { PizzaIngredientDTO } from '../Kitchen/Pizzas/DTO/PizzaIngredient.dto';
+import { OrderResDTO } from '../Orders/DTO/OrderRes.dto';
+import { WorkerDTO } from '../Workers/DTO/WorkerDTO';
+import { OrderItem } from '../Orders/Order/OrderItem.type';
+import { TableDTO } from 'Tables/DTO/Table.dto';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;
   private readonly workers: WorkersStore;
   private readonly tables: TablesStore;
   private readonly kitchen: KitchenService;
-  private readonly orders: OrdersStore;
+  private readonly orders: OrdersService;
 
   private constructor() {
     this.workers = WorkersStore.getInstance();
     this.tables = TablesStore.getInstance();
     this.kitchen = KitchenService.getInstance();
-    this.orders = OrdersStore.getInstance();
+    this.orders = OrdersService.getInstance();
   }
 
   public static getInstance() {
@@ -34,141 +32,100 @@ export class BackofficeService {
     BackofficeService.instance = null;
   }
 
-  public executePendingOrder(
-    orderId: string,
-    cookId: string
-  ): Order<WorkerItem, TableItem> {
-    const foundOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.findOrderById(
-        orderId,
-        OrdersServiceCollections.ORDERS_PENDING
-      );
-    const { id, orderItems }: { id: string; orderItems: OrderItem[] } =
-      foundOrder;
+  public executePendingOrder(orderId: string, cookId: string): OrderResDTO {
+    const foundOrder: OrderResDTO = this.orders.findOrderById(
+      orderId,
+      OrdersServiceCollections.ORDERS_PENDING
+    );
 
-    const ingredients: PizzaIngredient[] =
-      this.kitchen.takeIngredientsForOrder(orderItems);
+    const ingredients: PizzaIngredientDTO[] =
+      this.kitchen.takeIngredientsForOrder(foundOrder.orderItems);
 
-    const workerItem: WorkerItem = this.workers.findAvailableCookById(cookId);
+    const cook: WorkerDTO = this.workers.findAvailableCookById(cookId);
 
-    const updatedWorkerItem = this.workers.addOrUpdateItem(workerItem.worker, {
+    this.workers.updateWorker({
+      ...cook,
       isAvailable: false,
     });
 
     this.kitchen.cookPizzas(ingredients);
 
-    const updatedOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.addOrUpdateOrder(
-        { ...foundOrder, cook: updatedWorkerItem },
-        OrdersServiceCollections.ORDERS_PENDING
-      );
-    this.orders.addOrUpdateOrder(
-      updatedOrder,
+    const updatedOrder: OrderResDTO = this.orders.updateOrderCook(
+      foundOrder.id,
+      cook.id as string,
+      OrdersServiceCollections.ORDERS_PENDING
+    );
+
+    this.orders.moveOrder(
+      updatedOrder.id,
+      OrdersServiceCollections.ORDERS_PENDING,
       OrdersServiceCollections.ORDERS_IN_PROGRESS
     );
-    this.orders.deleteOrder(id, OrdersServiceCollections.ORDERS_PENDING);
 
-    return updatedOrder as Order<WorkerItem, TableItem>;
+    return {
+      id: updatedOrder.id,
+      orderItems: updatedOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+      })),
+      totalValue: updatedOrder.totalValue,
+      cookId: updatedOrder.cookId,
+      tableNameId: updatedOrder.tableNameId,
+      tablePerson: updatedOrder.tablePerson,
+    };
   }
 
-  public finishOrderByCook(
-    orderId: string,
-    cookId: string
-  ): Order<WorkerItem, TableItem | null> {
-    const foundWorkerItem: WorkerItem = this.findWorkerById(cookId);
-    const foundOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.findOrderById(
-        orderId,
-        OrdersServiceCollections.ORDERS_IN_PROGRESS
-      );
-    const updatedWorkerItem: WorkerItem = this.updateWorker(
-      foundWorkerItem.worker.id,
-      {
-        isAvailable: true,
-      }
-    );
-    const updatedOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.addOrUpdateOrder(
-        { ...foundOrder, cook: updatedWorkerItem },
-        OrdersServiceCollections.ORDERS_IN_PROGRESS
-      );
-    this.orders.addOrUpdateOrder(
-      updatedOrder,
-      OrdersServiceCollections.ORDERS_FINISHED
-    );
-    this.orders.deleteOrder(
-      updatedOrder.id,
+  public finishOrder(orderId: string): OrderResDTO {
+    const foundOrder: OrderResDTO = this.orders.findOrderById(
+      orderId,
       OrdersServiceCollections.ORDERS_IN_PROGRESS
     );
-    return updatedOrder as Order<WorkerItem, TableItem | null>;
+    const cook: WorkerDTO = this.workers.findWorker(
+      foundOrder.cookId as string
+    );
+    this.workers.updateWorker({
+      ...cook,
+      isAvailable: true,
+    });
+
+    this.orders.moveOrder(
+      orderId,
+      OrdersServiceCollections.ORDERS_IN_PROGRESS,
+      OrdersServiceCollections.ORDERS_FINISHED
+    );
+
+    return {
+      id: foundOrder.id,
+      orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+      })),
+      totalValue: foundOrder.totalValue,
+      cookId: foundOrder.cookId,
+      tableNameId: foundOrder.tableNameId,
+      tablePerson: foundOrder.tablePerson,
+    };
   }
 
   public makeTableFree(orderId: string): boolean {
-    const foundOrder: Order<WorkerItem | null, TableItem | null> =
-      this.orders.findOrderById(
-        orderId,
-        OrdersServiceCollections.ORDERS_FINISHED
+    const foundOrder: OrderResDTO = this.orders.findOrderById(
+      orderId,
+      OrdersServiceCollections.ORDERS_FINISHED
+    );
+
+    if (foundOrder.tableNameId && foundOrder.tablePerson) {
+      const table: TableDTO = this.tables.findTableByNameId(
+        foundOrder.tableNameId as string
       );
-    if (foundOrder.table?.table) {
-      this.tables.addOrUpdateItem(foundOrder.table.table, {
-        sitsToReserve: 0,
+
+      this.tables.updateTable({
+        ...table,
+        sitsAvailable: table.sitsAvailable + foundOrder.tablePerson,
         isAvailable: true,
       });
+
       return true;
     }
     return false;
-  }
-
-  public findWorkerById(workerId: string): WorkerItem {
-    return this.workers.findItemById(workerId);
-  }
-
-  public addWorker(
-    worker: Worker,
-    { isAvailable }: { isAvailable: boolean }
-  ): WorkerItem {
-    return this.workers.addOrUpdateItem(worker, { isAvailable });
-  }
-
-  public removeWorker(workerId: string): boolean {
-    return this.workers.removeExistingItem(workerId);
-  }
-
-  public updateWorker(
-    workerId: string,
-    { isAvailable }: { isAvailable: boolean }
-  ): WorkerItem {
-    return this.workers.updateExistingItemParam(workerId, { isAvailable });
-  }
-
-  public findTableById(id: string): TableItem {
-    return this.tables.findItemById(id);
-  }
-
-  public addTable(
-    table: Table,
-    {
-      sitsToReserve,
-      isAvailable,
-    }: { sitsToReserve: number; isAvailable: boolean }
-  ): TableItem {
-    return this.tables.addOrUpdateItem(table, { sitsToReserve, isAvailable });
-  }
-
-  public removeTable(tableId: string): boolean {
-    return this.tables.removeExistingItem(tableId);
-  }
-
-  public updateTable(
-    tableId: string,
-    {
-      sitsToReserve,
-      isAvailable,
-    }: { sitsToReserve: number; isAvailable: boolean }
-  ): TableItem {
-    return this.tables.updateExistingItemParam(tableId, {
-      sitsToReserve,
-      isAvailable,
-    });
   }
 }

@@ -18,12 +18,17 @@ export class WorkersStore {
     WorkersStore.instance = null;
   }
 
-  // public findAvailableCookById(id: string): WorkerDTO {
-  //   const foundWorker: Worker = this.validateIfExisting(id);
-  //   if (!foundWorker.isAvailable)
-  //     throw new WorkersStoreError('This worker is not available', { id });
-  //   return foundWorker;
-  // }
+  public findAvailableCookById(id: string): WorkerDTO {
+    const foundWorker: Worker = this.validateIfExisting(id);
+    if (!foundWorker.isAvailable)
+      throw new WorkersStoreError('This worker is not available', { id });
+    return {
+      id: foundWorker.id,
+      name: foundWorker.name,
+      role: foundWorker.role,
+      isAvailable: foundWorker.isAvailable,
+    };
+  }
 
   public findAvailableWorker(role: Role): WorkerDTO | null {
     let workerAvailable: Worker | null = null;
@@ -58,6 +63,7 @@ export class WorkersStore {
     const addedWorker: Worker = updatedMap.get(newWorker.id) as Worker;
 
     return {
+      id: addedWorker.id,
       name: addedWorker.name,
       role: addedWorker.role,
       isAvailable: addedWorker.isAvailable,

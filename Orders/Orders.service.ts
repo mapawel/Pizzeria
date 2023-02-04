@@ -46,6 +46,28 @@ export class OrdersService {
     return Array.from(this.orders[ordersType], ([_, value]) => value);
     //TODO OrderDTO
   }
+  public findOrderById(
+    id: string,
+    orderType: OrdersServiceCollections
+  ): OrderResDTO {
+    return this.orders.findOrderById(id, orderType);
+  }
+
+  public updateOrderCook(
+    orderId: string,
+    cookId: string,
+    orderType: OrdersServiceCollections
+  ): OrderResDTO {
+    return this.orders.updateOrderCook(orderId, cookId, orderType);
+  }
+
+  public moveOrder(
+    orderId: string,
+    prevCollection: OrdersServiceCollections,
+    targetCollection: OrdersServiceCollections
+  ): boolean {
+    return this.orders.moveOrder(orderId, prevCollection, targetCollection);
+  }
 
   public orderToGo(preOrdersArr: OrderItem[], discount?: string): OrderResDTO {
     const cook: WorkerDTO | null = this.workers.findAvailableWorker(Role.COOK);
@@ -73,12 +95,10 @@ export class OrdersService {
         discount,
         this.getTotalPizzasQty(preOrdersArr)
       );
-    this.orders.addOrUpdateOrder(
-      newOrder,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS
-    );
+    this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_IN_PROGRESS);
 
     return {
+      id: newOrder.id,
       orderItems: newOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
@@ -86,6 +106,7 @@ export class OrdersService {
       totalValue: newOrder.totalValue,
       cookId: newOrder.cookId,
       tableNameId: null,
+      tablePerson: null,
     };
   }
 
@@ -120,18 +141,27 @@ export class OrdersService {
         ...cook,
         isAvailable: false,
       });
-      newOrder = new OrderIn(preOrdersArr, totalValue, cook.id, table.nameId);
+      newOrder = new OrderIn(
+        preOrdersArr,
+        totalValue,
+        cook.id,
+        table.nameId,
+        tablePerson
+      );
       this.kitchen.cookPizzas(ingredients);
-      this.orders.addOrUpdateOrder(
+      this.orders.addOrder(
         newOrder,
         OrdersServiceCollections.ORDERS_IN_PROGRESS
       );
     } else {
-      newOrder = new OrderIn(preOrdersArr, totalValue, null, table.nameId);
-      this.orders.addOrUpdateOrder(
-        newOrder,
-        OrdersServiceCollections.ORDERS_PENDING
+      newOrder = new OrderIn(
+        preOrdersArr,
+        totalValue,
+        null,
+        table.nameId,
+        tablePerson
       );
+      this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_PENDING);
     }
     if (discount)
       this.discounts.useLimitedDiscount(
@@ -139,6 +169,7 @@ export class OrdersService {
         this.getTotalPizzasQty(preOrdersArr)
       );
     return {
+      id: newOrder.id,
       orderItems: newOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
@@ -146,6 +177,7 @@ export class OrdersService {
       totalValue: newOrder.totalValue,
       cookId: newOrder.cookId,
       tableNameId: newOrder.tableNameId,
+      tablePerson: newOrder.tablePerson,
     };
   }
 

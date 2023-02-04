@@ -34,12 +34,13 @@ export class DiscountStore {
     const foundDiscount: Discount | DiscountLimited = this.validateIfExisting(
       this.unifyCode(code)
     );
+
     return {
       code: foundDiscount.code,
       discountPercent: foundDiscount.discountPercent,
       limitQty:
         foundDiscount instanceof DiscountLimited
-          ? foundDiscount.getLimitQty
+          ? foundDiscount.getLimitQty()
           : null,
     };
   }

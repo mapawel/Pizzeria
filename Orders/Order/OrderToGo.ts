@@ -3,6 +3,7 @@ import { OrderItem } from './OrderItem.type';
 
 export class OrderToGo {
   readonly id: string;
+  readonly orderType = 'toGn';
 
   public constructor(
     readonly orderItems: OrderItem[],

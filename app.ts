@@ -6,12 +6,15 @@ import { WorkersStore } from './Workers/Workers.store';
 import { TablesStore } from './Tables/Tables.store';
 import { OrderResDTO } from './Orders/DTO/OrderRes.dto';
 import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
+import { BackofficeService } from './Backoffice-service/Backoffice.service';
+import { WorkerDTO } from './Workers/DTO/WorkerDTO';
 
 const discounts = DiscountStore.getInstance();
 const kitchen = KitchenService.getInstance();
 const orders = OrdersService.getInstance();
 const workers = WorkersStore.getInstance();
 const tables = TablesStore.getInstance();
+const backoffice = BackofficeService.getInstance();
 
 discounts.addDiscount('qwe', 0.1, 3);
 discounts.addDiscount('asd', 0.5);
@@ -48,12 +51,6 @@ workers.addWorker({
   isAvailable: false,
 });
 
-workers.addWorker({
-  name: 'janusz',
-  role: Role.COOK,
-  isAvailable: true,
-});
-
 tables.addTable({
   nameId: '1',
   sits: 4,
@@ -61,7 +58,7 @@ tables.addTable({
   isAvailable: true,
 });
 
-const order: OrderResDTO = orders.orderToGo(
+const order: OrderResDTO = orders.orderIn(
   [
     {
       pizzaNameId: margeritta.nameId,
@@ -72,10 +69,10 @@ const order: OrderResDTO = orders.orderToGo(
       qty: 1,
     },
   ],
+  3,
   'QWE'
 );
 
-console.log('order ----> ', order);
 console.log(
   'pending orders ----> ',
   orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
@@ -88,3 +85,45 @@ console.log(
   'finished orders ----> ',
   orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
 );
+
+const cook: WorkerDTO = workers.addWorker({
+  name: 'dariusz',
+  role: Role.COOK,
+  isAvailable: true,
+});
+
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EXECUTING ----> ');
+backoffice.executePendingOrder(order.id, cook.id as string);
+
+console.log(
+  'pending orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+);
+console.log(
+  'in progress orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+);
+console.log(
+  'finished orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+);
+
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FINISHING ----> ');
+backoffice.finishOrder(order.id);
+
+console.log(
+  'pending orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+);
+console.log(
+  'in progress orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+);
+console.log(
+  'finished orders ----> ',
+  orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+);
+
+backoffice.makeTableFree(order.id)
+
+console.log('ttttt ----> ', tables.findTableByNameId('1'));

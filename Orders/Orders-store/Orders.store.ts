@@ -33,34 +33,91 @@ export class OrdersStore {
     );
 
     return {
+      id: foundOrder.id,
       orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
       })),
       totalValue: foundOrder.totalValue,
       cookId: foundOrder.cookId,
-      tableNameId: foundOrder instanceof OrderIn ? foundOrder.tableNameId : null,
+      tableNameId:
+        foundOrder.orderType === 'in' ? foundOrder.tableNameId : null,
+      tablePerson:
+        foundOrder.orderType === 'in' ? foundOrder.tablePerson : null,
     };
   }
 
-  public addOrUpdateOrder(
+  public addOrder(
     order: OrderIn | OrderToGo,
     orderType: OrdersServiceCollections
   ): OrderResDTO {
     const updatedMap = this[orderType].set(order.id, order);
 
-    const uptadetOrder: OrderIn | OrderToGo = updatedMap.get(order.id) as
+    const uptadedOrder: OrderIn | OrderToGo = updatedMap.get(order.id) as
       | OrderIn
       | OrderToGo;
 
     return {
-      orderItems: uptadetOrder.orderItems.map((order: OrderItem) => ({
+      id: uptadedOrder.id,
+      orderItems: uptadedOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
       })),
-      totalValue: uptadetOrder.totalValue,
-      cookId: uptadetOrder.cookId,
-      tableNameId: uptadetOrder instanceof OrderIn ? uptadetOrder.tableNameId : null,
+      totalValue: uptadedOrder.totalValue,
+      cookId: uptadedOrder.cookId,
+      tableNameId:
+        uptadedOrder.orderType === 'in' ? uptadedOrder.tableNameId : null,
+      tablePerson:
+        uptadedOrder.orderType === 'in' ? uptadedOrder.tablePerson : null,
+    };
+  }
+
+  public moveOrder(
+    orderId: string,
+    prevCollection: OrdersServiceCollections,
+    targetCollection: OrdersServiceCollections
+  ): boolean {
+    const foundOrderInstance: OrderIn | OrderToGo = this.getOrderInstanceById(
+      orderId,
+      prevCollection
+    );
+
+    this[prevCollection].delete(foundOrderInstance.id);
+    this[targetCollection].set(foundOrderInstance.id, foundOrderInstance);
+    return true;
+  }
+
+  public updateOrderCook(
+    orderId: string,
+    cookId: string,
+    orderType: OrdersServiceCollections
+  ): OrderResDTO {
+    const foundOrder: OrderToGo | OrderIn = this.validateIfExisting(
+      orderId,
+      orderType
+    );
+
+    const updatedMap = this[orderType].set(foundOrder.id, {
+      ...foundOrder,
+      cookId,
+    });
+
+    const uptadedOrder: OrderIn | OrderToGo = updatedMap.get(foundOrder.id) as
+      | OrderIn
+      | OrderToGo;
+
+    return {
+      id: uptadedOrder.id,
+      orderItems: uptadedOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+      })),
+      totalValue: uptadedOrder.totalValue,
+      cookId: uptadedOrder.cookId,
+      tableNameId:
+        uptadedOrder.orderType === 'in' ? uptadedOrder.tableNameId : null,
+      tablePerson:
+        uptadedOrder.orderType === 'in' ? uptadedOrder.tablePerson : null,
     };
   }
 
@@ -84,5 +141,17 @@ export class OrdersStore {
         { id }
       );
     return foundOrder;
+  }
+
+  private getOrderInstanceById(
+    id: string,
+    orderType: OrdersServiceCollections
+  ): OrderIn | OrderToGo {
+    const foundOrderInstance: OrderIn | OrderToGo = this.validateIfExisting(
+      id,
+      orderType
+    );
+
+    return foundOrderInstance;
   }
 }
