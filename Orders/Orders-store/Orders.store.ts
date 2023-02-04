@@ -36,11 +36,10 @@ export class OrdersStore {
       orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
-        unitPrice: order.unitPrice,
       })),
       totalValue: foundOrder.totalValue,
       cookId: foundOrder.cookId,
-      tableId: foundOrder instanceof OrderIn ? foundOrder.tableId : null,
+      tableNameId: foundOrder instanceof OrderIn ? foundOrder.tableNameId : null,
     };
   }
 
@@ -58,11 +57,10 @@ export class OrdersStore {
       orderItems: uptadetOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
-        unitPrice: order.unitPrice,
       })),
       totalValue: uptadetOrder.totalValue,
       cookId: uptadetOrder.cookId,
-      tableId: uptadetOrder instanceof OrderIn ? uptadetOrder.tableId : null,
+      tableNameId: uptadetOrder instanceof OrderIn ? uptadetOrder.tableNameId : null,
     };
   }
 

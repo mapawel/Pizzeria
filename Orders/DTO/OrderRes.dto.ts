@@ -2,9 +2,8 @@ export interface OrderResDTO {
   orderItems: {
     pizzaNameId: string;
     qty: number;
-    unitPrice: number;
   }[];
   totalValue: number;
-  cookId: string;
-  tableId: string | (() => string) | null;
+  cookId: string | null;
+  tableNameId: string | (() => string) | null;
 }

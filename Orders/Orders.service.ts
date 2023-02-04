@@ -4,19 +4,16 @@ import { OrderToGo } from './Order/OrderToGo';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { TablesStore } from '../Tables/Tables.store';
 import { WorkersStore } from '../Workers/Workers.store';
-import { DiscountStore } from '../Discounts/Discount-store/Discount.store';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
-import { Discount } from '../Discounts/Discount/Discount';
 import { OrdersServiceError } from './exceptions/Orders.service.exception';
 import { OrderItem } from './Order/OrderItem.type';
 import { Role } from '../Workers/Worker/Roles.enum';
 import { DiscountService } from '../Discounts/Discount.service';
-import { PizzaIngredient } from 'Kitchen/Pizzas/Pizza-ingredient/PizzaIngredient';
 import { OrderResDTO } from './DTO/OrderRes.dto';
-import { Worker } from 'Workers/Worker/Worker';
 import { WorkerDTO } from 'Workers/DTO/WorkerDTO';
 import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/PizzaRes.dto';
 import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/PizzaIngredient.dto';
+import { TableDTO } from 'Tables/DTO/Table.dto';
 
 export class OrdersService {
   private static instance: OrdersService | null;
@@ -50,13 +47,7 @@ export class OrdersService {
     //TODO OrderDTO
   }
 
-  public orderToGo(
-    preOrdersArr: {
-      productNameId: string;
-      qty: number;
-    }[],
-    discount?: string
-  ): OrderResDTO {
+  public orderToGo(preOrdersArr: OrderItem[], discount?: string): OrderResDTO {
     const cook: WorkerDTO | null = this.workers.findAvailableWorker(Role.COOK);
     if (!cook?.id)
       throw new OrdersServiceError(
@@ -64,26 +55,23 @@ export class OrdersService {
         { preOrdersArr, discount }
       );
 
-    const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
-    // TODO zostawiam ale sprawdzić czy można tu potem usunąć dodawanie ceny
-
     const ingredients: PizzaIngredientDTO[] =
-      this.kitchen.takeIngredientsForOrder(orderItems);
+      this.kitchen.takeIngredientsForOrder(preOrdersArr);
 
-    const totalValue: number = this.getTotalOrderValue(orderItems, discount);
+    const totalValue: number = this.getTotalOrderValue(preOrdersArr, discount);
 
     this.workers.updateWorker({
       ...cook,
       isAvailable: false,
     });
 
-    const newOrder = new OrderToGo(orderItems, totalValue, cook.id);
+    const newOrder = new OrderToGo(preOrdersArr, totalValue, cook.id);
 
     this.kitchen.cookPizzas(ingredients);
     if (discount)
       this.discounts.useLimitedDiscount(
         discount,
-        this.getTotalPizzasQty(orderItems)
+        this.getTotalPizzasQty(preOrdersArr)
       );
     this.orders.addOrUpdateOrder(
       newOrder,
@@ -94,85 +82,71 @@ export class OrdersService {
       orderItems: newOrder.orderItems.map((order: OrderItem) => ({
         pizzaNameId: order.pizzaNameId,
         qty: order.qty,
-        unitPrice: order.unitPrice,
       })),
       totalValue: newOrder.totalValue,
       cookId: newOrder.cookId,
-      tableId: null,
+      tableNameId: null,
     };
   }
 
-  // public orderWhReservation(
-  //   preOrdersArr: {
-  //     productNameId: string;
-  //     qty: number;
-  //   }[],
-  //   tablePerson: number,
-  //   discount?: string
-  // ): Order<WorkerItem | null, TableItem> {
-  //   const table: TableItem | null = this.tables.findFreeTable(tablePerson);
-  //   if (!table)
-  //     throw new OrdersServiceError(
-  //       'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
-  //       { preOrdersArr, discount, tablePerson }
-  //     );
+  public orderIn(
+    preOrdersArr: OrderItem[],
+    tablePerson: number,
+    discount?: string
+  ): OrderResDTO {
+    const table: TableDTO | null = this.tables.findFreeTable(tablePerson);
+    if (!table)
+      throw new OrdersServiceError(
+        'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
+        { preOrdersArr, discount, tablePerson }
+      );
 
-  //   const updatedTable: TableItem = this.tables.addOrUpdateItem(table.table, {
-  //     sitsToReserve: tablePerson,
-  //     isAvailable: false,
-  //   });
+    this.tables.updateTable({
+      ...table,
+      isAvailable: false,
+      sitsAvailable: table.sitsAvailable - tablePerson,
+    });
 
-  //   const orderItems: OrderItem[] = this.createOrderItems(preOrdersArr);
+    const ingredients: PizzaIngredientDTO[] =
+      this.kitchen.takeIngredientsForOrder(preOrdersArr);
 
-  //   const ingredients: PizzaIngredient[] =
-  //     this.kitchen.takeIngredientsForOrder(orderItems);
-  //   const totalValue: number = this.getTotalOrderValue(orderItems, discount);
+    const totalValue: number = this.getTotalOrderValue(preOrdersArr, discount);
 
-  //   const cook: WorkerItem | null = this.workers.findAvailableWorker(Role.COOK);
-  //   let newOrder;
+    const cook: WorkerDTO | null = this.workers.findAvailableWorker(Role.COOK);
+    let newOrder;
 
-  //   if (cook) {
-  //     const updatedCook: WorkerItem = this.workers.addOrUpdateItem(
-  //       cook.worker,
-  //       { isAvailable: false }
-  //     );
-  //     newOrder = new Order(orderItems, totalValue, updatedCook, updatedTable);
-  //     this.kitchen.cookPizzas(ingredients);
-  //     this.orders.addOrUpdateOrder(
-  //       newOrder,
-  //       OrdersServiceCollections.ORDERS_IN_PROGRESS
-  //     );
-  //   } else {
-  //     newOrder = new Order(orderItems, totalValue, null, updatedTable);
-  //     this.orders.addOrUpdateOrder(
-  //       newOrder,
-  //       OrdersServiceCollections.ORDERS_PENDING
-  //     );
-  //   }
-  //   if (discount)
-  //     this.discounts.useLimitedDiscount(
-  //       discount,
-  //       this.getTotalPizzasQty(orderItems)
-  //     );
-  //   return newOrder;
-  // }
-
-  private createOrderItems(
-    preOrdersArr: {
-      productNameId: string;
-      qty: number;
-    }[]
-  ): OrderItem[] {
-    return preOrdersArr.map(
-      ({ productNameId, qty }: { productNameId: string; qty: number }) => {
-        const product: PizzaResDTO = this.kitchen.findPizzaById(productNameId);
-        return {
-          pizzaNameId: product.nameId,
-          qty,
-          unitPrice: product.price,
-        };
-      }
-    );
+    if (cook?.id) {
+      this.workers.updateWorker({
+        ...cook,
+        isAvailable: false,
+      });
+      newOrder = new OrderIn(preOrdersArr, totalValue, cook.id, table.nameId);
+      this.kitchen.cookPizzas(ingredients);
+      this.orders.addOrUpdateOrder(
+        newOrder,
+        OrdersServiceCollections.ORDERS_IN_PROGRESS
+      );
+    } else {
+      newOrder = new OrderIn(preOrdersArr, totalValue, null, table.nameId);
+      this.orders.addOrUpdateOrder(
+        newOrder,
+        OrdersServiceCollections.ORDERS_PENDING
+      );
+    }
+    if (discount)
+      this.discounts.useLimitedDiscount(
+        discount,
+        this.getTotalPizzasQty(preOrdersArr)
+      );
+    return {
+      orderItems: newOrder.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+      })),
+      totalValue: newOrder.totalValue,
+      cookId: newOrder.cookId,
+      tableNameId: newOrder.tableNameId,
+    };
   }
 
   private getTotalOrderValue(
@@ -186,11 +160,10 @@ export class OrdersService {
         )
       : 0;
 
-    return orderItems.reduce(
-      (acc: number, x: OrderItem) =>
-        acc + x.unitPrice * x.qty * (1 - discountPercent),
-      0
-    );
+    return orderItems.reduce((acc: number, x: OrderItem) => {
+      const product: PizzaResDTO = this.kitchen.findPizzaById(x.pizzaNameId);
+      return acc + product.price * x.qty * (1 - discountPercent);
+    }, 0);
   }
 
   private getTotalPizzasQty(orderItems: OrderItem[]): number {

@@ -3,6 +3,7 @@ import { KitchenService } from './Kitchen/Kitchen.service';
 import { OrdersService } from './Orders/Orders.service';
 import { DiscountStore } from './Discounts/Discount-store/Discount.store';
 import { WorkersStore } from './Workers/Workers.store';
+import { TablesStore } from './Tables/Tables.store';
 import { OrderResDTO } from './Orders/DTO/OrderRes.dto';
 import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
 
@@ -10,8 +11,9 @@ const discounts = DiscountStore.getInstance();
 const kitchen = KitchenService.getInstance();
 const orders = OrdersService.getInstance();
 const workers = WorkersStore.getInstance();
+const tables = TablesStore.getInstance();
 
-discounts.addDiscount('qwe', 0.1, 10);
+discounts.addDiscount('qwe', 0.1, 3);
 discounts.addDiscount('asd', 0.5);
 
 kitchen.addIngredient('cake', 1000);
@@ -52,16 +54,26 @@ workers.addWorker({
   isAvailable: true,
 });
 
-const order: OrderResDTO = orders.orderToGo([
-  {
-    productNameId: margeritta.nameId,
-    qty: 2,
-  },
-  {
-    productNameId: salame.nameId,
-    qty: 1,
-  },
-]);
+tables.addTable({
+  nameId: '1',
+  sits: 4,
+  sitsAvailable: 4,
+  isAvailable: true,
+});
+
+const order: OrderResDTO = orders.orderToGo(
+  [
+    {
+      pizzaNameId: margeritta.nameId,
+      qty: 2,
+    },
+    {
+      pizzaNameId: salame.nameId,
+      qty: 1,
+    },
+  ],
+  'QWE'
+);
 
 console.log('order ----> ', order);
 console.log(

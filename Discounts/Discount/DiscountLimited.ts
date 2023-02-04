@@ -1,4 +1,5 @@
 import { Discount } from './Discount';
+import { isPlusOrZero } from '../../general-validators/plusOrZero.validator';
 import { isPlus } from '../../general-validators/plus.validator';
 
 export class DiscountLimited extends Discount {
@@ -14,7 +15,7 @@ export class DiscountLimited extends Discount {
   }
 
   public setNewLimitQty(newLimitQty: number): void {
-    isPlus(newLimitQty, 'Passed coupon limit qty');
+    isPlusOrZero(newLimitQty, 'Passed coupon limit qty');
     this.limitQty = newLimitQty;
   }
 }
