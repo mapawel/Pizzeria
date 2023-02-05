@@ -35,6 +35,14 @@ export class DiscountService {
     return this.discounts.removeDiscount(code);
   }
 
+  public updateDiscount(
+    code: string,
+    discountPercent: number,
+    limitQty?: number
+  ): DiscountResDTO {
+    return this.discounts.updateDiscount(code, discountPercent, limitQty);
+  }
+
   public getValidDiscountPercent(code: string, qtyNeeded?: number): number {
     const foundDiscountDTO = this.findDiscountByCode(code);
     if (foundDiscountDTO.limitQty) {

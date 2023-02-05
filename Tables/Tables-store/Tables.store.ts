@@ -1,6 +1,6 @@
-import { Table } from './Table/Table';
-import { TablesStoreError } from './exceptions/Tables.store.exception';
-import { TableDTO } from './DTO/Table.dto';
+import { Table } from '../Table/Table';
+import { TablesStoreError } from '../exceptions/Tables.store.exception';
+import { TableDTO } from '../DTO/Table.dto';
 
 export class TablesStore {
   private static instance: TablesStore | null;

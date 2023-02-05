@@ -2,7 +2,7 @@ import { OrdersStore } from './Orders-store/Orders.store';
 import { OrderIn } from './Order/OrderIn';
 import { OrderToGo } from './Order/OrderToGo';
 import { KitchenService } from '../Kitchen/Kitchen.service';
-import { TablesStore } from '../Tables/Tables.store';
+import { TablesStore } from '../Tables/Tables-store/Tables.store';
 import { WorkersStore } from '../Workers/Workers.store';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
 import { OrdersServiceError } from './exceptions/Orders.service.exception';
@@ -40,12 +40,24 @@ export class OrdersService {
     OrdersService.instance = null;
   }
 
-  public listOrders(
-    ordersType: OrdersServiceCollections
-  ): (OrderIn | OrderToGo)[] {
-    return Array.from(this.orders[ordersType], ([_, value]) => value);
-    //TODO OrderDTO
+  public listOrders(ordersType: OrdersServiceCollections): OrderResDTO[] {
+    const ordersArr: (OrderIn | OrderToGo)[] = Array.from(
+      this.orders[ordersType],
+      ([_, value]) => value
+    );
+    return ordersArr.map((orderObj: OrderIn | OrderToGo) => ({
+      id: orderObj.id,
+      orderItems: orderObj.orderItems.map((order: OrderItem) => ({
+        pizzaNameId: order.pizzaNameId,
+        qty: order.qty,
+      })),
+      totalValue: orderObj.totalValue,
+      cookId: orderObj.cookId,
+      tableNameId: orderObj.orderType === 'in' ? orderObj.tableNameId : null,
+      tablePerson: orderObj.orderType === 'in' ? orderObj.tablePerson : null,
+    }));
   }
+  
   public findOrderById(
     id: string,
     orderType: OrdersServiceCollections

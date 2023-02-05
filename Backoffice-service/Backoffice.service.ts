@@ -1,26 +1,31 @@
 import { WorkersStore } from '../Workers/Workers.store';
-import { TablesStore } from '../Tables/Tables.store';
+import { TablesService } from '../Tables/Tables.service';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { OrdersService } from '../Orders/Orders.service';
-import { PizzaIngredientDTO } from '../Kitchen/Pizzas/DTO/PizzaIngredient.dto';
 import { OrderResDTO } from '../Orders/DTO/OrderRes.dto';
 import { WorkerDTO } from '../Workers/DTO/WorkerDTO';
-import { OrderItem } from '../Orders/Order/OrderItem.type';
-import { TableDTO } from 'Tables/DTO/Table.dto';
+import { TableDTO } from '../Tables/DTO/Table.dto';
+import { DiscountService } from '../Discounts/Discount.service';
+import { IngredientResDTO } from '../Kitchen/Ingredients/DTO/IngredientRes.dto';
+import { PizzaResDTO } from '../Kitchen/Pizzas/DTO/PizzaRes.dto';
+import { PizzaIngredientType } from '../Kitchen/Pizzas/Pizza/PizzaIngredients.type';
+import { DiscountResDTO } from '../Discounts/DTO/DiscountRes.dto';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;
-  private readonly workers: WorkersStore;
-  private readonly tables: TablesStore;
   private readonly kitchen: KitchenService;
   private readonly orders: OrdersService;
+  private readonly discounts: DiscountService;
+  private readonly tables: TablesService;
+  private readonly workers: WorkersStore;
 
   private constructor() {
-    this.workers = WorkersStore.getInstance();
-    this.tables = TablesStore.getInstance();
     this.kitchen = KitchenService.getInstance();
     this.orders = OrdersService.getInstance();
+    this.discounts = DiscountService.getInstance();
+    this.tables = TablesService.getInstance();
+    this.workers = WorkersStore.getInstance();
   }
 
   public static getInstance() {
@@ -32,100 +37,128 @@ export class BackofficeService {
     BackofficeService.instance = null;
   }
 
-  public executePendingOrder(orderId: string, cookId: string): OrderResDTO {
-    const foundOrder: OrderResDTO = this.orders.findOrderById(
-      orderId,
-      OrdersServiceCollections.ORDERS_PENDING
-    );
-
-    const ingredients: PizzaIngredientDTO[] =
-      this.kitchen.takeIngredientsForOrder(foundOrder.orderItems);
-
-    const cook: WorkerDTO = this.workers.findAvailableCookById(cookId);
-
-    this.workers.updateWorker({
-      ...cook,
-      isAvailable: false,
-    });
-
-    this.kitchen.cookPizzas(ingredients);
-
-    const updatedOrder: OrderResDTO = this.orders.updateOrderCook(
-      foundOrder.id,
-      cook.id as string,
-      OrdersServiceCollections.ORDERS_PENDING
-    );
-
-    this.orders.moveOrder(
-      updatedOrder.id,
-      OrdersServiceCollections.ORDERS_PENDING,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS
-    );
-
-    return {
-      id: updatedOrder.id,
-      orderItems: updatedOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: updatedOrder.totalValue,
-      cookId: updatedOrder.cookId,
-      tableNameId: updatedOrder.tableNameId,
-      tablePerson: updatedOrder.tablePerson,
-    };
+  public findIngredientById(nameId: string): IngredientResDTO {
+    return this.kitchen.findIngredientById(nameId);
   }
 
-  public finishOrder(orderId: string): OrderResDTO {
-    const foundOrder: OrderResDTO = this.orders.findOrderById(
-      orderId,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS
-    );
-    const cook: WorkerDTO = this.workers.findWorker(
-      foundOrder.cookId as string
-    );
-    this.workers.updateWorker({
-      ...cook,
-      isAvailable: true,
-    });
-
-    this.orders.moveOrder(
-      orderId,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS,
-      OrdersServiceCollections.ORDERS_FINISHED
-    );
-
-    return {
-      id: foundOrder.id,
-      orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: foundOrder.totalValue,
-      cookId: foundOrder.cookId,
-      tableNameId: foundOrder.tableNameId,
-      tablePerson: foundOrder.tablePerson,
-    };
+  public addIngredient(name: string, qty: number): IngredientResDTO {
+    return this.kitchen.addIngredient(name, qty);
   }
 
-  public makeTableFree(orderId: string): boolean {
-    const foundOrder: OrderResDTO = this.orders.findOrderById(
-      orderId,
-      OrdersServiceCollections.ORDERS_FINISHED
-    );
+  public removeIngredient(nameId: string): boolean {
+    return this.kitchen.removeIngredient(nameId);
+  }
+  public updateIngredient(nameId: string, qty: number): IngredientResDTO {
+    return this.kitchen.updateIngredient(nameId, qty);
+  }
 
-    if (foundOrder.tableNameId && foundOrder.tablePerson) {
-      const table: TableDTO = this.tables.findTableByNameId(
-        foundOrder.tableNameId as string
-      );
+  public findPizzaById(id: string): PizzaResDTO {
+    return this.kitchen.findPizzaById(id);
+  }
 
-      this.tables.updateTable({
-        ...table,
-        sitsAvailable: table.sitsAvailable + foundOrder.tablePerson,
-        isAvailable: true,
-      });
+  public addPizza(
+    name: string,
+    ingredients: PizzaIngredientType[],
+    price: number
+  ): PizzaResDTO {
+    return this.kitchen.addPizza(name, ingredients, price);
+  }
 
-      return true;
-    }
-    return false;
+  public removePizza(nameId: string): boolean {
+    return this.kitchen.removePizza(nameId);
+  }
+
+  public updatePizza(
+    nameId: string,
+    ingredients: PizzaIngredientType[],
+    price: number
+  ): PizzaResDTO {
+    return this.kitchen.updatePizza(nameId, ingredients, price);
+  }
+
+  public listOrders(ordersType: OrdersServiceCollections): OrderResDTO[] {
+    return this.orders.listOrders(ordersType);
+  }
+
+  public findOrderById(
+    id: string,
+    orderType: OrdersServiceCollections
+  ): OrderResDTO {
+    return this.orders.findOrderById(id, orderType);
+  }
+
+  public findDiscountByCode(code: string): DiscountResDTO {
+    return this.discounts.findDiscountByCode(code);
+  }
+
+  public addDiscount(
+    code: string,
+    discountPercent: number,
+    limitQty?: number
+  ): DiscountResDTO {
+    return this.discounts.addDiscount(code, discountPercent, limitQty);
+  }
+
+  public removeDiscount(code: string): boolean {
+    return this.discounts.removeDiscount(code);
+  }
+
+  public updateDiscount(
+    code: string,
+    discountPercent: number,
+    limitQty?: number
+  ): DiscountResDTO {
+    return this.discounts.updateDiscount(code, discountPercent, limitQty);
+  }
+
+  public findWorker(id: string): WorkerDTO {
+    return this.workers.findWorker(id);
+  }
+
+  public addWorker({ name, role, isAvailable }: WorkerDTO): WorkerDTO {
+    return this.workers.addWorker({ name, role, isAvailable });
+  }
+
+  public removeWorker(id: string): boolean {
+    return this.workers.removeWorker(id);
+  }
+  public updateWorker({ id, name, role, isAvailable }: WorkerDTO): WorkerDTO {
+    return this.workers.updateWorker({ id, name, role, isAvailable });
+  }
+
+  public findTableByNameId(nameId: string): TableDTO {
+    return this.tables.findTableByNameId(nameId);
+  }
+
+  public addTable({
+    nameId,
+    sits,
+    sitsAvailable,
+    isAvailable,
+  }: TableDTO): TableDTO {
+    return this.tables.addTable({
+      nameId,
+      sits,
+      sitsAvailable,
+      isAvailable,
+    });
+  }
+
+  public removeTable(nameId: string): boolean {
+    return this.tables.removeTable(nameId);
+  }
+
+  public updateTable({
+    nameId,
+    sits,
+    sitsAvailable,
+    isAvailable,
+  }: TableDTO): TableDTO {
+    return this.tables.updateTable({
+      nameId,
+      sits,
+      sitsAvailable,
+      isAvailable,
+    });
   }
 }

@@ -1,30 +1,22 @@
 import { Role } from './Workers/Worker/Roles.enum';
-import { KitchenService } from './Kitchen/Kitchen.service';
-import { OrdersService } from './Orders/Orders.service';
-import { DiscountStore } from './Discounts/Discount-store/Discount.store';
-import { WorkersStore } from './Workers/Workers.store';
-import { TablesStore } from './Tables/Tables.store';
 import { OrderResDTO } from './Orders/DTO/OrderRes.dto';
 import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
-import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { WorkerDTO } from './Workers/DTO/WorkerDTO';
+import { BackofficeService } from './Backoffice-service/Backoffice.service';
+import { CustomerService } from './Customer-service/Customer.service';
 
-const discounts = DiscountStore.getInstance();
-const kitchen = KitchenService.getInstance();
-const orders = OrdersService.getInstance();
-const workers = WorkersStore.getInstance();
-const tables = TablesStore.getInstance();
-const backoffice = BackofficeService.getInstance();
+const backoffice: BackofficeService = BackofficeService.getInstance();
+const service: CustomerService = CustomerService.getInstance();
 
-discounts.addDiscount('qwe', 0.1, 3);
-discounts.addDiscount('asd', 0.5);
+backoffice.addDiscount('qwe', 0.1, 3);
+backoffice.addDiscount('asd', 0.5);
 
-kitchen.addIngredient('cake', 1000);
-kitchen.addIngredient('sose', 1000);
-kitchen.addIngredient('cheese', 1000);
-kitchen.addIngredient('salami', 1000);
+backoffice.addIngredient('cake', 1000);
+backoffice.addIngredient('sose', 1000);
+backoffice.addIngredient('cheese', 1000);
+backoffice.addIngredient('salami', 1000);
 
-const margeritta = kitchen.addPizza(
+const margeritta = backoffice.addPizza(
   'margeritta',
   [
     { stockIngredientNameId: 'CAKE', qtyNeeded: 100 },
@@ -34,7 +26,7 @@ const margeritta = kitchen.addPizza(
   100
 );
 
-const salame = kitchen.addPizza(
+const salame = backoffice.addPizza(
   'salame',
   [
     { stockIngredientNameId: 'CAKE', qtyNeeded: 100 },
@@ -45,20 +37,20 @@ const salame = kitchen.addPizza(
   200
 );
 
-workers.addWorker({
+backoffice.addWorker({
   name: 'andrzej',
   role: Role.COOK,
   isAvailable: false,
 });
 
-tables.addTable({
+backoffice.addTable({
   nameId: '1',
   sits: 4,
   sitsAvailable: 4,
   isAvailable: true,
 });
 
-const order: OrderResDTO = orders.orderIn(
+const order: OrderResDTO = service.orderIn(
   [
     {
       pizzaNameId: margeritta.nameId,
@@ -75,55 +67,55 @@ const order: OrderResDTO = orders.orderIn(
 
 console.log(
   'pending orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
 );
 
-const cook: WorkerDTO = workers.addWorker({
+const cook: WorkerDTO = backoffice.addWorker({
   name: 'dariusz',
   role: Role.COOK,
   isAvailable: true,
 });
 
 console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EXECUTING ----> ');
-backoffice.executePendingOrder(order.id, cook.id as string);
+service.executePendingOrder(order.id, cook.id as string);
 
 console.log(
   'pending orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
 );
 
 console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FINISHING ----> ');
-backoffice.finishOrder(order.id);
+service.finishOrder(order.id);
 
 console.log(
   'pending orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  orders.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
 );
 
-backoffice.makeTableFree(order.id)
+service.makeOrderTableFree(order.id);
 
-console.log('ttttt ----> ', tables.findTableByNameId('1'));
+console.log('ttttt ----> ', backoffice.findTableByNameId('1'));

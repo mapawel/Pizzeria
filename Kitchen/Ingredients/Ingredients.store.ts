@@ -80,7 +80,7 @@ export class IngredientsStore {
   }
 
   public checkIfEnough(nameId: string, qty: number): StockIngredient {
-    // tu wyrzucam Ingredient bo wykorzystuję to wewnętrznie w tym scope ale to metoda publiczna i można się do niej dostać z zewnątrz - czy powinno wyć wyrzucane DTO? A co jeśli DTO jest tożsame z Ingedient?
+    // tu wyrzucam Ingredient bo wykorzystuję to wewnętrznie w tym scope ale to metoda publiczna i można się do niej dostać z zewnątrz - czy powinno wyć wyrzucane DTO?
     // TODO to fix!
     const foundIngredient = this.getIfExistingById(nameId);
     if (foundIngredient.qty < qty) {
