@@ -1,18 +1,18 @@
 import { OrdersStore } from './Orders-store/Orders.store';
-import { OrderIn } from './Order/OrderIn';
-import { OrderToGo } from './Order/OrderToGo';
+import { OrderIn } from './Order/Order-in';
+import { OrderToGo } from './Order/Order-to-go';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { TablesStore } from '../Tables/Tables-store/Tables.store';
 import { WorkersStore } from '../Workers/Workers.store';
 import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
-import { OrdersServiceError } from './exceptions/Orders.service.exception';
-import { OrderItem } from './Order/OrderItem.type';
+import { OrdersServiceError } from './exceptions/Orders-service.exception';
+import { OrderItem } from './Order/Order-item.type';
 import { Role } from '../Workers/Worker/Roles.enum';
 import { DiscountService } from '../Discounts/Discount.service';
-import { OrderResDTO } from './DTO/OrderRes.dto';
-import { WorkerDTO } from 'Workers/DTO/WorkerDTO';
-import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/PizzaRes.dto';
-import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/PizzaIngredient.dto';
+import { OrderResDTO } from './DTO/Order-res.dto';
+import { WorkerDTO } from 'Workers/DTO/Worker.dto';
+import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/Pizza-res.dto';
+import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 import { TableDTO } from 'Tables/DTO/Table.dto';
 
 export class OrdersService {
@@ -57,7 +57,7 @@ export class OrdersService {
       tablePerson: orderObj.orderType === 'in' ? orderObj.tablePerson : null,
     }));
   }
-  
+
   public findOrderById(
     id: string,
     orderType: OrdersServiceCollections

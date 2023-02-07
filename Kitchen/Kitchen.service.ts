@@ -1,11 +1,11 @@
-import { OrderItem } from 'Orders/Order/OrderItem.type';
+import { OrderItem } from 'Orders/Order/Order-item.type';
 import { IngredientsStore } from './Ingredients/Ingredients.store';
 import { PizzaStore } from './Pizzas/Pizza.store';
-import { IngredientResDTO } from './Ingredients/DTO/IngredientRes.dto';
-import { PizzaResDTO } from './Pizzas/DTO/PizzaRes.dto';
-import { PizzaIngredientType } from './Pizzas/Pizza/PizzaIngredients.type';
-import { PizzaIngredient } from './Pizzas/Pizza-ingredient/PizzaIngredient';
-import { PizzaIngredientDTO } from './Pizzas/DTO/PizzaIngredient.dto';
+import { IngredientResDTO } from './Ingredients/DTO/Ingredient-res.dto';
+import { PizzaResDTO } from './Pizzas/DTO/Pizza-res.dto';
+import { PizzaIngredientType } from './Pizzas/Pizza/Pizza-ingredients.type';
+import { PizzaIngredient } from './Pizzas/Pizza-ingredient/Pizza-ingredient';
+import { PizzaIngredientDTO } from './Pizzas/DTO/Pizza-ingredient.dto';
 
 export class KitchenService {
   private static instance: KitchenService | null;

@@ -1,6 +1,6 @@
-import { StockIngredient } from './Stock-ingredient/StockIngredient';
-import { IngretientStoreError } from './exceptions/Ingredient.store.exception';
-import { IngredientResDTO } from './DTO/IngredientRes.dto';
+import { StockIngredient } from './Stock-ingredient/Stock-ingredient';
+import { IngretientStoreError } from './exceptions/Ingredient-store.exception';
+import { IngredientResDTO } from './DTO/Ingredient-res.dto';
 import { isPlus } from '../../general-validators/plus.validator';
 
 export class IngredientsStore {

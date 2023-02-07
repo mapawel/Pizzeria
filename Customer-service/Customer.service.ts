@@ -1,11 +1,11 @@
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { OrdersService } from '../Orders/Orders.service';
-import { OrderResDTO } from '../Orders/DTO/OrderRes.dto';
-import { OrderItem } from '../Orders/Order/OrderItem.type';
+import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
+import { OrderItem } from '../Orders/Order/Order-item.type';
 import { KitchenService } from '../Kitchen/Kitchen.service';
-import { PizzaIngredientDTO } from '../Kitchen/Pizzas/DTO/PizzaIngredient.dto';
+import { PizzaIngredientDTO } from '../Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 import { WorkersStore } from '../Workers/Workers.store';
-import { WorkerDTO } from '../Workers/DTO/WorkerDTO';
+import { WorkerDTO } from '../Workers/DTO/Worker.dto';
 import { TablesService } from '../Tables/Tables.service';
 
 export class CustomerService {

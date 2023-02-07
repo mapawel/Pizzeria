@@ -1,6 +1,6 @@
 import { DiscountError } from './exceptions/Discount.exception';
 import { DiscountStore } from './Discount-store/Discount.store';
-import { DiscountResDTO } from './DTO/DiscountRes.dto';
+import { DiscountResDTO } from './DTO/Discount-res.dto';
 
 export class DiscountService {
   private static instance: DiscountService | null;

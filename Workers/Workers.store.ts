@@ -1,7 +1,7 @@
 import { Worker } from './Worker/Worker';
-import { WorkersStoreError } from './exceptions/Workers.store.exception';
+import { WorkersStoreError } from './exceptions/Workers-store.exception';
 import { Role } from './Worker/Roles.enum';
-import { WorkerDTO } from './DTO/WorkerDTO';
+import { WorkerDTO } from './DTO/Worker.dto';
 
 export class WorkersStore {
   private static instance: WorkersStore | null;

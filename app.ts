@@ -1,7 +1,7 @@
 import { Role } from './Workers/Worker/Roles.enum';
-import { OrderResDTO } from './Orders/DTO/OrderRes.dto';
+import { OrderResDTO } from './Orders/DTO/Order-res.dto';
 import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
-import { WorkerDTO } from './Workers/DTO/WorkerDTO';
+import { WorkerDTO } from './Workers/DTO/Worker.dto';
 import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { CustomerService } from './Customer-service/Customer.service';
 

@@ -3,14 +3,14 @@ import { TablesService } from '../Tables/Tables.service';
 import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { OrdersService } from '../Orders/Orders.service';
-import { OrderResDTO } from '../Orders/DTO/OrderRes.dto';
-import { WorkerDTO } from '../Workers/DTO/WorkerDTO';
+import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
+import { WorkerDTO } from '../Workers/DTO/Worker.dto';
 import { TableDTO } from '../Tables/DTO/Table.dto';
 import { DiscountService } from '../Discounts/Discount.service';
-import { IngredientResDTO } from '../Kitchen/Ingredients/DTO/IngredientRes.dto';
-import { PizzaResDTO } from '../Kitchen/Pizzas/DTO/PizzaRes.dto';
-import { PizzaIngredientType } from '../Kitchen/Pizzas/Pizza/PizzaIngredients.type';
-import { DiscountResDTO } from '../Discounts/DTO/DiscountRes.dto';
+import { IngredientResDTO } from '../Kitchen/Ingredients/DTO/Ingredient-res.dto';
+import { PizzaResDTO } from '../Kitchen/Pizzas/DTO/Pizza-res.dto';
+import { PizzaIngredientType } from '../Kitchen/Pizzas/Pizza/Pizza-ingredients.type';
+import { DiscountResDTO } from '../Discounts/DTO/Discount-res.dto';
 
 export class BackofficeService {
   private static instance: BackofficeService | null;

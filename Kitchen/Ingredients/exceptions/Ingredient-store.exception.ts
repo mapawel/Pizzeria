@@ -1,4 +1,4 @@
-import { StockIngredient } from '../Stock-ingredient/StockIngredient';
+import { StockIngredient } from '../Stock-ingredient/Stock-ingredient';
 
 export class IngretientStoreError extends Error {
   constructor(

@@ -1,5 +1,5 @@
 import { Discount } from './Discount';
-import { isPlusOrZero } from '../../general-validators/plusOrZero.validator';
+import { isPlusOrZero } from '../../general-validators/plus-or-zero.validator';
 import { isPlus } from '../../general-validators/plus.validator';
 
 export class DiscountLimited extends Discount {

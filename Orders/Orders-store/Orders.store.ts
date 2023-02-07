@@ -1,9 +1,9 @@
-import { OrderToGo } from '../Order/OrderToGo';
-import { OrderIn } from '../Order/OrderIn';
+import { OrderToGo } from '../Order/Order-to-go';
+import { OrderIn } from '../Order/Order-in';
 import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
-import { OrdersStoreError } from '../exceptions/Orders.store.exception';
-import { OrderResDTO } from '../DTO/OrderRes.dto';
-import { OrderItem } from 'Orders/Order/OrderItem.type';
+import { OrdersStoreError } from '../exceptions/Orders-store.exception';
+import { OrderResDTO } from '../DTO/Order-res.dto';
+import { OrderItem } from 'Orders/Order/Order-item.type';
 
 export class OrdersStore {
   private static instance: OrdersStore | null;

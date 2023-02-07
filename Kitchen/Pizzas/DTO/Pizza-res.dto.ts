@@ -1,4 +1,4 @@
-import { PizzaIngredient } from '../Pizza-ingredient/PizzaIngredient';
+import { PizzaIngredient } from '../Pizza-ingredient/Pizza-ingredient';
 
 export type PizzaResDTO = {
   readonly nameId: string;
