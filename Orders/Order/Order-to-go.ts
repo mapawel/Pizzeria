@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { OrderItem } from './Order-item.type';
+import { OrderType } from './Order-type.enum';
 
 export class OrderToGo {
   readonly id: string;
-  readonly orderType = 'toGn';
+  readonly orderType = OrderType.TOGO;
 
   public constructor(
     readonly orderItems: OrderItem[],

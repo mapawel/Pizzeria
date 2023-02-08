@@ -2,6 +2,7 @@ import { OrderIn } from '../Order/Order-in';
 import { OrderToGo } from '../Order/Order-to-go';
 import { OrderResDTO } from './Order-res.dto';
 import { OrderItem } from '../Order/Order-item.type';
+import { OrderType } from '../Order/Order-type.enum';
 
 export class OrderDTOMapper {
   public static mapToResDTO(order: OrderIn | OrderToGo): OrderResDTO {
@@ -13,8 +14,8 @@ export class OrderDTOMapper {
       })),
       totalValue: order.totalValue,
       cookId: order.cookId,
-      tableId: order.orderType === 'in' ? order.tableId : null,
-      tablePerson: order.orderType === 'in' ? order.tablePerson : null,
+      tableId: order.orderType === OrderType.IN ? order.tableId : null,
+      tablePerson: order.orderType === OrderType.IN ? order.tablePerson : null,
     };
   }
 }
