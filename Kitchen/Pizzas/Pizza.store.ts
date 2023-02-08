@@ -1,9 +1,10 @@
 import { Pizza } from './Pizza/Pizza';
 import { PizzaStoreError } from './exceptions/Pizza-store.exception';
-import { PizzaIngredient } from './Pizza-ingredient/Pizza-ingredient';
+import { PizzaIngredient } from './Pizza/Pizza-ingredient';
 import { PizzaResDTO } from './DTO/Pizza-res.dto';
 import { isPlus } from '../../general-validators/plus.validator';
 import { PizzaIngredientType } from './Pizza/Pizza-ingredients.type';
+import { PizzaDTOMapper } from './DTO/Pizza-dto.mapper';
 
 export class PizzaStore {
   private static instance: PizzaStore | null;
@@ -21,13 +22,8 @@ export class PizzaStore {
   }
 
   public findPizzaById(nameId: string): PizzaResDTO {
-    const foundPizza: Pizza = this.gatIfExisting(nameId);
-    return {
-      nameId: foundPizza.nameId,
-      name: foundPizza.name,
-      recipe: foundPizza.recipe,
-      price: foundPizza.price,
-    };
+    const foundPizza: Pizza = this.getIfExisting(nameId);
+    return PizzaDTOMapper.mapToResDTO(foundPizza);
   }
 
   public addPizza(
@@ -39,23 +35,14 @@ export class PizzaStore {
       this.translateIngredientsArrToMap(ingredients);
 
     const newPizza: Pizza = new Pizza(name, ingredientsMap, price);
-    const updatedMap: Map<string, Pizza> = this.pizzas.set(
-      newPizza.nameId,
-      newPizza
-    );
-    const addedPizza = updatedMap.get(newPizza.nameId) as PizzaResDTO;
+    this.pizzas.set(newPizza.nameId, newPizza);
 
-    return {
-      nameId: addedPizza.nameId,
-      name: addedPizza.name,
-      recipe: addedPizza.recipe,
-      price: addedPizza.price,
-    };
+    return PizzaDTOMapper.mapToResDTO(newPizza);
   }
 
   public removePizza(nameId: string): boolean {
-    this.gatIfExisting(nameId);
-    this.pizzas.delete(nameId);
+    const result: boolean = this.pizzas.delete(nameId);
+    if (!result) this.throwValidateError(nameId);
     return true;
   }
 
@@ -64,34 +51,32 @@ export class PizzaStore {
     ingredients: PizzaIngredientType[],
     price: number
   ): PizzaResDTO {
-    const foundPizza: Pizza = this.gatIfExisting(nameId);
+    const foundPizza: Pizza = this.getIfExisting(nameId);
     const updatedIngredients: Map<string, PizzaIngredient> =
       this.translateIngredientsArrToMap(ingredients);
 
-    const updatedMap: Map<string, Pizza> = this.pizzas.set(foundPizza.nameId, {
+    const newPizza: Pizza = {
       ...foundPizza,
       recipe: updatedIngredients,
       price,
-    });
-
-    const updatedPizza: Pizza = updatedMap.get(foundPizza.nameId) as Pizza;
-
-    return {
-      nameId: updatedPizza.nameId,
-      name: updatedPizza.name,
-      recipe: updatedPizza.recipe,
-      price: updatedPizza.price,
     };
+
+    this.pizzas.set(foundPizza.nameId, newPizza);
+
+    return PizzaDTOMapper.mapToResDTO(newPizza);
   }
 
-  private gatIfExisting(nameId: string): Pizza {
+  private throwValidateError(nameId: string): void {
+    throw new PizzaStoreError(
+      'Pizza with passed nameId not found in store, could not proceed.',
+      { nameId }
+    );
+  }
+
+  private getIfExisting(nameId: string): Pizza {
     const foundPizza = this.pizzas.get(nameId);
-    if (!foundPizza)
-      throw new PizzaStoreError(
-        'Pizza with passed nameId not found in store, could not proceed.',
-        { nameId }
-      );
-    return foundPizza;
+    if (!foundPizza) this.throwValidateError(nameId);
+    return foundPizza as Pizza;
   }
 
   private translateIngredientsArrToMap(

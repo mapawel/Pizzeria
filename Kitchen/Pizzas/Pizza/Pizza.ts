@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PizzaIngredient } from '../Pizza-ingredient/Pizza-ingredient';
+import { PizzaIngredient } from './Pizza-ingredient';
 
 export class Pizza {
   readonly id: string;

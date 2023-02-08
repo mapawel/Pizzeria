@@ -4,7 +4,7 @@ import { PizzaStore } from './Pizzas/Pizza.store';
 import { IngredientResDTO } from './Ingredients/DTO/Ingredient-res.dto';
 import { PizzaResDTO } from './Pizzas/DTO/Pizza-res.dto';
 import { PizzaIngredientType } from './Pizzas/Pizza/Pizza-ingredients.type';
-import { PizzaIngredient } from './Pizzas/Pizza-ingredient/Pizza-ingredient';
+import { PizzaIngredient } from './Pizzas/Pizza/Pizza-ingredient';
 import { PizzaIngredientDTO } from './Pizzas/DTO/Pizza-ingredient.dto';
 
 export class KitchenService {

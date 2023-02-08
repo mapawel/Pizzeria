@@ -2,6 +2,7 @@ import { StockIngredient } from './Stock-ingredient/Stock-ingredient';
 import { IngretientStoreError } from './exceptions/Ingredient-store.exception';
 import { IngredientResDTO } from './DTO/Ingredient-res.dto';
 import { isPlus } from '../../general-validators/plus.validator';
+import { IngredientDTOMapper } from './DTO/Ingredient-dto.mapper';
 
 export class IngredientsStore {
   private static instance: IngredientsStore | null;
@@ -20,11 +21,7 @@ export class IngredientsStore {
 
   public findIngredientById(nameId: string): IngredientResDTO {
     const foundIngredient: StockIngredient = this.getIfExistingById(nameId);
-    return {
-      nameId: foundIngredient.nameId,
-      name: foundIngredient.name,
-      qty: foundIngredient.qty,
-    };
+    return IngredientDTOMapper.mapToResDTO(foundIngredient);
   }
 
   public addIngredient(name: string, qty: number): IngredientResDTO {
@@ -32,25 +29,14 @@ export class IngredientsStore {
 
     const ingredient: StockIngredient = new StockIngredient(name, qty);
 
-    const updatedMap: Map<string, StockIngredient> = this.ingredients.set(
-      ingredient.nameId,
-      ingredient
-    );
+    this.ingredients.set(ingredient.nameId, ingredient);
 
-    const addedIngredient: StockIngredient = updatedMap.get(
-      ingredient.nameId
-    ) as StockIngredient;
-
-    return {
-      nameId: addedIngredient.nameId,
-      name: addedIngredient.name,
-      qty: addedIngredient.qty,
-    };
+    return IngredientDTOMapper.mapToResDTO(ingredient);
   }
 
   public removeIngredient(nameId: string): boolean {
-    this.getIfExistingById(nameId);
-    this.ingredients.delete(nameId);
+    const result: boolean = this.ingredients.delete(nameId);
+    if (!result) this.throwValidateError(nameId);
     return true;
   }
 
@@ -60,28 +46,17 @@ export class IngredientsStore {
         ? this.checkIfEnough(nameId, -qty)
         : this.getIfExistingById(nameId);
 
-    const updatedMap: Map<string, StockIngredient> = this.ingredients.set(
-      nameId,
-      {
-        ...foundIngredient,
-        qty: foundIngredient.qty + qty,
-      }
-    );
-
-    const updatedItem: StockIngredient = updatedMap.get(
-      foundIngredient.nameId
-    ) as StockIngredient;
-
-    return {
-      nameId: updatedItem.nameId,
-      name: updatedItem.name,
-      qty: updatedItem.qty,
+    const newIngredient: StockIngredient = {
+      ...foundIngredient,
+      qty: foundIngredient.qty + qty,
     };
+
+    this.ingredients.set(nameId, newIngredient);
+
+    return IngredientDTOMapper.mapToResDTO(newIngredient);
   }
 
   public checkIfEnough(nameId: string, qty: number): StockIngredient {
-    // tu wyrzucam Ingredient bo wykorzystuję to wewnętrznie w tym scope ale to metoda publiczna i można się do niej dostać z zewnątrz - czy powinno wyć wyrzucane DTO?
-    // TODO to fix!
     const foundIngredient = this.getIfExistingById(nameId);
     if (foundIngredient.qty < qty) {
       throw new Error(`Not enought ${nameId} on stock.`);
@@ -89,13 +64,16 @@ export class IngredientsStore {
     return foundIngredient;
   }
 
+  private throwValidateError(nameId: string): void {
+    throw new IngretientStoreError(
+      'Ingredient with passet nameId not found in store, could not proceed.',
+      { nameId }
+    );
+  }
+
   private getIfExistingById(nameId: string): StockIngredient {
     const foundIngredient = this.ingredients.get(nameId);
-    if (!foundIngredient)
-      throw new IngretientStoreError(
-        'Ingredient with passet nameId not found in store, could not proceed.',
-        { nameId }
-      );
-    return foundIngredient;
+    if (!foundIngredient) this.throwValidateError(nameId);
+    return foundIngredient as StockIngredient;
   }
 }

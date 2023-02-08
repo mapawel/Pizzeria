@@ -1,6 +1,7 @@
 import { Table } from '../Table/Table';
 import { TablesStoreError } from '../exceptions/Tables-store.exception';
 import { TableDTO } from '../DTO/Table.dto';
+import { TableDTOMapper } from '../DTO/Table-dto.mapper';
 
 export class TablesStore {
   private static instance: TablesStore | null;
@@ -18,14 +19,9 @@ export class TablesStore {
   }
 
   public findTableByNameId(nameId: string): TableDTO {
-    const foundTable: Table = this.validateIfExisting(nameId);
+    const foundTable: Table = this.getIfExisting(nameId);
 
-    return {
-      nameId: foundTable.nameId,
-      sits: foundTable.sits,
-      sitsAvailable: foundTable.sitsAvailable,
-      isAvailable: foundTable.isAvailable,
-    };
+    return TableDTOMapper.mapToDTO(foundTable);
   }
 
   public addTable({
@@ -35,20 +31,14 @@ export class TablesStore {
     isAvailable,
   }: TableDTO): TableDTO {
     const table: Table = new Table(nameId, sits, sitsAvailable, isAvailable);
-    const updatedMap: Map<string, Table> = this.tables.set(nameId, table);
-    const addedTable: Table = updatedMap.get(nameId) as Table;
+    this.tables.set(nameId, table);
 
-    return {
-      nameId: addedTable.nameId,
-      sits: addedTable.sits,
-      sitsAvailable: addedTable.sitsAvailable,
-      isAvailable: addedTable.isAvailable,
-    };
+    return TableDTOMapper.mapToDTO(table);
   }
 
   public removeTable(nameId: string): boolean {
-    this.validateIfExisting(nameId);
-    this.tables.delete(nameId);
+    const result: boolean = this.tables.delete(nameId);
+    if (!result) this.throwValidateError(nameId);
     return true;
   }
 
@@ -58,22 +48,17 @@ export class TablesStore {
     sitsAvailable,
     isAvailable,
   }: TableDTO): TableDTO {
-    const table: Table = this.validateIfExisting(nameId);
-    const updatedMap = this.tables.set(table.nameId, {
+    const table: Table = this.getIfExisting(nameId);
+    const newTable: Table = {
       ...table,
       nameId,
       sits,
       sitsAvailable,
       isAvailable,
-    });
-    const updatedTable: Table = updatedMap.get(table.nameId) as Table;
-
-    return {
-      nameId: updatedTable.nameId,
-      sits: updatedTable.sits,
-      sitsAvailable: updatedTable.sitsAvailable,
-      isAvailable: updatedTable.isAvailable,
     };
+    this.tables.set(table.nameId, newTable);
+
+    return TableDTOMapper.mapToDTO(table);
   }
 
   public findFreeTable(person: number): TableDTO | null {
@@ -84,26 +69,24 @@ export class TablesStore {
     });
     if (!tableAvailable) return null;
 
-    return {
-      nameId: tableAvailable['nameId'],
-      sits: tableAvailable['sits'],
-      sitsAvailable: tableAvailable['sitsAvailable'],
-      isAvailable: tableAvailable['isAvailable'],
-    };
+    return TableDTOMapper.mapToDTO(tableAvailable);
   }
 
   public checkIfAvailable(nameId: string): boolean {
-    const currentTable = this.validateIfExisting(nameId);
+    const currentTable = this.getIfExisting(nameId);
     return currentTable.isAvailable;
   }
 
-  private validateIfExisting(nameId: string): Table {
+  private throwValidateError(nameId: string): void {
+    throw new TablesStoreError(
+      'Table with passed id not found in store, could not proceed.',
+      { nameId }
+    );
+  }
+
+  private getIfExisting(nameId: string): Table {
     const foundWorker = this.tables.get(nameId);
-    if (!foundWorker)
-      throw new TablesStoreError(
-        'Table with passed id not found in store, could not proceed.',
-        { nameId }
-      );
-    return foundWorker;
+    if (!foundWorker) this.throwValidateError(nameId);
+    return foundWorker as Table;
   }
 }

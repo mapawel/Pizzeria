@@ -3,7 +3,8 @@ import { OrderIn } from '../Order/Order-in';
 import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
 import { OrdersStoreError } from '../exceptions/Orders-store.exception';
 import { OrderResDTO } from '../DTO/Order-res.dto';
-import { OrderItem } from 'Orders/Order/Order-item.type';
+import { OrderItem } from '../Order/Order-item.type';
+import { OrderDTOMapper } from '../DTO/Order-dto.mapper';
 
 export class OrdersStore {
   private static instance: OrdersStore | null;
@@ -27,49 +28,18 @@ export class OrdersStore {
     id: string,
     orderType: OrdersServiceCollections
   ): OrderResDTO {
-    const foundOrder: OrderIn | OrderToGo = this.validateIfExisting(
-      id,
-      orderType
-    );
+    const foundOrder: OrderIn | OrderToGo = this.getIfExisting(id, orderType);
 
-    return {
-      id: foundOrder.id,
-      orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: foundOrder.totalValue,
-      cookId: foundOrder.cookId,
-      tableNameId:
-        foundOrder.orderType === 'in' ? foundOrder.tableNameId : null,
-      tablePerson:
-        foundOrder.orderType === 'in' ? foundOrder.tablePerson : null,
-    };
+    return OrderDTOMapper.mapToResDTO(foundOrder);
   }
 
   public addOrder(
     order: OrderIn | OrderToGo,
     orderType: OrdersServiceCollections
   ): OrderResDTO {
-    const updatedMap = this[orderType].set(order.id, order);
+    this[orderType].set(order.id, order);
 
-    const uptadedOrder: OrderIn | OrderToGo = updatedMap.get(order.id) as
-      | OrderIn
-      | OrderToGo;
-
-    return {
-      id: uptadedOrder.id,
-      orderItems: uptadedOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: uptadedOrder.totalValue,
-      cookId: uptadedOrder.cookId,
-      tableNameId:
-        uptadedOrder.orderType === 'in' ? uptadedOrder.tableNameId : null,
-      tablePerson:
-        uptadedOrder.orderType === 'in' ? uptadedOrder.tablePerson : null,
-    };
+    return OrderDTOMapper.mapToResDTO(order);
   }
 
   public moveOrder(
@@ -92,62 +62,48 @@ export class OrdersStore {
     cookId: string,
     orderType: OrdersServiceCollections
   ): OrderResDTO {
-    const foundOrder: OrderToGo | OrderIn = this.validateIfExisting(
+    const foundOrder: OrderToGo | OrderIn = this.getIfExisting(
       orderId,
       orderType
     );
 
-    const updatedMap = this[orderType].set(foundOrder.id, {
-      ...foundOrder,
-      cookId,
-    });
+    const updatedOrder: OrderIn | OrderToGo = { ...foundOrder, cookId };
 
-    const uptadedOrder: OrderIn | OrderToGo = updatedMap.get(foundOrder.id) as
-      | OrderIn
-      | OrderToGo;
+    this[orderType].set(foundOrder.id, updatedOrder);
 
-    return {
-      id: uptadedOrder.id,
-      orderItems: uptadedOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: uptadedOrder.totalValue,
-      cookId: uptadedOrder.cookId,
-      tableNameId:
-        uptadedOrder.orderType === 'in' ? uptadedOrder.tableNameId : null,
-      tablePerson:
-        uptadedOrder.orderType === 'in' ? uptadedOrder.tablePerson : null,
-    };
+    return OrderDTOMapper.mapToResDTO(updatedOrder);
   }
 
-  public deleteOrder(
+  public removeOrder(
     orderId: string,
     orderType: OrdersServiceCollections
   ): boolean {
-    const foundOrder = this.validateIfExisting(orderId, orderType);
-    this[orderType].delete(foundOrder.id);
+    const result: boolean = this[orderType].delete(orderId);
+    if (!result) this.throwValidateError(orderId);
     return true;
   }
 
-  private validateIfExisting(
+  private throwValidateError(id: string): void {
+    throw new OrdersStoreError(
+      'Order with passed id not found in store, could not proceed.',
+      { id }
+    );
+  }
+
+  private getIfExisting(
     id: string,
     orderType: OrdersServiceCollections
   ): OrderIn | OrderToGo {
     const foundOrder = this[orderType].get(id);
-    if (!foundOrder)
-      throw new OrdersStoreError(
-        'Order with passed id not found in store, could not proceed.',
-        { id }
-      );
-    return foundOrder;
+    if (!foundOrder) this.throwValidateError(id);
+    return foundOrder as OrderIn | OrderToGo;
   }
 
   private getOrderInstanceById(
     id: string,
     orderType: OrdersServiceCollections
   ): OrderIn | OrderToGo {
-    const foundOrderInstance: OrderIn | OrderToGo = this.validateIfExisting(
+    const foundOrderInstance: OrderIn | OrderToGo = this.getIfExisting(
       id,
       orderType
     );

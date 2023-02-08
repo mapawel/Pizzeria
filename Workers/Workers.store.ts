@@ -2,6 +2,7 @@ import { Worker } from './Worker/Worker';
 import { WorkersStoreError } from './exceptions/Workers-store.exception';
 import { Role } from './Worker/Roles.enum';
 import { WorkerDTO } from './DTO/Worker.dto';
+import { WorkerDTOMapper } from './DTO/Worker-dto.mapper';
 
 export class WorkersStore {
   private static instance: WorkersStore | null;
@@ -19,15 +20,10 @@ export class WorkersStore {
   }
 
   public findAvailableCookById(id: string): WorkerDTO {
-    const foundWorker: Worker = this.validateIfExisting(id);
+    const foundWorker: Worker = this.getIfExisting(id);
     if (!foundWorker.isAvailable)
       throw new WorkersStoreError('This worker is not available', { id });
-    return {
-      id: foundWorker.id,
-      name: foundWorker.name,
-      role: foundWorker.role,
-      isAvailable: foundWorker.isAvailable,
-    };
+    return WorkerDTOMapper.mapToDTO(foundWorker);
   }
 
   public findAvailableWorker(role: Role): WorkerDTO | null {
@@ -38,41 +34,24 @@ export class WorkersStore {
     });
     if (!workerAvailable) return null;
 
-    return {
-      id: workerAvailable['id'],
-      name: workerAvailable['name'],
-      role: workerAvailable['role'],
-      isAvailable: workerAvailable['isAvailable'],
-    };
+    return WorkerDTOMapper.mapToDTO(workerAvailable);
   }
 
   public findWorker(id: string): WorkerDTO {
-    const foundWorker: Worker = this.validateIfExisting(id);
-
-    return {
-      id: foundWorker.id,
-      name: foundWorker.name,
-      role: foundWorker.role,
-      isAvailable: foundWorker.isAvailable,
-    };
+    const foundWorker: Worker = this.getIfExisting(id);
+    return WorkerDTOMapper.mapToDTO(foundWorker);
   }
 
   public addWorker({ name, role, isAvailable }: WorkerDTO): WorkerDTO {
     const newWorker: Worker = new Worker(name, role, isAvailable);
-    const updatedMap = this.workers.set(newWorker.id, newWorker);
-    const addedWorker: Worker = updatedMap.get(newWorker.id) as Worker;
+    this.workers.set(newWorker.id, newWorker);
 
-    return {
-      id: addedWorker.id,
-      name: addedWorker.name,
-      role: addedWorker.role,
-      isAvailable: addedWorker.isAvailable,
-    };
+    return WorkerDTOMapper.mapToDTO(newWorker);
   }
 
   public removeWorker(id: string): boolean {
-    this.validateIfExisting(id);
-    this.workers.delete(id);
+    const result: boolean = this.workers.delete(id);
+    if (!result) this.throwValidateError(id);
     return true;
   }
 
@@ -81,29 +60,28 @@ export class WorkersStore {
       throw new WorkersStoreError('To update worker, worker id is required', {
         name,
       });
-    const worker: Worker = this.validateIfExisting(id);
-    const updatedMap = this.workers.set(worker.id, {
+    const worker: Worker = this.getIfExisting(id);
+    const newWorker: Worker = {
       ...worker,
       name,
       role,
       isAvailable,
-    });
-    const updatedWorker: Worker = updatedMap.get(worker.id) as Worker;
-
-    return {
-      name: updatedWorker.name,
-      role: updatedWorker.role,
-      isAvailable: updatedWorker.isAvailable,
     };
+    this.workers.set(worker.id, newWorker);
+
+    return WorkerDTOMapper.mapToDTO(newWorker);
   }
 
-  private validateIfExisting(id: string): Worker {
+  private throwValidateError(id: string): void {
+    throw new WorkersStoreError(
+      'Worker with passed id not found in store, could not proceed.',
+      { id }
+    );
+  }
+
+  private getIfExisting(id: string): Worker {
     const foundWorker = this.workers.get(id);
-    if (!foundWorker)
-      throw new WorkersStoreError(
-        'Worker with passed id not found in store, could not proceed.',
-        { id }
-      );
-    return foundWorker;
+    if (!foundWorker) this.throwValidateError(id);
+    return foundWorker as Worker;
   }
 }
