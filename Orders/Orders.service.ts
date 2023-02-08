@@ -14,6 +14,7 @@ import { WorkerDTO } from 'Workers/DTO/Worker.dto';
 import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/Pizza-res.dto';
 import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 import { TableDTO } from 'Tables/DTO/Table.dto';
+import { OrderDTOMapper } from './DTO/Order-dto.mapper';
 
 export class OrdersService {
   private static instance: OrdersService | null;
@@ -45,17 +46,9 @@ export class OrdersService {
       this.orders[ordersType],
       ([_, value]) => value
     );
-    return ordersArr.map((orderObj: OrderIn | OrderToGo) => ({
-      id: orderObj.id,
-      orderItems: orderObj.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: orderObj.totalValue,
-      cookId: orderObj.cookId,
-      tableNameId: orderObj.orderType === 'in' ? orderObj.tableNameId : null,
-      tablePerson: orderObj.orderType === 'in' ? orderObj.tablePerson : null,
-    }));
+    return ordersArr.map((orderObj: OrderIn | OrderToGo) =>
+      OrderDTOMapper.mapToResDTO(orderObj)
+    );
   }
 
   public findOrderById(
@@ -109,17 +102,7 @@ export class OrdersService {
       );
     this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_IN_PROGRESS);
 
-    return {
-      id: newOrder.id,
-      orderItems: newOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: newOrder.totalValue,
-      cookId: newOrder.cookId,
-      tableNameId: null,
-      tablePerson: null,
-    };
+    return OrderDTOMapper.mapToResDTO(newOrder);
   }
 
   public orderIn(
@@ -180,17 +163,7 @@ export class OrdersService {
         discount,
         this.getTotalPizzasQty(preOrdersArr)
       );
-    return {
-      id: newOrder.id,
-      orderItems: newOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: newOrder.totalValue,
-      cookId: newOrder.cookId,
-      tableNameId: newOrder.tableNameId,
-      tablePerson: newOrder.tablePerson,
-    };
+    return OrderDTOMapper.mapToResDTO(newOrder);
   }
 
   private getTotalOrderValue(

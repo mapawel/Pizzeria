@@ -84,17 +84,7 @@ export class CustomerService {
       OrdersServiceCollections.ORDERS_IN_PROGRESS
     );
 
-    return {
-      id: updatedOrder.id,
-      orderItems: updatedOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: updatedOrder.totalValue,
-      cookId: updatedOrder.cookId,
-      tableNameId: updatedOrder.tableNameId,
-      tablePerson: updatedOrder.tablePerson,
-    };
+    return updatedOrder;
   }
 
   public finishOrder(orderId: string): OrderResDTO {
@@ -116,17 +106,7 @@ export class CustomerService {
       OrdersServiceCollections.ORDERS_FINISHED
     );
 
-    return {
-      id: foundOrder.id,
-      orderItems: foundOrder.orderItems.map((order: OrderItem) => ({
-        pizzaNameId: order.pizzaNameId,
-        qty: order.qty,
-      })),
-      totalValue: foundOrder.totalValue,
-      cookId: foundOrder.cookId,
-      tableNameId: foundOrder.tableNameId,
-      tablePerson: foundOrder.tablePerson,
-    };
+    return foundOrder;
   }
 
   public makeOrderTableFree(orderId: string): boolean {
