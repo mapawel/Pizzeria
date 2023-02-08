@@ -1,6 +1,6 @@
 import { Role } from './Workers/Worker/Roles.enum';
 import { OrderResDTO } from './Orders/DTO/Order-res.dto';
-import { OrdersServiceCollections } from './Orders/Order/Orders-service.collections.enum';
+import { OrderState } from './Orders/Order/orders-state.enum';
 import { WorkerDTO } from './Workers/DTO/Worker.dto';
 import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { CustomerService } from './Customer-service/Customer.service';
@@ -68,15 +68,15 @@ const order: OrderResDTO = service.orderIn(
 
 console.log(
   'pending orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrderState.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrderState.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrderState.ORDERS_FINISHED)
 );
 
 const cook: WorkerDTO = backoffice.addWorker({
@@ -90,15 +90,15 @@ service.executePendingOrder(order.id, cook.id as string);
 
 console.log(
   'pending orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrderState.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrderState.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrderState.ORDERS_FINISHED)
 );
 
 console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FINISHING ----> ');
@@ -106,15 +106,15 @@ service.finishOrder(order.id);
 
 console.log(
   'pending orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_PENDING)
+  service.listOrders(OrderState.ORDERS_PENDING)
 );
 console.log(
   'in progress orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_IN_PROGRESS)
+  service.listOrders(OrderState.ORDERS_IN_PROGRESS)
 );
 console.log(
   'finished orders ----> ',
-  service.listOrders(OrdersServiceCollections.ORDERS_FINISHED)
+  service.listOrders(OrderState.ORDERS_FINISHED)
 );
 
 service.makeOrderTableFree(order.id);

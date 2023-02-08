@@ -1,6 +1,6 @@
 import { OrderToGo } from '../Order/Order-to-go';
 import { OrderIn } from '../Order/Order-in';
-import { OrdersServiceCollections } from '../Order/Orders-service.collections.enum';
+import { OrderState } from '../Order/orders-state.enum';
 import { OrdersStoreError } from '../exceptions/Orders-store.exception';
 import { OrderResDTO } from '../DTO/Order-res.dto';
 import { OrderItem } from '../Order/Order-item.type';
@@ -24,10 +24,7 @@ export class OrdersStore {
     OrdersStore.instance = null;
   }
 
-  public findOrderById(
-    id: string,
-    orderType: OrdersServiceCollections
-  ): OrderResDTO {
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
     const foundOrder: OrderIn | OrderToGo = this.getIfExisting(id, orderType);
 
     return OrderDTOMapper.mapToResDTO(foundOrder);
@@ -35,7 +32,7 @@ export class OrdersStore {
 
   public addOrder(
     order: OrderIn | OrderToGo,
-    orderType: OrdersServiceCollections
+    orderType: OrderState
   ): OrderResDTO {
     this[orderType].set(order.id, order);
 
@@ -44,8 +41,8 @@ export class OrdersStore {
 
   public moveOrder(
     orderId: string,
-    prevCollection: OrdersServiceCollections,
-    targetCollection: OrdersServiceCollections
+    prevCollection: OrderState,
+    targetCollection: OrderState
   ): boolean {
     const foundOrderInstance: OrderIn | OrderToGo = this.getOrderInstanceById(
       orderId,
@@ -60,7 +57,7 @@ export class OrdersStore {
   public updateOrderCook(
     orderId: string,
     cookId: string,
-    orderType: OrdersServiceCollections
+    orderType: OrderState
   ): OrderResDTO {
     const foundOrder: OrderToGo | OrderIn = this.getIfExisting(
       orderId,
@@ -74,10 +71,7 @@ export class OrdersStore {
     return OrderDTOMapper.mapToResDTO(updatedOrder);
   }
 
-  public removeOrder(
-    orderId: string,
-    orderType: OrdersServiceCollections
-  ): boolean {
+  public removeOrder(orderId: string, orderType: OrderState): boolean {
     const result: boolean = this[orderType].delete(orderId);
     if (!result) this.throwValidateError(orderId);
     return true;
@@ -92,7 +86,7 @@ export class OrdersStore {
 
   private getIfExisting(
     id: string,
-    orderType: OrdersServiceCollections
+    orderType: OrderState
   ): OrderIn | OrderToGo {
     const foundOrder = this[orderType].get(id);
     if (!foundOrder) this.throwValidateError(id);
@@ -101,7 +95,7 @@ export class OrdersStore {
 
   private getOrderInstanceById(
     id: string,
-    orderType: OrdersServiceCollections
+    orderType: OrderState
   ): OrderIn | OrderToGo {
     const foundOrderInstance: OrderIn | OrderToGo = this.getIfExisting(
       id,

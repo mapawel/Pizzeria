@@ -1,4 +1,4 @@
-import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
+import { OrderState } from '../Orders/Order/orders-state.enum';
 import { OrdersService } from '../Orders/Orders.service';
 import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
 import { OrderItem } from '../Orders/Order/Order-item.type';
@@ -31,14 +31,11 @@ export class CustomerService {
     CustomerService.instance = null;
   }
 
-  public listOrders(ordersType: OrdersServiceCollections): OrderResDTO[] {
+  public listOrders(ordersType: OrderState): OrderResDTO[] {
     return this.orders.listOrders(ordersType);
   }
 
-  public findOrderById(
-    id: string,
-    orderType: OrdersServiceCollections
-  ): OrderResDTO {
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
     return this.orders.findOrderById(id, orderType);
   }
 
@@ -57,7 +54,7 @@ export class CustomerService {
   public executePendingOrder(orderId: string, cookId: string): OrderResDTO {
     const foundOrder: OrderResDTO = this.orders.findOrderById(
       orderId,
-      OrdersServiceCollections.ORDERS_PENDING
+      OrderState.ORDERS_PENDING
     );
 
     const ingredients: PizzaIngredientDTO[] =
@@ -75,13 +72,13 @@ export class CustomerService {
     const updatedOrder: OrderResDTO = this.orders.updateOrderCook(
       foundOrder.id,
       cook.id as string,
-      OrdersServiceCollections.ORDERS_PENDING
+      OrderState.ORDERS_PENDING
     );
 
     this.orders.moveOrder(
       updatedOrder.id,
-      OrdersServiceCollections.ORDERS_PENDING,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS
+      OrderState.ORDERS_PENDING,
+      OrderState.ORDERS_IN_PROGRESS
     );
 
     return updatedOrder;
@@ -90,7 +87,7 @@ export class CustomerService {
   public finishOrder(orderId: string): OrderResDTO {
     const foundOrder: OrderResDTO = this.orders.findOrderById(
       orderId,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS
+      OrderState.ORDERS_IN_PROGRESS
     );
     const cook: WorkerDTO = this.workers.findWorker(
       foundOrder.cookId as string
@@ -102,8 +99,8 @@ export class CustomerService {
 
     this.orders.moveOrder(
       orderId,
-      OrdersServiceCollections.ORDERS_IN_PROGRESS,
-      OrdersServiceCollections.ORDERS_FINISHED
+      OrderState.ORDERS_IN_PROGRESS,
+      OrderState.ORDERS_FINISHED
     );
 
     return foundOrder;
@@ -112,7 +109,7 @@ export class CustomerService {
   public makeOrderTableFree(orderId: string): boolean {
     const foundOrder: OrderResDTO = this.orders.findOrderById(
       orderId,
-      OrdersServiceCollections.ORDERS_FINISHED
+      OrderState.ORDERS_FINISHED
     );
 
     if (foundOrder.tableId && foundOrder.tablePerson) {

@@ -4,7 +4,7 @@ import { OrderToGo } from './Order/Order-to-go';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { TablesStore } from '../Tables/Tables-store/Tables.store';
 import { WorkersStore } from '../Workers/Workers.store';
-import { OrdersServiceCollections } from './Order/Orders-service.collections.enum';
+import { OrderState } from './Order/orders-state.enum';
 import { OrdersServiceError } from './exceptions/Orders-service.exception';
 import { OrderItem } from './Order/Order-item.type';
 import { Role } from '../Workers/Worker/Roles.enum';
@@ -42,7 +42,7 @@ export class OrdersService {
     OrdersService.instance = null;
   }
 
-  public listOrders(ordersType: OrdersServiceCollections): OrderResDTO[] {
+  public listOrders(ordersType: OrderState): OrderResDTO[] {
     const ordersArr: (OrderIn | OrderToGo)[] = Array.from(
       this.orders[ordersType],
       ([_, value]) => value
@@ -52,25 +52,22 @@ export class OrdersService {
     );
   }
 
-  public findOrderById(
-    id: string,
-    orderType: OrdersServiceCollections
-  ): OrderResDTO {
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
     return this.orders.findOrderById(id, orderType);
   }
 
   public updateOrderCook(
     orderId: string,
     cookId: string,
-    orderType: OrdersServiceCollections
+    orderType: OrderState
   ): OrderResDTO {
     return this.orders.updateOrderCook(orderId, cookId, orderType);
   }
 
   public moveOrder(
     orderId: string,
-    prevCollection: OrdersServiceCollections,
-    targetCollection: OrdersServiceCollections
+    prevCollection: OrderState,
+    targetCollection: OrderState
   ): boolean {
     return this.orders.moveOrder(orderId, prevCollection, targetCollection);
   }
@@ -101,7 +98,7 @@ export class OrdersService {
         discount,
         this.getTotalPizzasQty(preOrdersArr)
       );
-    this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_IN_PROGRESS);
+    this.orders.addOrder(newOrder, OrderState.ORDERS_IN_PROGRESS);
 
     return OrderDTOMapper.mapToResDTO(newOrder);
   }
@@ -145,10 +142,7 @@ export class OrdersService {
         tablePerson
       );
       this.kitchen.cookPizzas(ingredients);
-      this.orders.addOrder(
-        newOrder,
-        OrdersServiceCollections.ORDERS_IN_PROGRESS
-      );
+      this.orders.addOrder(newOrder, OrderState.ORDERS_IN_PROGRESS);
     } else {
       newOrder = new OrderIn(
         preOrdersArr,
@@ -157,7 +151,7 @@ export class OrdersService {
         table.id,
         tablePerson
       );
-      this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_PENDING);
+      this.orders.addOrder(newOrder, OrderState.ORDERS_PENDING);
     }
     if (discount)
       this.discounts.useLimitedDiscount(

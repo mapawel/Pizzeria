@@ -1,6 +1,6 @@
 import { WorkersStore } from '../Workers/Workers.store';
 import { TablesService } from '../Tables/Tables.service';
-import { OrdersServiceCollections } from '../Orders/Order/Orders-service.collections.enum';
+import { OrderState } from '../Orders/Order/orders-state.enum';
 import { KitchenService } from '../Kitchen/Kitchen.service';
 import { OrdersService } from '../Orders/Orders.service';
 import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
@@ -77,14 +77,11 @@ export class BackofficeService {
     return this.kitchen.updatePizza(nameId, ingredients, price);
   }
 
-  public listOrders(ordersType: OrdersServiceCollections): OrderResDTO[] {
+  public listOrders(ordersType: OrderState): OrderResDTO[] {
     return this.orders.listOrders(ordersType);
   }
 
-  public findOrderById(
-    id: string,
-    orderType: OrdersServiceCollections
-  ): OrderResDTO {
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
     return this.orders.findOrderById(id, orderType);
   }
 
