@@ -66,7 +66,7 @@ export class IngredientsStore {
 
   private throwValidateError(nameId: string): void {
     throw new IngretientStoreError(
-      'Ingredient with passet nameId not found in store, could not proceed.',
+      'Ingredient with passed nameId not found in store, could not proceed.',
       { nameId }
     );
   }
