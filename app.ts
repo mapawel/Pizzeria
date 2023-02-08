@@ -4,6 +4,7 @@ import { OrdersServiceCollections } from './Orders/Order/Orders-service.collecti
 import { WorkerDTO } from './Workers/DTO/Worker.dto';
 import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { CustomerService } from './Customer-service/Customer.service';
+import { TableWithIdDTO } from 'Tables/DTO/Table-with-id.dto';
 
 const backoffice: BackofficeService = BackofficeService.getInstance();
 const service: CustomerService = CustomerService.getInstance();
@@ -43,8 +44,8 @@ backoffice.addWorker({
   isAvailable: false,
 });
 
-backoffice.addTable({
-  nameId: '1',
+const exampleTable: TableWithIdDTO = backoffice.addTable({
+  name: '1',
   sits: 4,
   sitsAvailable: 4,
   isAvailable: true,
@@ -118,4 +119,4 @@ console.log(
 
 service.makeOrderTableFree(order.id);
 
-console.log('ttttt ----> ', backoffice.findTableByNameId('1'));
+console.log('table ----> ', backoffice.findTableByNameId(exampleTable.id));

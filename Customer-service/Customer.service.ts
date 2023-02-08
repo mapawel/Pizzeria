@@ -115,9 +115,9 @@ export class CustomerService {
       OrdersServiceCollections.ORDERS_FINISHED
     );
 
-    if (foundOrder.tableNameId && foundOrder.tablePerson) {
+    if (foundOrder.tableId && foundOrder.tablePerson) {
       return this.tables.makeTableFree(
-        foundOrder.tableNameId as string,
+        foundOrder.tableId as string,
         foundOrder.tablePerson
       );
     }

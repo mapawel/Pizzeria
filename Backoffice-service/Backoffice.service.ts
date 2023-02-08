@@ -6,6 +6,7 @@ import { OrdersService } from '../Orders/Orders.service';
 import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
 import { WorkerDTO } from '../Workers/DTO/Worker.dto';
 import { TableDTO } from '../Tables/DTO/Table.dto';
+import { TableWithIdDTO } from '../Tables/DTO/Table-with-id.dto';
 import { DiscountService } from '../Discounts/Discount.service';
 import { IngredientResDTO } from '../Kitchen/Ingredients/DTO/Ingredient-res.dto';
 import { PizzaResDTO } from '../Kitchen/Pizzas/DTO/Pizza-res.dto';
@@ -131,31 +132,33 @@ export class BackofficeService {
   }
 
   public addTable({
-    nameId,
+    name,
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableDTO {
+  }: TableDTO): TableWithIdDTO {
     return this.tables.addTable({
-      nameId,
+      name,
       sits,
       sitsAvailable,
       isAvailable,
     });
   }
 
-  public removeTable(nameId: string): boolean {
-    return this.tables.removeTable(nameId);
+  public removeTable(id: string): boolean {
+    return this.tables.removeTable(id);
   }
 
   public updateTable({
-    nameId,
+    id,
+    name,
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableDTO {
+  }: TableWithIdDTO): TableWithIdDTO {
     return this.tables.updateTable({
-      nameId,
+      id,
+      name,
       sits,
       sitsAvailable,
       isAvailable,

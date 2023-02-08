@@ -1,4 +1,5 @@
 import { TableDTO } from './DTO/Table.dto';
+import { TableWithIdDTO } from './DTO/Table-with-id.dto';
 import { TablesStore } from './Tables-store/Tables.store';
 
 export class TablesService {
@@ -18,52 +19,54 @@ export class TablesService {
     TablesService.instance = null;
   }
 
-  public findTableByNameId(nameId: string): TableDTO {
-    return this.tables.findTableByNameId(nameId);
+  public findTableByNameId(id: string): TableWithIdDTO {
+    return this.tables.findTableByNameId(id);
   }
 
   public addTable({
-    nameId,
+    name,
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableDTO {
+  }: TableDTO): TableWithIdDTO {
     return this.tables.addTable({
-      nameId,
+      name,
       sits,
       sitsAvailable,
       isAvailable,
     });
   }
 
-  public removeTable(nameId: string): boolean {
-    return this.tables.removeTable(nameId);
+  public removeTable(id: string): boolean {
+    return this.tables.removeTable(id);
   }
 
   public updateTable({
-    nameId,
+    id,
+    name,
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableDTO {
+  }: TableWithIdDTO): TableWithIdDTO {
     return this.tables.updateTable({
-      nameId,
+      id,
+      name,
       sits,
       sitsAvailable,
       isAvailable,
     });
   }
 
-  public findFreeTable(person: number): TableDTO | null {
+  public findFreeTable(person: number): TableWithIdDTO | null {
     return this.tables.findFreeTable(person);
   }
 
-  public checkIfAvailable(nameId: string): boolean {
-    return this.tables.checkIfAvailable(nameId)
+  public checkIfAvailable(id: string): boolean {
+    return this.tables.checkIfAvailable(id);
   }
 
-  public makeTableFree(tableNameId: string, freeSits: number): boolean {
-    const table: TableDTO = this.tables.findTableByNameId(tableNameId);
+  public makeTableFree(id: string, freeSits: number): boolean {
+    const table: TableWithIdDTO = this.tables.findTableByNameId(id);
 
     this.tables.updateTable({
       ...table,

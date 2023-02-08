@@ -13,7 +13,7 @@ export class OrderDTOMapper {
       })),
       totalValue: order.totalValue,
       cookId: order.cookId,
-      tableNameId: order.orderType === 'in' ? order.tableNameId : null,
+      tableId: order.orderType === 'in' ? order.tableId : null,
       tablePerson: order.orderType === 'in' ? order.tablePerson : null,
     };
   }

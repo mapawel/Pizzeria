@@ -14,6 +14,7 @@ import { WorkerDTO } from 'Workers/DTO/Worker.dto';
 import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/Pizza-res.dto';
 import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 import { TableDTO } from 'Tables/DTO/Table.dto';
+import { TableWithIdDTO } from 'Tables/DTO/Table-with-id.dto';
 import { OrderDTOMapper } from './DTO/Order-dto.mapper';
 
 export class OrdersService {
@@ -110,7 +111,7 @@ export class OrdersService {
     tablePerson: number,
     discount?: string
   ): OrderResDTO {
-    const table: TableDTO | null = this.tables.findFreeTable(tablePerson);
+    const table: TableWithIdDTO | null = this.tables.findFreeTable(tablePerson);
     if (!table)
       throw new OrdersServiceError(
         'This order cannot be prepared - no a free table available. Check if the customer wants to order to go out.',
@@ -140,7 +141,7 @@ export class OrdersService {
         preOrdersArr,
         totalValue,
         cook.id,
-        table.nameId,
+        table.id,
         tablePerson
       );
       this.kitchen.cookPizzas(ingredients);
@@ -153,7 +154,7 @@ export class OrdersService {
         preOrdersArr,
         totalValue,
         null,
-        table.nameId,
+        table.id,
         tablePerson
       );
       this.orders.addOrder(newOrder, OrdersServiceCollections.ORDERS_PENDING);

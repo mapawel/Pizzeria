@@ -6,6 +6,6 @@ export interface OrderResDTO {
   }[];
   totalValue: number;
   cookId: string | null;
-  tableNameId: string | (() => string) | null;
+  tableId: string | (() => string) | null;
   tablePerson: number | null;
 }

@@ -9,7 +9,7 @@ export class OrderIn {
     readonly orderItems: OrderItem[],
     readonly totalValue: number,
     public cookId: string | null,
-    public tableNameId: string,
+    public tableId: string,
     public tablePerson: number
   ) {
     this.id = uuidv4();
