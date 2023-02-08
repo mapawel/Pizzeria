@@ -43,6 +43,7 @@ export class WorkersStore {
   }
 
   public addWorker({ name, role, isAvailable }: WorkerDTO): WorkerDTO {
+    this.validateIfNameExists(name);
     const newWorker: Worker = new Worker(name, role, isAvailable);
     this.workers.set(newWorker.id, newWorker);
 
@@ -83,5 +84,20 @@ export class WorkersStore {
     const foundWorker = this.workers.get(id);
     if (!foundWorker) this.throwValidateError(id);
     return foundWorker as Worker;
+  }
+
+  private validateIfNameExists(nameToValidate: string): void {
+    const tablesArr: Worker[] = Array.from(this.workers, ([_, value]) => value);
+
+    const foundTableIndex: number = tablesArr.findIndex(
+      ({ name }: { name: string }) =>
+        name === nameToValidate.trim().toUpperCase()
+    );
+
+    if (foundTableIndex >= 0)
+      throw new WorkersStoreError(
+        'Worker with passed name already exists, could not proceed.',
+        { name: nameToValidate.trim().toUpperCase() }
+      );
   }
 }

@@ -1,8 +1,8 @@
 import { Table } from '../Table/Table';
-import { TableWithIdDTO } from './Table-with-id.dto';
+import { TableDTO } from './Table.dto';
 
 export class TableDTOMapper {
-  public static mapToResDTO(table: Table): TableWithIdDTO {
+  public static mapToDTO(table: Table): TableDTO {
     return {
       id: table.id,
       name: table.name,

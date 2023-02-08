@@ -3,11 +3,13 @@ import { Role } from './Roles.enum';
 
 export class Worker {
   readonly id: string;
+  readonly name: string;
   public constructor(
-    readonly name: string,
+    name: string,
     readonly role: Role,
     readonly isAvailable: boolean
   ) {
     this.id = uuidv4();
+    this.name = name.trim().toUpperCase();
   }
 }

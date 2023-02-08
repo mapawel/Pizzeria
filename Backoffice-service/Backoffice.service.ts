@@ -6,7 +6,6 @@ import { OrdersService } from '../Orders/Orders.service';
 import { OrderResDTO } from '../Orders/DTO/Order-res.dto';
 import { WorkerDTO } from '../Workers/DTO/Worker.dto';
 import { TableDTO } from '../Tables/DTO/Table.dto';
-import { TableWithIdDTO } from '../Tables/DTO/Table-with-id.dto';
 import { DiscountService } from '../Discounts/Discount.service';
 import { IngredientResDTO } from '../Kitchen/Ingredients/DTO/Ingredient-res.dto';
 import { PizzaResDTO } from '../Kitchen/Pizzas/DTO/Pizza-res.dto';
@@ -133,7 +132,7 @@ export class BackofficeService {
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableWithIdDTO {
+  }: TableDTO): TableDTO {
     return this.tables.addTable({
       name,
       sits,
@@ -152,7 +151,7 @@ export class BackofficeService {
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableWithIdDTO): TableWithIdDTO {
+  }: TableDTO): TableDTO {
     return this.tables.updateTable({
       id,
       name,

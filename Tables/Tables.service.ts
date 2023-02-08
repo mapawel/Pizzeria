@@ -1,5 +1,4 @@
 import { TableDTO } from './DTO/Table.dto';
-import { TableWithIdDTO } from './DTO/Table-with-id.dto';
 import { TablesStore } from './Tables-store/Tables.store';
 
 export class TablesService {
@@ -19,7 +18,7 @@ export class TablesService {
     TablesService.instance = null;
   }
 
-  public findTableByNameId(id: string): TableWithIdDTO {
+  public findTableByNameId(id: string): TableDTO {
     return this.tables.findTableByNameId(id);
   }
 
@@ -28,7 +27,7 @@ export class TablesService {
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableDTO): TableWithIdDTO {
+  }: TableDTO): TableDTO {
     return this.tables.addTable({
       name,
       sits,
@@ -47,7 +46,7 @@ export class TablesService {
     sits,
     sitsAvailable,
     isAvailable,
-  }: TableWithIdDTO): TableWithIdDTO {
+  }: TableDTO): TableDTO {
     return this.tables.updateTable({
       id,
       name,
@@ -57,7 +56,7 @@ export class TablesService {
     });
   }
 
-  public findFreeTable(person: number): TableWithIdDTO | null {
+  public findFreeTable(person: number): TableDTO | null {
     return this.tables.findFreeTable(person);
   }
 
@@ -66,7 +65,7 @@ export class TablesService {
   }
 
   public makeTableFree(id: string, freeSits: number): boolean {
-    const table: TableWithIdDTO = this.tables.findTableByNameId(id);
+    const table: TableDTO = this.tables.findTableByNameId(id);
 
     this.tables.updateTable({
       ...table,

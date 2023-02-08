@@ -4,7 +4,7 @@ import { OrderState } from './Orders/Order/orders-state.enum';
 import { WorkerDTO } from './Workers/DTO/Worker.dto';
 import { BackofficeService } from './Backoffice-service/Backoffice.service';
 import { CustomerService } from './Customer-service/Customer.service';
-import { TableWithIdDTO } from 'Tables/DTO/Table-with-id.dto';
+import { TableDTO } from './Tables/DTO/Table.dto';
 
 const backoffice: BackofficeService = BackofficeService.getInstance();
 const service: CustomerService = CustomerService.getInstance();
@@ -44,8 +44,8 @@ backoffice.addWorker({
   isAvailable: false,
 });
 
-const exampleTable: TableWithIdDTO = backoffice.addTable({
-  name: '1',
+const exampleTable: TableDTO = backoffice.addTable({
+  name: '    PIerwszY ',
   sits: 4,
   sitsAvailable: 4,
   isAvailable: true,
@@ -80,7 +80,7 @@ console.log(
 );
 
 const cook: WorkerDTO = backoffice.addWorker({
-  name: 'dariusz',
+  name: 'janusz',
   role: Role.COOK,
   isAvailable: true,
 });
@@ -119,4 +119,5 @@ console.log(
 
 service.makeOrderTableFree(order.id);
 
-console.log('table ----> ', backoffice.findTableByNameId(exampleTable.id));
+if (exampleTable.id)
+  console.log('table ----> ', backoffice.findTableByNameId(exampleTable.id));
