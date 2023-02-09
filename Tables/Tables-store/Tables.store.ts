@@ -18,10 +18,28 @@ export class TablesStore {
     TablesStore.instance = null;
   }
 
-  public findTableByNameId(nameId: string): TableDTO {
-    const foundTable: Table = this.getIfExisting(nameId);
+  public findTableById(id: string): TableDTO {
+    const foundTable: Table = this.getIfExisting(id);
 
     return TableDTOMapper.mapToDTO(foundTable);
+  }
+
+  public findFreeTable(person: number): TableDTO | null {
+    const tablesArr: Table[] = Array.from(
+      this.tables,
+      ([_, value]: [string, Table]) => value
+    );
+    const tableAvailable: Table | undefined = tablesArr.find(
+      ({
+        sitsAvailable,
+        isAvailable,
+      }: {
+        sitsAvailable: number;
+        isAvailable: Boolean;
+      }) => !!isAvailable && sitsAvailable >= person
+    );
+
+    return tableAvailable ? TableDTOMapper.mapToDTO(tableAvailable) : null;
   }
 
   public addTable({
@@ -60,17 +78,6 @@ export class TablesStore {
     this.tables.set(table.id, newTable);
 
     return TableDTOMapper.mapToDTO(table);
-  }
-
-  public findFreeTable(person: number): TableDTO | null {
-    let tableAvailable: Table | null = null;
-    this.tables.forEach((table: Table) => {
-      if (table.sitsAvailable >= person && table.isAvailable && !tableAvailable)
-        tableAvailable = table;
-    });
-    if (!tableAvailable) return null;
-
-    return TableDTOMapper.mapToDTO(tableAvailable);
   }
 
   public checkIfAvailable(id: string): boolean {

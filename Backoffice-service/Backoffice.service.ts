@@ -124,7 +124,7 @@ export class BackofficeService {
   }
 
   public findTableByNameId(nameId: string): TableDTO {
-    return this.tables.findTableByNameId(nameId);
+    return this.tables.findTableById(nameId);
   }
 
   public addTable({

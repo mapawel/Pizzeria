@@ -19,22 +19,24 @@ export class WorkersStore {
     WorkersStore.instance = null;
   }
 
-  public findAvailableCookById(id: string): WorkerDTO {
+  public getAvailableCookById(id: string): WorkerDTO {
     const foundWorker: Worker = this.getIfExisting(id);
     if (!foundWorker.isAvailable)
       throw new WorkersStoreError('This worker is not available', { id });
     return WorkerDTOMapper.mapToDTO(foundWorker);
   }
 
-  public findAvailableWorker(role: Role): WorkerDTO | null {
-    let workerAvailable: Worker | null = null;
-    this.workers.forEach((worker: Worker) => {
-      if (worker.role === role && worker.isAvailable && !workerAvailable)
-        workerAvailable = worker;
-    });
-    if (!workerAvailable) return null;
+  public findAvailableWorker(searchedRole: Role): WorkerDTO | null {
+    const workersArr: Worker[] = Array.from(
+      this.workers,
+      ([_, value]: [string, Worker]) => value
+    );
+    const workerAvailable: Worker | undefined = workersArr.find(
+      ({ role, isAvailable }: { role: Role; isAvailable: Boolean }) =>
+        !!isAvailable && role === searchedRole
+    );
 
-    return WorkerDTOMapper.mapToDTO(workerAvailable);
+    return workerAvailable ? WorkerDTOMapper.mapToDTO(workerAvailable) : null;
   }
 
   public findWorker(id: string): WorkerDTO {

@@ -18,8 +18,8 @@ export class TablesService {
     TablesService.instance = null;
   }
 
-  public findTableByNameId(id: string): TableDTO {
-    return this.tables.findTableByNameId(id);
+  public findTableById(id: string): TableDTO {
+    return this.tables.findTableById(id);
   }
 
   public addTable({
@@ -65,7 +65,7 @@ export class TablesService {
   }
 
   public makeTableFree(id: string, freeSits: number): boolean {
-    const table: TableDTO = this.tables.findTableByNameId(id);
+    const table: TableDTO = this.tables.findTableById(id);
 
     this.tables.updateTable({
       ...table,

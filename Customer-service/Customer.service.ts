@@ -60,7 +60,7 @@ export class CustomerService {
     const ingredients: PizzaIngredientDTO[] =
       this.kitchen.takeIngredientsForOrder(foundOrder.orderItems);
 
-    const cook: WorkerDTO = this.workers.findAvailableCookById(cookId);
+    const cook: WorkerDTO = this.workers.getAvailableCookById(cookId);
 
     this.workers.updateWorker({
       ...cook,
