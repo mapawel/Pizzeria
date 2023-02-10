@@ -3,6 +3,7 @@ import { Discount } from '../Discount/Discount';
 import { DiscountLimited } from '../Discount/Discount-limited';
 import { DiscountResDTO } from '../DTO/Discount-res.dto';
 import { DiscountDTOMapper } from '../DTO/Discount-dto.mapper';
+import { isPlusOrZero } from '../../general-validators/plus-or-zero.validator';
 
 export class DiscountStore {
   private static instance: DiscountStore | null;
@@ -67,7 +68,7 @@ export class DiscountStore {
     const fountDiscount: Discount | DiscountLimited = this.getIfExisting(
       this.unifyCode(code)
     );
-
+    if (limitQty) isPlusOrZero(limitQty, 'Qty')
     const newDiscount: Discount | DiscountLimited =
       fountDiscount instanceof DiscountLimited
         ? {
@@ -81,7 +82,6 @@ export class DiscountStore {
           };
 
     this.discounts.set(this.unifyCode(code), newDiscount);
-
     return DiscountDTOMapper.mapToResDTO(newDiscount);
   }
 

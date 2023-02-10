@@ -31,6 +31,7 @@ export class WorkersStore {
       this.workers,
       ([_, value]: [string, Worker]) => value
     );
+    // Object.values
     const workerAvailable: Worker | undefined = workersArr.find(
       ({ role, isAvailable }: { role: Role; isAvailable: Boolean }) =>
         !!isAvailable && role === searchedRole
