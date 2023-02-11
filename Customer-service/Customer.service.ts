@@ -35,14 +35,6 @@ export class CustomerService {
     TablesService.resetInstance();
   }
 
-  public listOrders(ordersType: OrderState): OrderResDTO[] {
-    return this.orders.listOrders(ordersType);
-  }
-
-  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
-    return this.orders.findOrderById(id, orderType);
-  }
-
   public orderToGo(preOrdersArr: OrderItem[], discount?: string): OrderResDTO {
     return this.orders.orderToGo(preOrdersArr, discount);
   }
@@ -123,5 +115,13 @@ export class CustomerService {
       );
     }
     return false;
+  }
+
+  public listOrders(ordersType: OrderState): OrderResDTO[] {
+    return this.orders.listOrders(ordersType);
+  }
+
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
+    return this.orders.findOrderById(id, orderType);
   }
 }
