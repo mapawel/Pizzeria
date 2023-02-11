@@ -21,7 +21,7 @@ export class CustomerServiceSpecSetup {
 
   private readonly tableName = 'BigRound';
   private readonly tableSits = 6;
-  private readonly tableSitsAvailable = 6;
+  public readonly tableSitsAvailable = 6;
   private readonly tableIsAvailable = true;
   private exampleTableId: string = '';
 

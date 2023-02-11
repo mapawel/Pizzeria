@@ -10,6 +10,7 @@ import { ValidatorError } from '../../general-validators/Validator.exception';
 import { OrdersStoreError } from '../../Orders/exceptions/Orders-store.exception';
 import { PizzaStoreError } from '../../Kitchen/Pizzas/exceptions/Pizza-store.exception';
 import { IngretientStoreError } from '../../Kitchen/Ingredients/exceptions/Ingredient-store.exception';
+import { TableDTO } from 'Tables/DTO/Table.dto';
 
 describe('Customer service tests suite - orderIn() variants:', () => {
   //setup
@@ -92,7 +93,41 @@ describe('Customer service tests suite - orderIn() variants:', () => {
       //then
     });
 
-    it('Should create a new order to go with a discount.', () => {
+    it('Should update table status connected with the order to not available and decrease a number od sits available at this table.', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      const personsToOrder: number = 1;
+      setup.changeExampleTableAvailibility(true); // a table for 6 persons
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 1,
+        },
+      ];
+
+      //when
+      const addedOrder: OrderResDTO = service.orderIn(
+        orderItems,
+        personsToOrder
+      );
+      if (addedOrder.id) {
+        const foundOrder: OrderResDTO = service.findOrderById(
+          addedOrder.id,
+          OrderState.ORDERS_IN_PROGRESS
+        );
+        //then
+        const assertedTable: TableDTO = backoffice.findTableById(
+          foundOrder.tableId as string
+        );
+        assert.isFalse(assertedTable.isAvailable);
+        assert.equal(
+          assertedTable.sitsAvailable,
+          setup.tableSitsAvailable - personsToOrder
+        );
+      } else assert.fail('No order found.');
+    });
+
+    it('Should create a new order at place with a discount.', () => {
       // all necessary backoffice states are set in setup class
       //given
       const personsToOrder: number = 1;
