@@ -4,6 +4,12 @@ import { CustomerService } from '../Customer.service';
 import { OrdersServiceError } from '../../Orders/exceptions/Orders-service.exception';
 import { BackofficeService } from '../../Backoffice-service/Backoffice.service';
 import { CustomerServiceSpecSetup } from './Customer-service.spec-setup';
+import { OrderItem } from '../../Orders/Order/Order-item.type';
+import { OrderState } from '../../Orders/Order/orders-state.enum';
+import { ValidatorError } from '../../general-validators/Validator.exception';
+import { OrdersStoreError } from '../../Orders/exceptions/Orders-store.exception';
+import { PizzaStoreError } from '../../Kitchen/Pizzas/exceptions/Pizza-store.exception';
+import { IngretientStoreError } from '../../Kitchen/Ingredients/exceptions/Ingredient-store.exception';
 
 describe('Customer service tests suite - orderToGo variants:', () => {
   //setup
@@ -24,10 +30,10 @@ describe('Customer service tests suite - orderToGo variants:', () => {
 
   describe('happy path test:', () => {
     it('Should create a new order to go. It can be done if there is a cook available only but free table.', () => {
+      // all necessary backoffice states are set in setup class
       //given
       setup.changeExampleTableAvailibility(false);
-      //when
-      const addedOrder: OrderResDTO = service.orderToGo([
+      const orderItems: OrderItem[] = [
         {
           pizzaNameId: setup.pizza1NameId,
           qty: 2,
@@ -36,25 +42,142 @@ describe('Customer service tests suite - orderToGo variants:', () => {
           pizzaNameId: setup.pizza2NameId,
           qty: 1,
         },
-      ]);
+      ];
+      const expectedTotalValue: number =
+        setup.pizza1Price * orderItems[0].qty +
+        setup.pizza2Price * orderItems[1].qty;
+
+      //when
+      const addedOrder: OrderResDTO = service.orderToGo(orderItems);
 
       //then
-      console.log('addedOrder ----> ', addedOrder);
+      assert.deepEqual(addedOrder.orderItems, orderItems);
+      assert.equal(addedOrder.totalValue, expectedTotalValue);
+      assert.isNull(addedOrder.tableId);
     });
 
-    // it('Should throw OrdersServiceError due to no cook available to prepare a new order.', () => {
-    //   assert.throws(() => {
-    //     service.orderToGo([
-    //       {
-    //         pizzaNameId: pizza1NameId,
-    //         qty: 2,
-    //       },
-    //       {
-    //         pizzaNameId: pizza2NameId,
-    //         qty: 1,
-    //       },
-    //     ]);
-    //   }, OrdersServiceError);
-    // });
+    it('Should create a new order to go and this order should have state "ordersInProgress"', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 1,
+        },
+      ];
+
+      //when
+      const addedOrder: OrderResDTO = service.orderToGo(orderItems);
+      if (addedOrder.id) {
+        const foundOrder: OrderResDTO = service.findOrderById(
+          addedOrder.id,
+          OrderState.ORDERS_IN_PROGRESS
+        );
+        //then
+        assert.deepEqual(foundOrder, addedOrder);
+      } else assert.fail('No order found.');
+      //then
+    });
+
+    it('Should create a new order to go with a discount.', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 2,
+        },
+        {
+          pizzaNameId: setup.pizza2NameId,
+          qty: 1,
+        },
+      ];
+      const totalValue: number =
+        setup.pizza1Price * orderItems[0].qty +
+        setup.pizza2Price * orderItems[1].qty;
+      const expectedTotalValue: number =
+        totalValue * (1 - setup.discountUnlimitedPercent);
+      //when
+      const addedOrder: OrderResDTO = service.orderToGo(
+        orderItems,
+        setup.discountUnlimitedCode
+      );
+
+      //then
+      assert.deepEqual(addedOrder.orderItems, orderItems);
+      assert.equal(addedOrder.totalValue, expectedTotalValue);
+      assert.isNull(addedOrder.tableId);
+    });
+  });
+
+  describe('unsuccessed path test:', () => {
+    it('Should throw OrdersServiceError on try to orderToGo while there is no cook available even there is a free table', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      setup.changeExampleWorkerAvailibility(false);
+      setup.changeExampleTableAvailibility(true);
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 1,
+        },
+      ];
+      //when
+      //then
+      assert.throws(() => {
+        service.orderToGo(orderItems);
+      }, OrdersServiceError);
+    });
+
+    it('Should throw OrdersStoreError on try to orderToGo not existing product', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      setup.changeExampleWorkerAvailibility(true);
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: 'nonExisting',
+          qty: 1,
+        },
+      ];
+      //when
+      //then
+      assert.throws(() => {
+        service.orderToGo(orderItems);
+      }, PizzaStoreError);
+    });
+
+    it('Should throw ValidatorError on try to orderToGo wrong product qty (-)', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      setup.changeExampleWorkerAvailibility(true);
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 0,
+        },
+      ];
+      //when
+      //then
+      assert.throws(() => {
+        service.orderToGo(orderItems);
+      }, ValidatorError);
+    });
+
+    it('Should throw IngredientsStoreError on try to orderToGo a product while there is no ingredient stock to prepare it', () => {
+      // all necessary backoffice states are set in setup class
+      //given
+      setup.makeIngredientOutOfStock()
+      const orderItems: OrderItem[] = [
+        {
+          pizzaNameId: setup.pizza1NameId,
+          qty: 1,
+        },
+      ];
+      //when
+      //then
+      assert.throws(() => {
+        service.orderToGo(orderItems);
+      }, IngretientStoreError);
+    });
   });
 });

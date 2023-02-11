@@ -8,10 +8,10 @@ export class CustomerServiceSpecSetup {
   private readonly backoffice: BackofficeService;
 
   public readonly discountUnlimitedCode = 'UnlimitedCode';
-  private readonly discountUnlimitedPercent = 0.1;
+  public readonly discountUnlimitedPercent = 0.1;
   public readonly discountLimitedCode = 'LimitedCode';
   private readonly discountLimitedQty = 3;
-  private readonly discountLimitedPercent = 0.5;
+  public readonly discountLimitedPercent = 0.5;
 
   private readonly workerName = 'John Doe';
   private readonly workerRole: Role = Role.COOK;
@@ -28,7 +28,7 @@ export class CustomerServiceSpecSetup {
   private readonly ingredient1NameId = this.ingredient1Name
     .trim()
     .toUpperCase();
-  private readonly ingredient1Qty = 1000;
+  private ingredient1Qty = 1000;
 
   private readonly ingredient2Name = 'Cheese';
   private readonly ingredient2NameId = this.ingredient2Name
@@ -114,8 +114,12 @@ export class CustomerServiceSpecSetup {
     );
   }
 
-  public workerId(): string {
+  public get workerId(): string {
     return this.exampleWorkerId;
+  }
+
+  public get tableId(): string {
+    return this.exampleTableId;
   }
 
   public changeExampleWorkerAvailibility(availability: boolean): void {
@@ -125,6 +129,13 @@ export class CustomerServiceSpecSetup {
       role: this.workerRole,
       isAvailable: availability,
     });
+  }
+
+  public makeIngredientOutOfStock(): void {
+    this.backoffice.updateIngredient(
+      this.ingredient1NameId,
+      -this.ingredient1Qty
+    );
   }
 
   public changeExampleTableAvailibility(availability: boolean): void {

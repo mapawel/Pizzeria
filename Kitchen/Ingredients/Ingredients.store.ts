@@ -59,7 +59,9 @@ export class IngredientsStore {
   public checkIfEnough(nameId: string, qty: number): StockIngredient {
     const foundIngredient = this.getIfExistingById(nameId);
     if (foundIngredient.qty < qty) {
-      throw new Error(`Not enought ${nameId} on stock.`);
+      throw new IngretientStoreError(`Not enought ${nameId} on stock.`, {
+        nameId,
+      });
     }
     return foundIngredient;
   }

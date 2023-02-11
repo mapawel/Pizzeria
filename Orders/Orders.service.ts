@@ -15,6 +15,7 @@ import { PizzaResDTO } from 'Kitchen/Pizzas/DTO/Pizza-res.dto';
 import { PizzaIngredientDTO } from 'Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 import { TableDTO } from 'Tables/DTO/Table.dto';
 import { OrderDTOMapper } from './DTO/Order-dto.mapper';
+import { isPlus } from '../general-validators/plus.validator';
 
 export class OrdersService {
   private static instance: OrdersService | null;
@@ -83,6 +84,10 @@ export class OrdersService {
         'This order cannot be delivered - no cook available.',
         { preOrdersArr, discount }
       );
+
+    preOrdersArr.forEach(({ qty }: { qty: number }) =>
+      isPlus(qty, 'Order qty')
+    );
 
     const ingredients: PizzaIngredientDTO[] =
       this.kitchen.takeIngredientsForOrder(preOrdersArr);
