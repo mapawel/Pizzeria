@@ -2,6 +2,7 @@ import { assert } from 'chai';
 import { BackofficeService } from '../Backoffice.service';
 import { ValidatorError } from '../../general-validators/Validator.exception';
 import { TableDTO } from '../../Tables/DTO/Table.dto';
+import { TablesStoreError } from '../../Tables/exceptions/Tables-store.exception';
 
 describe('Backoffice service tests suite - tables methods:', () => {
   //setup
@@ -55,95 +56,170 @@ describe('Backoffice service tests suite - tables methods:', () => {
         });
       }, ValidatorError);
     });
+
+    it('should throw ValidatorError on try to add a table with not proper sits available (greather than sits)', () => {
+      //given
+      const newTableSitsAvailable = tableSits + 1;
+
+      //when//then
+      assert.throws(
+        () =>
+          backoffice.addTable({
+            name: tableName,
+            sits: tableSits,
+            sitsAvailable: newTableSitsAvailable,
+            isAvailable: tableIsAvailable,
+          }),
+        ValidatorError
+      );
+    });
+
+    it('should throw DiscountError on try to find not existing discount', () => {
+      //when//then
+      assert.throws(
+        () => backoffice.findTableById('nonExisting'),
+        TablesStoreError
+      );
+    });
   });
 
-  // it('should throw DiscountError on try to find not existing discount', () => {
-  //   //when//then
-  //   assert.throws(
-  //     () => backoffice.findDiscountByCode('nonExisting'),
-  //     DiscountError
-  //   );
-  // });
+  describe('removeTable() test:', () => {
+    it('should remove a table by code', () => {
+      //given
+      const addedTable: TableDTO = backoffice.addTable({
+        name: tableName,
+        sits: tableSits,
+        sitsAvailable: tableSitsAvailable,
+        isAvailable: tableIsAvailable,
+      });
 
-  // describe('removeDiscount() test:', () => {
-  //   it('should remove discount by code', () => {
-  //     //given
-  //     backoffice.addDiscount(discountCode, discountPercent);
-  //     backoffice.findDiscountByCode(discountCode);
+      if (addedTable.id) {
+        backoffice.findTableById(addedTable.id);
+        //when
+        backoffice.removeTable(addedTable.id);
+        //then
+        assert.throws(() => {
+          backoffice.findTableById(addedTable.id as string);
+        }, TablesStoreError);
+      } else {
+        assert.fail('Table id not found');
+      }
+    });
 
-  //     //when
-  //     backoffice.removeDiscount(normalizedDiscountCode);
-  //     //then
+    it('should throw DiscountError on try to remove not existing discount', () => {
+      //when//then
+      assert.throws(
+        () => backoffice.removeTable('nonExisting'),
+        TablesStoreError
+      );
+    });
+  });
 
-  //     assert.throws(
-  //       () => backoffice.findDiscountByCode(discountCode),
-  //       DiscountError
-  //     );
-  //   });
+  describe('updateTable() test:', () => {
+    //given
+    const newTableName = '  newBigRound';
+    const newTableNomalizedName = newTableName.trim().toLowerCase();
+    const newTableSits = 8;
+    const newTableSitsAvailable = 8;
+    const newTableIsAvailable = false;
 
-  //   it('should throw DiscountError on try to remove not existing discount', () => {
-  //     //when//then
-  //     assert.throws(
-  //       () => backoffice.removeDiscount('nonExisting'),
-  //       DiscountError
-  //     );
-  //   });
-  // });
+    it('should update a table with new params', () => {
+      const addedTable: TableDTO = backoffice.addTable({
+        name: tableName,
+        sits: tableSits,
+        sitsAvailable: tableSitsAvailable,
+        isAvailable: tableIsAvailable,
+      });
 
-  // describe('updatePizza() test:', () => {
-  //   it('should update discount with new params', () => {
-  //     //given
-  //     const newDiscountPercent = 0.3;
-  //     const newDiscountLimit = 100;
+      if (addedTable.id) {
+        //when
+        backoffice.updateTable({
+          id: addedTable.id,
+          name: newTableName,
+          sits: newTableSits,
+          sitsAvailable: newTableSitsAvailable,
+          isAvailable: newTableIsAvailable,
+        });
+        //then
+        const assertedTable: TableDTO = backoffice.findTableById(addedTable.id);
+        assert.equal(assertedTable.name, newTableNomalizedName);
+        assert.equal(assertedTable.sits, newTableSits);
+        assert.equal(assertedTable.sitsAvailable, newTableSitsAvailable);
+        assert.equal(assertedTable.isAvailable, newTableIsAvailable);
+      } else {
+        assert.fail('Table id not found');
+      }
+    });
 
-  //     backoffice.addDiscount(discountCode, discountPercent, discountLimit);
+    it('should throw ValidatorError on try to update a table with not proper sits qty (-)', () => {
+      //given
+      const newTableSits = -10;
+      const addedTable: TableDTO = backoffice.addTable({
+        name: tableName,
+        sits: tableSits,
+        sitsAvailable: tableSitsAvailable,
+        isAvailable: tableIsAvailable,
+      });
 
-  //     //when
+      if (addedTable.id) {
+        //when//then
+        assert.throws(
+          () =>
+            backoffice.updateTable({
+              id: addedTable.id,
+              name: tableName,
+              sits: newTableSits,
+              sitsAvailable: tableSitsAvailable,
+              isAvailable: tableIsAvailable,
+            }),
+          ValidatorError
+        );
+      } else {
+        assert.fail('Table id not found');
+      }
+    });
 
-  //     backoffice.updateDiscount(
-  //       discountCode,
-  //       newDiscountPercent,
-  //       newDiscountLimit
-  //     );
+    it('should throw ValidatorError on try to update a table with not proper sits available (greather than sits)', () => {
+      //given
+      const newTableSitsAvailable = tableSits + 1;
+      const addedTable: TableDTO = backoffice.addTable({
+        name: tableName,
+        sits: tableSits,
+        sitsAvailable: tableSitsAvailable,
+        isAvailable: tableIsAvailable,
+      });
 
-  //     const assertedDiscount: DiscountResDTO =
-  //       backoffice.findDiscountByCode(discountCode);
+      if (addedTable.id) {
+        //when//then
+        assert.throws(
+          () =>
+            backoffice.updateTable({
+              id: addedTable.id,
+              name: tableName,
+              sits: tableSits,
+              sitsAvailable: newTableSitsAvailable,
+              isAvailable: tableIsAvailable,
+            }),
+          ValidatorError
+        );
+      } else {
+        assert.fail('Table id not found');
+      }
+    });
 
-  //     //then
-  //     assert.equal(assertedDiscount.code, normalizedDiscountCode);
-  //     assert.equal(assertedDiscount.discountPercent, newDiscountPercent);
-  //     assert.equal(assertedDiscount.limitQty, newDiscountLimit);
-  //   });
-
-  //   it('should throw ValidatorError on try to update a discount with not proper limit qty (-)', () => {
-  //     //given
-  //     const newDiscountLimit = -10;
-
-  //     backoffice.addDiscount(discountCode, discountPercent, discountLimit);
-
-  //     //when
-
-  //     //then
-  //     assert.throws(() => {
-  //       backoffice.updateDiscount(
-  //         discountCode,
-  //         discountPercent,
-  //         newDiscountLimit
-  //       );
-  //     }, ValidatorError);
-  //   });
-
-  //   it('should throw DiscountStoreError on try to update not existing discount', () => {
-  //     //when//then
-  //     assert.throws(
-  //       () =>
-  //         backoffice.updateDiscount(
-  //           'nonExisting',
-  //           discountPercent,
-  //           discountLimit
-  //         ),
-  //       DiscountError
-  //     );
-  //   });
-  // });
+    it('should throw TablesStoreError on try to update not existing table', () => {
+      //when//then
+      assert.throws(
+        () =>
+          backoffice.updateTable({
+            id: 'nonExisting',
+            name: newTableName,
+            sits: newTableSits,
+            sitsAvailable: newTableSitsAvailable,
+            isAvailable: newTableIsAvailable,
+          }),
+        TablesStoreError
+      );
+    });
+  });
 });

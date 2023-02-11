@@ -67,7 +67,7 @@ export class WorkersStore {
     const worker: Worker = this.getIfExisting(id);
     const newWorker: Worker = {
       ...worker,
-      name,
+      name: name.trim().toUpperCase(),
       role,
       isAvailable,
     };

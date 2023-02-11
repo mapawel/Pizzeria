@@ -2,6 +2,9 @@ import { Table } from '../Table/Table';
 import { TablesStoreError } from '../exceptions/Tables-store.exception';
 import { TableDTO } from '../DTO/Table.dto';
 import { TableDTOMapper } from '../DTO/Table-dto.mapper';
+import { isPlus } from '../../general-validators/plus.validator';
+import { isPlusOrZero } from '../../general-validators/plus-or-zero.validator';
+import { notGreaterThan } from '../../general-validators/not-greater-than.validator';
 
 export class TablesStore {
   private static instance: TablesStore | null;
@@ -68,9 +71,12 @@ export class TablesStore {
     isAvailable,
   }: TableDTO): TableDTO {
     const table: Table = this.getIfExisting(id ? id : '');
+    isPlus(sits, 'Sits');
+    isPlusOrZero(sitsAvailable, 'SitsAvailable');
+    notGreaterThan(sitsAvailable, sits, 'SitsAvailable');
     const newTable: Table = {
       ...table,
-      name,
+      name: name.trim().toLowerCase(),
       sits,
       sitsAvailable,
       isAvailable,
