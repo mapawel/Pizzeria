@@ -2,7 +2,8 @@ import { Role } from '../../Workers/Worker/Roles.enum';
 import { PizzaIngredientType } from '../../Kitchen/Pizzas/Pizza/Pizza-ingredients.type';
 import { BackofficeService } from '../../Backoffice-service/Backoffice.service';
 import { WorkerDTO } from '../../Workers/DTO/Worker.dto';
-import { TableDTO } from 'Tables/DTO/Table.dto';
+import { TableDTO } from '../../Tables/DTO/Table.dto';
+import { PizzaIngredientDTO } from '../../Kitchen/Pizzas/DTO/Pizza-ingredient.dto';
 
 export class CustomerServiceSpecSetup {
   private readonly backoffice: BackofficeService;
@@ -36,7 +37,7 @@ export class CustomerServiceSpecSetup {
     .toUpperCase();
   private readonly ingredient2Qty = 1000;
 
-  private readonly ingredient3Name = 'Cheese';
+  private readonly ingredient3Name = 'Salami';
   private readonly ingredient3NameId = this.ingredient3Name
     .trim()
     .toUpperCase();
@@ -112,6 +113,66 @@ export class CustomerServiceSpecSetup {
       this.pizza2Ingredients,
       this.pizza2Price
     );
+  }
+
+  private ingredientsRequiredFor2MockedPizzas(
+    pizza1Qty: number,
+    pizza2Qty: number
+  ): PizzaIngredientDTO[] {
+    return [
+      {
+        nameId: this.ingredient1NameId,
+        qty: 100 * pizza1Qty + 150 * pizza2Qty,
+      },
+      {
+        nameId: this.ingredient2NameId,
+        qty: 200 * pizza1Qty,
+      },
+      {
+        nameId: this.ingredient3NameId,
+        qty: 50 * pizza2Qty,
+      },
+    ];
+  }
+
+  public ingredientsAfterCooking2MockedPizzas(
+    pizza1Qty: number,
+    pizza2Qty: number
+  ): PizzaIngredientDTO[] {
+    const allRequiredIng: PizzaIngredientDTO[] =
+      this.ingredientsRequiredFor2MockedPizzas(pizza1Qty, pizza2Qty);
+
+    const ingRegured = (ingredientNameId: string): number =>
+      allRequiredIng.find(
+        ({ nameId }: { nameId: string }) => nameId === ingredientNameId
+      )?.qty as number;
+
+    return [
+      {
+        nameId: this.ingredient1NameId,
+        qty: this.ingredient1Qty - ingRegured(this.ingredient1NameId),
+      },
+      {
+        nameId: this.ingredient2NameId,
+        qty: this.ingredient1Qty - ingRegured(this.ingredient2NameId),
+      },
+      {
+        nameId: this.ingredient3NameId,
+        qty: this.ingredient1Qty - ingRegured(this.ingredient3NameId),
+      },
+    ];
+  }
+
+  public get ingredientQty1(): PizzaIngredientDTO {
+    return this.backoffice.findIngredientById(this.ingredient1NameId);
+  }
+
+  public get ingredientQty2(): PizzaIngredientDTO {
+    return this.backoffice.findIngredientById(this.ingredient2NameId);
+  }
+
+  public get ingredientQty3(): PizzaIngredientDTO {
+    return this.backoffice.findIngredientById(this.ingredient3NameId);
   }
 
   public get workerId(): string {

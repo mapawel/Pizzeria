@@ -124,6 +124,10 @@ export class OrdersService {
         { preOrdersArr, discount, tablePerson }
       );
 
+    preOrdersArr.forEach(({ qty }: { qty: number }) =>
+      isPlus(qty, 'Order qty')
+    );
+
     this.tables.updateTable({
       ...table,
       isAvailable: false,
