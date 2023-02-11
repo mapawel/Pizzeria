@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Ingredient } from 'Kitchen/interfaces/Ingredient.interface';
+import { Ingredient } from '../../Kitchen/interfaces/Ingredient.interface';
 import { BackofficeService } from '../Backoffice.service';
 import { PizzaStoreError } from '../../Kitchen/Pizzas/exceptions/Pizza-store.exception';
 import { PizzaIngredientType } from '../../Kitchen/Pizzas/Pizza/Pizza-ingredients.type';
@@ -176,6 +176,9 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
           qtyNeeded: 200,
         },
       ];
+
+      backoffice.addPizza(pizzaName, pizzaIngredients, pizzaPrice);
+
       assert.throws(() => {
         backoffice.updatePizza(
           pizzaName.toUpperCase(),

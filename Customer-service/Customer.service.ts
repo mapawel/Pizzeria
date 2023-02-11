@@ -29,6 +29,10 @@ export class CustomerService {
 
   public static resetInstance() {
     CustomerService.instance = null;
+    OrdersService.resetInstance();
+    KitchenService.resetInstance();
+    WorkersStore.resetInstance();
+    TablesService.resetInstance();
   }
 
   public listOrders(ordersType: OrderState): OrderResDTO[] {

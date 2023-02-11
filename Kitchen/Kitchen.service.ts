@@ -24,6 +24,8 @@ export class KitchenService {
 
   public static resetInstance() {
     KitchenService.instance = null;
+    IngredientsStore.resetInstance();
+    PizzaStore.resetInstance();
   }
 
   public findIngredientById(nameId: string): IngredientResDTO {

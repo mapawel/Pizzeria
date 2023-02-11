@@ -22,10 +22,10 @@ export class BackofficeService {
 
   private constructor() {
     this.kitchen = KitchenService.getInstance();
-    this.orders = OrdersService.getInstance();
     this.discounts = DiscountService.getInstance();
     this.tables = TablesService.getInstance();
     this.workers = WorkersStore.getInstance();
+    this.orders = OrdersService.getInstance();
   }
 
   public static getInstance() {
@@ -35,6 +35,11 @@ export class BackofficeService {
 
   public static resetInstance() {
     BackofficeService.instance = null;
+    KitchenService.resetInstance();
+    OrdersService.resetInstance();
+    DiscountService.resetInstance();
+    TablesService.resetInstance();
+    WorkersStore.resetInstance();
   }
 
   public findIngredientById(nameId: string): IngredientResDTO {
@@ -76,14 +81,6 @@ export class BackofficeService {
     return this.kitchen.updatePizza(nameId, ingredients, price);
   }
 
-  public listOrders(ordersType: OrderState): OrderResDTO[] {
-    return this.orders.listOrders(ordersType);
-  }
-
-  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
-    return this.orders.findOrderById(id, orderType);
-  }
-
   public findDiscountByCode(code: string): DiscountResDTO {
     return this.discounts.findDiscountByCode(code);
   }
@@ -123,8 +120,8 @@ export class BackofficeService {
     return this.workers.updateWorker({ id, name, role, isAvailable });
   }
 
-  public findTableByNameId(nameId: string): TableDTO {
-    return this.tables.findTableById(nameId);
+  public findTableById(id: string): TableDTO {
+    return this.tables.findTableById(id);
   }
 
   public addTable({
@@ -159,5 +156,13 @@ export class BackofficeService {
       sitsAvailable,
       isAvailable,
     });
+  }
+
+  public listOrders(ordersType: OrderState): OrderResDTO[] {
+    return this.orders.listOrders(ordersType);
+  }
+
+  public findOrderById(id: string, orderType: OrderState): OrderResDTO {
+    return this.orders.findOrderById(id, orderType);
   }
 }

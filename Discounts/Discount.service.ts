@@ -17,6 +17,7 @@ export class DiscountService {
 
   public static resetInstance() {
     DiscountService.instance = null;
+    DiscountStore.resetInstance();
   }
 
   public findDiscountByCode(code: string): DiscountResDTO {

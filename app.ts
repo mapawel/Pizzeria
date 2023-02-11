@@ -120,4 +120,4 @@ console.log(
 service.makeOrderTableFree(order.id);
 
 if (exampleTable.id)
-  console.log('table ----> ', backoffice.findTableByNameId(exampleTable.id));
+  console.log('table ----> ', backoffice.findTableById(exampleTable.id));

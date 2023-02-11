@@ -16,6 +16,7 @@ export class TablesService {
 
   public static resetInstance() {
     TablesService.instance = null;
+    TablesStore.resetInstance()
   }
 
   public findTableById(id: string): TableDTO {
