@@ -49,7 +49,7 @@ describe('Customer service tests suite - finishOrder() variants:', () => {
 
   describe('happy path test:', () => {
     it('Should move the order from "ordersInProgress" to "orfersFinished".', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
         //given
@@ -71,7 +71,7 @@ describe('Customer service tests suite - finishOrder() variants:', () => {
     });
 
     it('Should update cook status to availale after finishOrder()', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
         //given
@@ -89,10 +89,10 @@ describe('Customer service tests suite - finishOrder() variants:', () => {
 
   describe('unsuccessed path test:', () => {
     it('Should throw OrdersStoreError on try to finishOrder with not existing order id.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
+
       if (addedOrderId) {
-        //when
-        //then
+        //when//then
         assert.throws(() => {
           service.finishOrder('notExisting');
         }, OrdersStoreError);

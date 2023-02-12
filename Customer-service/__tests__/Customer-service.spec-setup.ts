@@ -8,43 +8,43 @@ import { PizzaIngredientDTO } from '../../Kitchen/Pizzas/DTO/Pizza-ingredient.dt
 export class CustomerServiceSpecSetup {
   private readonly backoffice: BackofficeService;
 
-  public readonly discountUnlimitedCode = 'UnlimitedCode';
-  public readonly discountUnlimitedPercent = 0.1;
-  public readonly discountLimitedCode = 'LimitedCode';
-  private readonly discountLimitedQty = 3;
-  public readonly discountLimitedPercent = 0.5;
+  public readonly discountUnlimitedCode: string = 'UnlimitedCode';
+  public readonly discountUnlimitedPercent: number = 0.1;
+  public readonly discountLimitedCode: string = 'LimitedCode';
+  private readonly discountLimitedQty: number = 3;
+  public readonly discountLimitedPercent: number = 0.5;
 
-  private readonly workerName = 'John Doe';
+  private readonly workerName: string = 'John Doe';
   private readonly workerRole: Role = Role.COOK;
-  private readonly workerIsAvailable = true;
+  private readonly workerIsAvailable: boolean = true;
   private exampleWorkerId: string = '';
 
-  private readonly tableName = 'BigRound';
-  private readonly tableSits = 6;
-  public readonly tableSitsAvailable = 6;
+  private readonly tableName: string = 'BigRound';
+  private readonly tableSits: number = 6;
+  public readonly tableSitsAvailable: number = 6;
   private readonly tableIsAvailable = true;
   private exampleTableId: string = '';
 
-  private readonly ingredient1Name = 'Sose';
-  private readonly ingredient1NameId = this.ingredient1Name
+  private readonly ingredient1Name: string = 'Sose';
+  private readonly ingredient1NameId: string = this.ingredient1Name
     .trim()
     .toUpperCase();
-  private ingredient1Qty = 1000;
+  private ingredient1Qty: number = 1000;
 
-  private readonly ingredient2Name = 'Cheese';
-  private readonly ingredient2NameId = this.ingredient2Name
+  private readonly ingredient2Name: string = 'Cheese';
+  private readonly ingredient2NameId: string = this.ingredient2Name
     .trim()
     .toUpperCase();
-  private readonly ingredient2Qty = 1000;
+  private readonly ingredient2Qty: number = 1000;
 
-  private readonly ingredient3Name = 'Salami';
-  private readonly ingredient3NameId = this.ingredient3Name
+  private readonly ingredient3Name: string = 'Salami';
+  private readonly ingredient3NameId: string = this.ingredient3Name
     .trim()
     .toUpperCase();
-  private readonly ingredient3Qty = 1000;
+  private readonly ingredient3Qty: number = 1000;
 
-  private readonly pizza1Name = 'ExamplePizza1';
-  public readonly pizza1Price = 30;
+  private readonly pizza1Name: string = 'ExamplePizza1';
+  public readonly pizza1Price: number = 30;
   private readonly pizza1Ingredients: PizzaIngredientType[] = [
     {
       stockIngredientNameId: this.ingredient1NameId,
@@ -55,10 +55,10 @@ export class CustomerServiceSpecSetup {
       qtyNeeded: 200,
     },
   ];
-  public readonly pizza1NameId = this.pizza1Name.trim().toUpperCase();
+  public readonly pizza1NameId: string = this.pizza1Name.trim().toUpperCase();
 
-  private readonly pizza2Name = 'ExamplePizza2';
-  public readonly pizza2Price = 40;
+  private readonly pizza2Name: string = 'ExamplePizza2';
+  public readonly pizza2Price: number = 40;
   private readonly pizza2Ingredients: PizzaIngredientType[] = [
     {
       stockIngredientNameId: this.ingredient1NameId,
@@ -69,7 +69,7 @@ export class CustomerServiceSpecSetup {
       qtyNeeded: 50,
     },
   ];
-  public readonly pizza2NameId = this.pizza2Name.trim().toUpperCase();
+  public readonly pizza2NameId: string = this.pizza2Name.trim().toUpperCase();
 
   constructor() {
     this.backoffice = BackofficeService.getInstance();

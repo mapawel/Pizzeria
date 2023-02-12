@@ -51,7 +51,7 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
 
   describe('happy path test:', () => {
     it('Should move the order from "ordersPending" to "ordersInProgress" with cookId attached to order.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
         //given
@@ -82,11 +82,13 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
     });
 
     it('Should update attached cook status to not available after attaching the cook to the order', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
-        //when
+        //given
         setup.changeExampleWorkerAvailibility(true);
+
+        //when
         service.executePendingOrder(addedOrderId, setup.workerId);
 
         //then
@@ -96,12 +98,13 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
     });
 
     it('Should decrease ingredient qtys after creating a new order at place while a cook is also available.', () => {
-      // all necessary backoffice states are set in setup class
-      //given
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
-        //when
+        //given
         setup.changeExampleWorkerAvailibility(true);
+
+        //when
         service.executePendingOrder(addedOrderId, setup.workerId);
 
         //then
@@ -129,10 +132,10 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
 
   describe('unsuccessed path test:', () => {
     it('Should throw WorkersStoreError on try to executePendingOrder by cook who is not available.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
+
       if (addedOrderId) {
-        //when
-        //then
+        //when//then
         assert.throws(() => {
           service.executePendingOrder(addedOrderId, setup.workerId);
         }, WorkersStoreError);
@@ -140,10 +143,10 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
     });
 
     it('Should throw WorkersStoreError on try to executePendingOrder by not existing cook.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
+
       if (addedOrderId) {
-        //when
-        //then
+        //when//then
         assert.throws(() => {
           service.executePendingOrder(addedOrderId, 'notExisting');
         }, WorkersStoreError);
@@ -151,10 +154,10 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
     });
 
     it('Should throw OrdersStoreError on try to executePendingOrder with not existing order id.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
+
       if (addedOrderId) {
-        //when
-        //then
+        //when//then
         assert.throws(() => {
           service.executePendingOrder('notExisting', setup.workerId);
         }, OrdersStoreError);
@@ -162,7 +165,7 @@ describe('Customer service tests suite - executePendingOrder() variants:', () =>
     });
 
     it('Should throw error on try to executePendingOrder while there is no ingredients on stock required', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
         //given

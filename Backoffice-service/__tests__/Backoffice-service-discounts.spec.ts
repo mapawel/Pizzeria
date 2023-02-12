@@ -7,7 +7,6 @@ import { DiscountError } from '../../Discounts/exceptions/Discount.exception';
 describe('Backoffice service tests suite - discounts methods:', () => {
   //setup
   let backoffice: BackofficeService;
-
   const discountCode = '   qwertY   ';
   const normalizedDiscountCode = discountCode.trim().toUpperCase();
   const discountPercent = 0.5;
@@ -26,10 +25,11 @@ describe('Backoffice service tests suite - discounts methods:', () => {
       //when
       backoffice.addDiscount(discountCode, discountPercent);
 
+      //when+then
       const assertedDiscount: DiscountResDTO =
         backoffice.findDiscountByCode(discountCode);
 
-      //then
+      //...then
       assert.equal(assertedDiscount.code, normalizedDiscountCode);
       assert.equal(assertedDiscount.discountPercent, discountPercent);
       assert.isNull(assertedDiscount.limitQty);
@@ -39,18 +39,19 @@ describe('Backoffice service tests suite - discounts methods:', () => {
       //when
       backoffice.addDiscount(discountCode, discountPercent, discountLimit);
 
+      //then
       const assertedDiscount: DiscountResDTO =
         backoffice.findDiscountByCode(discountCode);
-
-      //then
       assert.equal(assertedDiscount.code, normalizedDiscountCode);
       assert.equal(assertedDiscount.discountPercent, discountPercent);
       assert.equal(assertedDiscount.limitQty, discountLimit);
     });
 
     it('should throw ValidatorError on try to add a new discount with not proper limit qty (-)', () => {
-      const newDiscountLimit = -1;
+      //given
+      const newDiscountLimit: number = -1;
 
+      //when//then
       assert.throws(() => {
         backoffice.addDiscount(discountCode, discountPercent, newDiscountLimit);
       }, ValidatorError);
@@ -69,12 +70,11 @@ describe('Backoffice service tests suite - discounts methods:', () => {
     it('should remove discount by code', () => {
       //given
       backoffice.addDiscount(discountCode, discountPercent);
-      backoffice.findDiscountByCode(discountCode);
 
       //when
       backoffice.removeDiscount(normalizedDiscountCode);
-      //then
 
+      //then
       assert.throws(
         () => backoffice.findDiscountByCode(discountCode),
         DiscountError
@@ -93,23 +93,20 @@ describe('Backoffice service tests suite - discounts methods:', () => {
   describe('updatePizza() test:', () => {
     it('should update discount with new params', () => {
       //given
-      const newDiscountPercent = 0.3;
-      const newDiscountLimit = 100;
-
+      const newDiscountPercent: number = 0.3;
+      const newDiscountLimit: number = 100;
       backoffice.addDiscount(discountCode, discountPercent, discountLimit);
 
       //when
-
       backoffice.updateDiscount(
         discountCode,
         newDiscountPercent,
         newDiscountLimit
       );
 
+      //then
       const assertedDiscount: DiscountResDTO =
         backoffice.findDiscountByCode(discountCode);
-
-      //then
       assert.equal(assertedDiscount.code, normalizedDiscountCode);
       assert.equal(assertedDiscount.discountPercent, newDiscountPercent);
       assert.equal(assertedDiscount.limitQty, newDiscountLimit);
@@ -117,13 +114,10 @@ describe('Backoffice service tests suite - discounts methods:', () => {
 
     it('should throw ValidatorError on try to update a discount with not proper limit qty (-)', () => {
       //given
-      const newDiscountLimit = -10;
-
+      const newDiscountLimit: number = -10;
       backoffice.addDiscount(discountCode, discountPercent, discountLimit);
 
-      //when
-
-      //then
+      //when//then
       assert.throws(() => {
         backoffice.updateDiscount(
           discountCode,

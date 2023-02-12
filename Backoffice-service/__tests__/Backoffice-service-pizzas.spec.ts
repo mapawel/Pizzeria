@@ -10,9 +10,8 @@ import { ValidatorError } from '../../general-validators/Validator.exception';
 describe('Backoffice service tests suite - pizzas methods:', () => {
   //setup
   let backoffice: BackofficeService;
-
-  const pizzaName = 'ExamplePizza';
-  const pizzaPrice = 30;
+  const pizzaName: string = 'ExamplePizza';
+  const pizzaPrice: number = 30;
   const pizzaIngredients: PizzaIngredientType[] = [
     {
       stockIngredientNameId: 'SOSE',
@@ -23,7 +22,6 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
       qtyNeeded: 200,
     },
   ];
-
   const expectedRecipe: Ingredient[] = pizzaIngredients.map(
     ({
       stockIngredientNameId,
@@ -37,7 +35,12 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
     })
   );
 
-  const createTestableRecipe = (map: Map<string, PizzaIngredient>) =>
+  const createTestableRecipe = (
+    map: Map<string, PizzaIngredient>
+  ): {
+    nameId: string;
+    qty: number;
+  }[] =>
     Array.from(map, ([_, v]: [string, Ingredient]) => v).map(
       ({ nameId, qty }: Ingredient) => ({ nameId, qty })
     );
@@ -55,13 +58,13 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
       //when
       backoffice.addPizza(pizzaName, pizzaIngredients, pizzaPrice);
 
+      //when+then
       const assertedPizza: PizzaResDTO = backoffice.findPizzaById(
         pizzaName.toUpperCase()
       );
 
-      //then
+      //...then
       const testableAssertedRecipe = createTestableRecipe(assertedPizza.recipe);
-
       assert.deepEqual(testableAssertedRecipe, expectedRecipe);
       assert.equal(assertedPizza.name, pizzaName);
       assert.equal(assertedPizza.nameId, pizzaName.toLocaleUpperCase());
@@ -69,6 +72,7 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
     });
 
     it('should throw ValidatorError on try to add a new Pizza with not proper ingredient qty (-)', () => {
+      //given
       const newPizzaIngredients: PizzaIngredientType[] = [
         {
           stockIngredientNameId: 'SOSE',
@@ -84,6 +88,7 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
       }, ValidatorError);
     });
 
+    //when//then
     it('should throw PizzaStoreError on try to find not existing pizza', () => {
       //when//then
       assert.throws(
@@ -97,11 +102,11 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
     it('should remove pizza by nameId', () => {
       //given
       backoffice.addPizza(pizzaName, pizzaIngredients, pizzaPrice);
-      backoffice.findPizzaById(pizzaName.toUpperCase());
+
       //when
       backoffice.removePizza(pizzaName.toUpperCase());
-      //then
 
+      //then
       assert.throws(
         () => backoffice.findPizzaById(pizzaName.toUpperCase()),
         PizzaStoreError
@@ -131,7 +136,6 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
           qtyNeeded: 100,
         },
       ];
-
       const expectedNewRecipe: Ingredient[] = newPizzaIngredients.map(
         ({
           stockIngredientNameId,
@@ -144,7 +148,6 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
           qty: qtyNeeded,
         })
       );
-
       backoffice.addPizza(pizzaName, pizzaIngredients, pizzaPrice);
 
       //when
@@ -158,14 +161,13 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
       const assertedPizza: PizzaResDTO = backoffice.findPizzaById(
         pizzaName.toUpperCase()
       );
-
       const testableAssertedRecipe = createTestableRecipe(assertedPizza.recipe);
-
       assert.deepEqual(testableAssertedRecipe, expectedNewRecipe);
       assert.equal(assertedPizza.price, newPizzaPrice);
     });
 
     it('should throw ValidatorError on try to update a Pizza with not proper ingredient qty (-)', () => {
+      //given
       const newPizzaIngredients: PizzaIngredientType[] = [
         {
           stockIngredientNameId: 'SOSE',
@@ -176,9 +178,9 @@ describe('Backoffice service tests suite - pizzas methods:', () => {
           qtyNeeded: 200,
         },
       ];
-
       backoffice.addPizza(pizzaName, pizzaIngredients, pizzaPrice);
 
+      //then//then
       assert.throws(() => {
         backoffice.updatePizza(
           pizzaName.toUpperCase(),

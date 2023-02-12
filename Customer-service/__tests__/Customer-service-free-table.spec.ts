@@ -22,7 +22,6 @@ describe('Customer service tests suite - makeOrderTableFree() variants:', () => 
     service = CustomerService.getInstance();
     backoffice = BackofficeService.getInstance();
     setup = new CustomerServiceSpecSetup();
-
     const personsToOrder: number = 1;
     setup.changeExampleTableAvailibility(true); // a table for 6 persons
     setup.changeExampleWorkerAvailibility(true);
@@ -36,7 +35,6 @@ describe('Customer service tests suite - makeOrderTableFree() variants:', () => 
         qty: 1,
       },
     ];
-
     const addedOrder: OrderResDTO = service.orderIn(orderItems, personsToOrder);
     addedOrderId = addedOrder.id;
   });
@@ -48,7 +46,7 @@ describe('Customer service tests suite - makeOrderTableFree() variants:', () => 
 
   describe('happy path test:', () => {
     it('Should update table status to availale after makeOrderTableFree() and also retrive a number of sits available at this table.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
 
       if (addedOrderId) {
         //given
@@ -67,10 +65,10 @@ describe('Customer service tests suite - makeOrderTableFree() variants:', () => 
 
   describe('unsuccessed path test:', () => {
     it('Should throw OrdersStoreError on try to makeOrderTableFree with not existing order id.', () => {
-      // all necessary backoffice states are set in setup class
+      // given: all necessary backoffice states are set in setup class
+
       if (addedOrderId) {
-        //when
-        //then
+        //when//then
         assert.throws(() => {
           service.makeOrderTableFree('notExisting');
         }, OrdersStoreError);

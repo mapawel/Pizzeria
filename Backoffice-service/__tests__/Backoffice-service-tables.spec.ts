@@ -7,12 +7,11 @@ import { TablesStoreError } from '../../Tables/exceptions/Tables-store.exception
 describe('Backoffice service tests suite - tables methods:', () => {
   //setup
   let backoffice: BackofficeService;
-
-  const tableName = '  BigRound';
-  const tableNameNormalized = tableName.trim().toLowerCase();
-  const tableSits = 6;
-  const tableSitsAvailable = 6;
-  const tableIsAvailable = true;
+  const tableName: string = '  BigRound';
+  const tableNameNormalized: string = tableName.trim().toLowerCase();
+  const tableSits: number = 6;
+  const tableSitsAvailable: number = 6;
+  const tableIsAvailable: boolean = true;
 
   beforeEach(() => {
     backoffice = BackofficeService.getInstance();
@@ -33,8 +32,10 @@ describe('Backoffice service tests suite - tables methods:', () => {
       });
 
       if (addedTable.id) {
+        //then+then
         const assertedTable: TableDTO = backoffice.findTableById(addedTable.id);
-        //then
+
+        //...then
         assert.equal(assertedTable.name, tableNameNormalized);
         assert.equal(assertedTable.sits, tableSits);
         assert.equal(assertedTable.sitsAvailable, tableSitsAvailable);
@@ -45,8 +46,10 @@ describe('Backoffice service tests suite - tables methods:', () => {
     });
 
     it('should throw ValidatorError on try to add a new table with not proper sits (-)', () => {
-      const newTableSits = -1;
+      //given
+      const newTableSits: number = -1;
 
+      //when//then
       assert.throws(() => {
         backoffice.addTable({
           name: tableName,
@@ -59,7 +62,7 @@ describe('Backoffice service tests suite - tables methods:', () => {
 
     it('should throw ValidatorError on try to add a table with not proper sits available (greather than sits)', () => {
       //given
-      const newTableSitsAvailable = tableSits + 1;
+      const newTableSitsAvailable: number = tableSits + 1;
 
       //when//then
       assert.throws(
@@ -95,8 +98,10 @@ describe('Backoffice service tests suite - tables methods:', () => {
 
       if (addedTable.id) {
         backoffice.findTableById(addedTable.id);
+
         //when
         backoffice.removeTable(addedTable.id);
+
         //then
         assert.throws(() => {
           backoffice.findTableById(addedTable.id as string);
@@ -117,11 +122,11 @@ describe('Backoffice service tests suite - tables methods:', () => {
 
   describe('updateTable() test:', () => {
     //given
-    const newTableName = '  newBigRound';
-    const newTableNomalizedName = newTableName.trim().toLowerCase();
-    const newTableSits = 8;
-    const newTableSitsAvailable = 8;
-    const newTableIsAvailable = false;
+    const newTableName: string = '  newBigRound';
+    const newTableNomalizedName: string = newTableName.trim().toLowerCase();
+    const newTableSits: number = 8;
+    const newTableSitsAvailable: number = 8;
+    const newTableIsAvailable: boolean = false;
 
     it('should update a table with new params', () => {
       const addedTable: TableDTO = backoffice.addTable({
@@ -140,6 +145,7 @@ describe('Backoffice service tests suite - tables methods:', () => {
           sitsAvailable: newTableSitsAvailable,
           isAvailable: newTableIsAvailable,
         });
+
         //then
         const assertedTable: TableDTO = backoffice.findTableById(addedTable.id);
         assert.equal(assertedTable.name, newTableNomalizedName);
@@ -153,7 +159,7 @@ describe('Backoffice service tests suite - tables methods:', () => {
 
     it('should throw ValidatorError on try to update a table with not proper sits qty (-)', () => {
       //given
-      const newTableSits = -10;
+      const newTableSits: number = -10;
       const addedTable: TableDTO = backoffice.addTable({
         name: tableName,
         sits: tableSits,
@@ -181,7 +187,7 @@ describe('Backoffice service tests suite - tables methods:', () => {
 
     it('should throw ValidatorError on try to update a table with not proper sits available (greather than sits)', () => {
       //given
-      const newTableSitsAvailable = tableSits + 1;
+      const newTableSitsAvailable: number = tableSits + 1;
       const addedTable: TableDTO = backoffice.addTable({
         name: tableName,
         sits: tableSits,

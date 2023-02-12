@@ -1,3 +1,5 @@
+// just an example code here - more detailed information about the app working can be read in tests
+
 import { Role } from './Workers/Worker/Roles.enum';
 import { OrderResDTO } from './Orders/DTO/Order-res.dto';
 import { OrderState } from './Orders/Order/orders-state.enum';

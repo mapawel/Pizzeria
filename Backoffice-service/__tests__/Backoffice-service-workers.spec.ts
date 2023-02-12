@@ -7,11 +7,10 @@ import { WorkersStoreError } from '../../Workers/exceptions/Workers-store.except
 describe('Backoffice service tests suite - workers methods:', () => {
   //setup
   let backoffice: BackofficeService;
-
-  const workerName = ' John doe  ';
-  const workerNormalizedName = workerName.trim().toUpperCase();
+  const workerName: string = ' John doe  ';
+  const workerNormalizedName: string = workerName.trim().toUpperCase();
   const workerRole: Role = Role.COOK;
-  const workerIsAvailable = true;
+  const workerIsAvailable: boolean = true;
 
   beforeEach(() => {
     backoffice = BackofficeService.getInstance();
@@ -31,8 +30,9 @@ describe('Backoffice service tests suite - workers methods:', () => {
       });
 
       if (addedWorker.id) {
+        //when+then
         const assertedWorker: WorkerDTO = backoffice.findWorker(addedWorker.id);
-        //then
+        //...then
         assert.equal(assertedWorker.name, workerNormalizedName);
         assert.equal(assertedWorker.role, workerRole);
         assert.equal(assertedWorker.isAvailable, workerIsAvailable);
@@ -61,8 +61,10 @@ describe('Backoffice service tests suite - workers methods:', () => {
 
       if (addedWorker.id) {
         backoffice.findWorker(addedWorker.id);
+
         //when
         backoffice.removeWorker(addedWorker.id);
+
         //then
         assert.throws(() => {
           backoffice.findWorker(addedWorker.id as string);
@@ -83,10 +85,10 @@ describe('Backoffice service tests suite - workers methods:', () => {
 
   describe('updateWorker() test:', () => {
     //given
-    const newWorkerName = ' Mat doe  ';
-    const newWorkerNormalizedName = newWorkerName.trim().toUpperCase();
+    const newWorkerName: string = ' Mat doe  ';
+    const newWorkerNormalizedName: string = newWorkerName.trim().toUpperCase();
     const newWorkerRole: Role = Role.WAITER;
-    const newWorkerIsAvailable = false;
+    const newWorkerIsAvailable: boolean = false;
 
     it('should update a worker with new params', () => {
       const addedWorker: WorkerDTO = backoffice.addWorker({
@@ -103,6 +105,7 @@ describe('Backoffice service tests suite - workers methods:', () => {
           role: newWorkerRole,
           isAvailable: newWorkerIsAvailable,
         });
+
         //then
         const assertedWorker: WorkerDTO = backoffice.findWorker(addedWorker.id);
         assert.equal(assertedWorker.name, newWorkerNormalizedName);
